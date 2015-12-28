@@ -57,29 +57,4 @@ class Parser extends Utility;
 
         return $tree;
     }
-
-    /**
-     * Parse comments.
-     *
-     * @return mixed
-     */
-    protected function parseComments($line)
-    {
-
-    }
-
-    /**
-     * Trim leading and trailing whitespace as well as
-     * whitespace surrounding individual arguments.
-     *
-     * @param string  $line
-     * @return string
-     */
-    public function removeWhitespace($line)
-    {
-        $line = trim($line);
-        preg_replace('/( )+/', ' ', $line);
-
-        return $line;
-    }
 }

@@ -2,9 +2,9 @@
 namespace Vulcan\Rivescript;
 
 use Monolog\Logger;
-use Monolog\Handlers\StreamHandler;
+use Monolog\Handler\StreamHandler;
 
-class Utility()
+class Utility
 {
     /**
      * @var Logger
@@ -29,7 +29,7 @@ class Utility()
      * @param  array  $context The log context
      * @return Boolean  Whether the record has been processed
      */
-    protected function debug($message, array $context = array())
+    public function debug($message, array $context = array())
     {
         return $this->logger->addDebug($message, $context);
     }
@@ -41,17 +41,46 @@ class Utility()
      * @param  array  $context The log context
      * @return Boolean  Whether the record has been processed
      */
-    protected function warning($message, array $context = array())
+    public function warning($message, array $context = array())
     {
         return $this->logger->addWarning($message, $context);
     }
 
-    protected function startsWith($haystack, $needle)
+    /**
+     * Trim leading and trailing whitespace as well as
+     * whitespace surrounding individual arguments.
+     *
+     * @param string  $line
+     * @return string
+     */
+    public function removeWhitespace($line)
+    {
+        $line = trim($line);
+        preg_replace('/( )+/', ' ', $line);
+
+        return $line;
+    }
+
+    /**
+     * Determine if string starts with the supplied needle.
+     *
+     * @param string  $haystack
+     * @param string  $needle
+     * @return bool
+     */
+    public function startsWith($haystack, $needle)
     {
         return $needle === '' or strrpos($haystack, $needle, -strlen($haystack)) !== false;
     }
 
-    protected function endsWith($haystack, $needle)
+    /**
+     * Determine if string ends with the supplied needle.
+     *
+     * @param string  $haystack
+     * @param string  $needle
+     * @return bool
+     */
+    public function endsWith($haystack, $needle)
     {
         return $needle === '' or (($temp = strlen($haystack) - strlen($needle)) >= 0 and strpos($haystack, $needle, $temp) !== false);
     }
