@@ -3,7 +3,7 @@ namespace Vulcan\Rivescript;
 
 use SplFileObject;
 
-class Parser
+class Parser extends Utility;
 {
     /**
      * Process Rivescript file.
@@ -12,6 +12,18 @@ class Parser
      */
     public function process($file)
     {
+        $tree = [
+            'begin' => [
+                'global' => [],
+                'var'    => [],
+                'sub'    => [],
+                'person' => [],
+                'array'  => []
+            ],
+            'topics'  => [],
+            'objects' => []
+        ];
+
         $file       = new SplFileObject($file);
         $lineNumber = 0;
 
@@ -19,12 +31,41 @@ class Parser
             $lineNumber++;
             $line = $this->removeWhitespace($file->fgets());
 
+            // Skip empty lines
             if (empty($line)) continue;
 
-            echo $line;
+            // Parse comments
+            if ($this->startsWith($line, '//')) {
+                continue;
+            } elseif ($this->startsWith($line, '#')) {
+                $this->warning('Using the # symbol for comments is deprecated');
+                continue;
+            } elseif ($this->startsWith($line, '/*')) {
+                if ($this->endsWith($line, '*/')) continue;
+
+                $insideComment = true;
+                continue;
+            } elseif ($this->endsWith($line, '*/')) {
+                $insideComment = false;
+                continue;
+            }
+
+            if ($insideComment === true) continue;
         }
 
         $file = null;
+
+        return $tree;
+    }
+
+    /**
+     * Parse comments.
+     *
+     * @return mixed
+     */
+    protected function parseComments($line)
+    {
+
     }
 
     /**
