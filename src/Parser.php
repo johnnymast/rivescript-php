@@ -17,6 +17,8 @@ class Parser extends Utility
         'objects' => []
     ];
 
+    protected $trigger;
+
     protected $commands = [
         'Trigger',
         'Response'
@@ -66,15 +68,17 @@ class Parser extends Utility
                 ];
             }
 
-            $trigger = [
-                'trigger' => $line->value(),
-                'reply'   => [],
+            $this->trigger = [
+                'trigger'   => $line->value(),
+                'reply'     => [],
                 'condition' => [],
-                'redirect' => null,
-                'previous' => null,
+                'redirect'  => null,
+                'previous'  => null,
             ];
 
-            $this->tree['topics']['random']['triggers'][] = $trigger;
+            $this->tree['topics']['random']['triggers'][] = $this->trigger;
+
+            return null;
         }
 
         return $command;
@@ -82,6 +86,14 @@ class Parser extends Utility
 
     protected function commandResponse($line, $command)
     {
+        if ($line->command() === '-') {
+            $this->trigger['reply'][] = $line->value();
+
+            dd($this->trigger);
+
+            return null;
+        }
+
         return $command;
     }
 }
