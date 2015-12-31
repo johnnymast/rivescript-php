@@ -3,8 +3,25 @@ namespace Vulcan\Rivescript;
 
 use SplFileObject;
 
-class Parser extends Utility;
+class Parser extends Utility
 {
+    protected $tree = [
+        'begin' => [
+            'global' => [],
+            'var'    => [],
+            'sub'    => [],
+            'person' => [],
+            'array'  => []
+        ],
+        'topics'  => [],
+        'objects' => []
+    ];
+
+    protected $commands = [
+        'Trigger',
+        'Response'
+    ];
+
     /**
      * Process Rivescript file.
      *
@@ -12,126 +29,59 @@ class Parser extends Utility;
      */
     public function process($file)
     {
-        $tree = [
-            'begin' => [
-                'global' => [],
-                'var'    => [],
-                'sub'    => [],
-                'person' => [],
-                'array'  => []
-            ],
-            'topics'  => [],
-            'objects' => []
-        ];
-
-        $file          = new SplFileObject($file);
-        $lineNumber    = 0;
-        $topic         = 'random';
-        $insideComment = false;
+        $file       = new SplFileObject($file);
+        $lineNumber = 1;
 
         while (! $file->eof()) {
-            $lineNumber++;
-            $line = $this->removeWhitespace($file->fgets());
+            $currentCommand = null;
+            $line           = new Line($file->fgets(), $lineNumber++);
 
-            // Skip empty lines
-            if (empty($line)) continue;
+            if ($line->isInterrupted() or $line->isComment()) continue;
 
-            // Parse comments
-            if ($this->startsWith($line, '//')) {
-                continue;
-            } elseif ($this->startsWith($line, '#')) {
-                $this->warning('Using the # symbol for comments is deprecated');
-                continue;
-            } elseif ($this->startsWith($line, '/*')) {
-                if ($this->endsWith($line, '*/')) continue;
+            echo $line->number().': <b>'.$line->command().'</b> '.$line->value().'<br>';
 
-                $insideComment = true;
-                continue;
-            } elseif ($this->endsWith($line, '*/')) {
-                $insideComment = false;
-                continue;
-            }
+            foreach ($this->commands as $type) {
+                $command = $this->{'command'.$type}($line, $currentCommand);
 
-            if ($insideComment === true) continue;
-
-            // Separate command from the data
-            if (strlen($line) < 2) {
-                $this->warning("Weird single-character line #$linenumber found.");
-                continue;
-            }
-
-            $command = substr($line, 0, 1);
-            $line    = $this->removeWhitespace(substr($line, 1));
-
-            // Sort out the types of Rivescript commands
-            switch ($command) {
-                // Definition
-                case '!':
-                    switch ($type) {
-                        case 'local':
-                            break;
-
-                        case 'global':
-                            break;
-
-                        case 'var':
-                            break;
-
-                        case 'array':
-                            break;
-
-                        case 'sub':
-                            break;
-
-                        case 'person':
-                            break;
-
-                        default:
-                            $this->warning("Unknown definition type '$type'");
-                    }
-                    break;
-
-                // Start of Labeled Section
-                case '>':
-                    break;
-
-                // End of Labeled Section
-                case '<':
-                    break;
-
-                // Trigger
-                case '+':
-                    break;
-
-                // Response
-                case '-':
-                    break;
-
-                // Condition
-                case '*':
-                    break;
-
-                // Previous
-                case '%':
-                    continue;
-                    break;
-
-                // Continue
-                case '^':
-                    continue;
-                    break;
-
-                // Redirect
-                case '@':
-                    break;
-
-                default:
-                    $this->warning("Unknown command '$command'.");
+                if (isset($command)) {
+                    $currentCommand = $command;
+                    continue 2;
+                }
             }
         }
 
         $file = null;
 
-        return $tree;
+        return $this->tree;
+    }
+
+    protected function commandTrigger($line, $command)
+    {
+        if ($line->command() === '+') {
+            if (! isset($this->tree['topics']['random'])) {
+                $this->tree['topics']['random'] = [
+                    'includes' => [],
+                    'inherits' => [],
+                    'triggers' => []
+                ];
+            }
+
+            $trigger = [
+                'trigger' => $line->value(),
+                'reply'   => [],
+                'condition' => [],
+                'redirect' => null,
+                'previous' => null,
+            ];
+
+            $this->tree['topics']['random']['triggers'][] = $trigger;
+        }
+
+        return $command;
+    }
+
+    protected function commandResponse($line, $command)
+    {
+        return $command;
     }
 }
