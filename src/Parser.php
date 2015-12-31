@@ -24,8 +24,10 @@ class Parser extends Utility;
             'objects' => []
         ];
 
-        $file       = new SplFileObject($file);
-        $lineNumber = 0;
+        $file          = new SplFileObject($file);
+        $lineNumber    = 0;
+        $topic         = 'random';
+        $insideComment = false;
 
         while (! $file->eof()) {
             $lineNumber++;
@@ -51,6 +53,81 @@ class Parser extends Utility;
             }
 
             if ($insideComment === true) continue;
+
+            // Separate command from the data
+            if (strlen($line) < 2) {
+                $this->warning("Weird single-character line #$linenumber found.");
+                continue;
+            }
+
+            $command = substr($line, 0, 1);
+            $line    = $this->removeWhitespace(substr($line, 1));
+
+            // Sort out the types of Rivescript commands
+            switch ($command) {
+                // Definition
+                case '!':
+                    switch ($type) {
+                        case 'local':
+                            break;
+
+                        case 'global':
+                            break;
+
+                        case 'var':
+                            break;
+
+                        case 'array':
+                            break;
+
+                        case 'sub':
+                            break;
+
+                        case 'person':
+                            break;
+
+                        default:
+                            $this->warning("Unknown definition type '$type'");
+                    }
+                    break;
+
+                // Start of Labeled Section
+                case '>':
+                    break;
+
+                // End of Labeled Section
+                case '<':
+                    break;
+
+                // Trigger
+                case '+':
+                    break;
+
+                // Response
+                case '-':
+                    break;
+
+                // Condition
+                case '*':
+                    break;
+
+                // Previous
+                case '%':
+                    continue;
+                    break;
+
+                // Continue
+                case '^':
+                    continue;
+                    break;
+
+                // Redirect
+                case '@':
+                    break;
+
+                default:
+                    $this->warning("Unknown command '$command'.");
+            }
         }
 
         $file = null;
