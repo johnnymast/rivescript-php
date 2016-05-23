@@ -40,8 +40,6 @@ class Parser extends Utility
 
             if ($line->isInterrupted() or $line->isComment()) continue;
 
-            echo $line->number().': <b>'.$line->command().'</b> '.$line->value().'<br>';
-
             foreach ($this->commands as $type) {
                 $command = $this->{'command'.$type}($line, $currentCommand);
 
@@ -88,8 +86,6 @@ class Parser extends Utility
     {
         if ($line->command() === '-') {
             $this->trigger['reply'][] = $line->value();
-
-            dd($this->trigger);
 
             return null;
         }

@@ -1,0 +1,17 @@
+#! /usr/bin/env php
+
+<?php
+use Symfony\Component\Console\Application;
+use Vulcan\Rivescript\Commands\ChatCommand;
+use Vulcan\Rivescript\Parser;
+use Vulcan\Rivescript\Rivescript;
+
+require 'vendor/autoload.php';
+
+$app        = new Application('Rivescript PHP Interpreter', '1.0');
+$parser     = new Parser;
+$rivescript = new Rivescript($parser);
+
+$app->add(new ChatCommand($rivescript));
+
+$app->run();
