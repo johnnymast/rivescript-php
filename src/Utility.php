@@ -1,4 +1,5 @@
 <?php
+
 namespace Vulcan\Rivescript;
 
 use Monolog\Logger;

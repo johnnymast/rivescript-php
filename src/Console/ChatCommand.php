@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Commands;
+namespace Vulcan\Rivescript\Console;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,9 +29,7 @@ class ChatCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $brain = $input->getArgument('brain');
-
-        $this->rivescript->loadFile($brain);
+        $this->rivescript->loadFile($input->getArgument('brain'));
 
         $this->waitForUserInput($input, $output);
     }
@@ -49,7 +47,8 @@ class ChatCommand extends Command
     protected function getBotResponse($input, $output, $message)
     {
         $bot      = 'Bot > ';
-        $response = '<info>No response.</info>';
+        $reply    = $this->rivescript->reply(null, $message);
+        $response = "<info>{$reply}</info>";
 
         $output->writeln($bot.$response);
 

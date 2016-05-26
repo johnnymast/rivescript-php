@@ -1,4 +1,5 @@
 <?php
+
 namespace Vulcan\Rivescript;
 
 class Rivescript extends Utility
@@ -8,16 +9,18 @@ class Rivescript extends Utility
      */
     protected $parser;
 
+    public $tree;
+
     /**
      * Create a new Rivescript instance.
      *
      * @param Parser  $parser
      */
-    public function __construct(Parser $parser)
+    public function __construct()
     {
         parent::__construct();
 
-        $this->parser = $parser;
+        $this->parser = new Parser;
     }
 
     /*
@@ -34,7 +37,7 @@ class Rivescript extends Utility
      */
     public function loadFile($file)
     {
-        return $this->parser->process($file);
+        $this->tree = $this->parser->process($file);
     }
 
     private function parse($file)
@@ -46,5 +49,24 @@ class Rivescript extends Utility
         foreach($tree['begin'] as $type => $vars) {
             //
         }
+    }
+
+    public function reply($user, $message)
+    {
+        $triggers = $this->tree['topics']['random']['triggers'];
+
+        $found = array_search($message, array_column($triggers, 'trigger'));
+
+        if (is_int($found)) {
+            $replies = $triggers[$found]['reply'];
+
+            var_dump($replies);
+
+            if (count($replies)) {
+                return $replies[array_rand($replies)];
+            }
+        }
+
+        return 'No response found.';
     }
 }
