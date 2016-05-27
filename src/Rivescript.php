@@ -60,7 +60,9 @@ class Rivescript extends Utility
         if (is_int($found)) {
             $replies = $triggers[$found]['reply'];
 
-            var_dump($replies);
+            // echo "\n---\n\n";
+            // var_dump($replies);
+            // echo "\n---\n\n";
 
             if (count($replies)) {
                 return $replies[array_rand($replies)];

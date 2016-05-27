@@ -20,6 +20,8 @@ class Parser extends Utility
 
     protected $trigger;
 
+    protected $topic = 'random';
+
     protected $commands = [
         'Trigger',
         'Response'
@@ -75,7 +77,9 @@ class Parser extends Utility
                 'previous'  => null,
             ];
 
-            $this->tree['topics']['random']['triggers'][] = $this->trigger;
+            $this->tree['topics'][$this->topic]['triggers'][] = $this->trigger;
+
+            $this->trigger['key'] = max(array_keys($this->tree['topics'][$this->topic]['triggers']));
 
             return null;
         }
@@ -87,6 +91,8 @@ class Parser extends Utility
     {
         if ($line->command() === '-') {
             $this->trigger['reply'][] = $line->value();
+
+            $this->tree['topics']['random']['triggers'][$this->trigger['key']] = $this->trigger;
 
             return null;
         }
