@@ -109,12 +109,28 @@ class Rivescript extends Utility
 
     protected function tagStars($text, $data)
     {
-        $pattern = '/(<star>)/';
+        $pattern = '/<star(([0-9])?)>/';
 
         preg_match_all($pattern, $text, $matches);
 
-        if (! empty($matches[1])) {
-            $text = preg_replace($pattern, $data['stars'][0], $text);
+        if (isset($matches[1])) {
+            $search = $matches[0];
+
+            foreach ($matches[1] as $match) {
+                if (empty($match)) {
+                    $match = 0;
+                } else {
+                    $match--;
+                }
+
+                if (isset($data['stars'][$match])) {
+                    $replace[] = $data['stars'][$match];
+                } else {
+                    $replace[] = '';
+                }
+            }
+
+            $text = str_replace($search, $replace, $text);
         }
 
         return $text;
