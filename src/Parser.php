@@ -23,6 +23,7 @@ class Parser extends Utility
     protected $topic = 'random';
 
     protected $commands = [
+        'Topic',
         'Trigger',
         'Response'
     ];
@@ -56,6 +57,19 @@ class Parser extends Utility
         $file = null;
 
         return $this->tree;
+    }
+
+    protected function commandTopic($line, $command)
+    {
+        if ($line->command() === '>') {
+            list($command, $topic) = explode(' ', $line->value());
+
+            $this->topic = $topic;
+        }
+
+        if ($line->command() === '<') {
+            $this->topic = 'random';
+        }
     }
 
     protected function commandTrigger($line, $command)
@@ -92,7 +106,7 @@ class Parser extends Utility
         if ($line->command() === '-') {
             $this->trigger['reply'][] = $line->value();
 
-            $this->tree['topics']['random']['triggers'][$this->trigger['key']] = $this->trigger;
+            $this->tree['topics'][$this->topic]['triggers'][$this->trigger['key']] = $this->trigger;
 
             return null;
         }

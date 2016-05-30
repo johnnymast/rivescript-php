@@ -1,6 +1,6 @@
 ! version = 2.0
 
-+ hello bot
++ hello
 - Hello, human!
 - Hello!
 - Hi there
@@ -8,7 +8,26 @@
 - Yo!
 - Hey!
 
++ i am # years old
+- Wow!
+
 + how are you
 - I'm doing great
 - I'm good!
 - Doing awesome
+
++ my name is _
+- Nice to meet you!
+
++ i hate you
+- Well then, I won't talk to you until you take that back. {topic=apology}
+
+> topic apology
+
++ sorry
+- Okay, I guess I'll forgive you then. {topic=random}
+
+< topic
+
++ *
+- I don't understand

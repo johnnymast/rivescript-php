@@ -11,6 +11,17 @@ class Rivescript extends Utility
 
     public $tree;
 
+    protected $topic = 'random';
+
+    protected $tags = [
+        'Topic'
+    ];
+
+    protected $triggers = [
+        'Atomic',
+        'Wildcard',
+    ];
+
     /**
      * Create a new Rivescript instance.
      *
@@ -40,35 +51,59 @@ class Rivescript extends Utility
         $this->tree = $this->parser->process($file);
     }
 
-    private function parse($file)
-    {
-        $tree = $this->parser->process($file);
-
-        // Get all of the "begin" type variables:
-        // global, var, sub, person, array...
-        foreach($tree['begin'] as $type => $vars) {
-            //
-        }
-    }
-
     public function reply($user, $message)
     {
-        $triggers = $this->tree['topics']['random']['triggers'];
+        $triggers = $this->tree['topics'][$this->topic]['triggers'];
 
-        $found = array_search($message, array_column($triggers, 'trigger'));
+        if (count($triggers) > 0) {
+            foreach ($triggers as $key => $trigger) {
+                foreach ($this->triggers as $class) {
+                    $className    = "\Vulcan\Rivescript\Interpreter\Triggers\\$class";
+                    $triggerClass = new $className;
 
-        if (is_int($found)) {
-            $replies = $triggers[$found]['reply'];
+                    $found = $triggerClass->parse($trigger['trigger'], $message);
 
-            // echo "\n---\n\n";
-            // var_dump($replies);
-            // echo "\n---\n\n";
+                    if ($found === true) {
+                        $foundKey = $key;
+                        break 2;
+                    }
+                }
+            }
 
-            if (count($replies)) {
-                return $replies[array_rand($replies)];
+            if (isset($foundKey) and is_int($foundKey)) {
+                $replies = $triggers[$foundKey]['reply'];
+
+                if (count($replies)) {
+                    $reply = $this->parseReply($replies[array_rand($replies)]);
+
+                    return $reply;
+                }
             }
         }
 
         return 'No response found.';
+    }
+
+    public function parseReply($message)
+    {
+        foreach ($this->tags as $type) {
+            $message = $this->{'tag'.$type}($message);
+        }
+
+        return $message;
+    }
+
+    protected function tagTopic($text)
+    {
+        $pattern = '/{\s*topic\s*=\s*(\w+)\s*}/i';
+
+        preg_match_all($pattern, $text, $matches);
+
+        if (! empty($matches[1])) {
+            $text        = preg_replace($pattern, '', $text);
+            $this->topic = $matches[1][0];
+        }
+
+        return $text;
     }
 }
