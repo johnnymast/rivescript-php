@@ -41,10 +41,7 @@ class ChatCommand extends Command
 
         $message = $helper->ask($input, $output, $question);
 
-        if ($message === '/quit') {
-            $output->writeln('Exiting...');
-            die();
-        }
+        $this->parseConsoleCommands($message, $output);
 
         $this->getBotResponse($input, $output, $message);
     }
@@ -58,5 +55,13 @@ class ChatCommand extends Command
         $output->writeln($bot.$response);
 
         $this->waitForUserInput($input, $output);
+    }
+
+    protected function parseConsoleCommands($message, $output)
+    {
+        if ($message === '/quit') {
+            $output->writeln('Exiting...');
+            die();
+        }
     }
 }
