@@ -42,7 +42,7 @@ RiveScript is an interpreted scripting language for giving responses to chatterb
 ## Format
 A RiveScript document should be parsed line by line, and preferably arranged in the interpreter's memory in an efficient way.
 
-The first character on each line should be the **command**, and the rest of the rest of the line is the command's **arguments**. The **command** should be a single character that is not a number or letter.
+The first character on each line should be the **command**, and the rest of the line is the command's **arguments**. The **command** should be a single character that is not a number or letter.
 
 In its most simplest form, a valid RiveScript trigger/response pair looks like this:
 
