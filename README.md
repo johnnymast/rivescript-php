@@ -19,18 +19,3 @@ composer require vulcan/rivescript
 
 ## Integration
 The Vulcan RiveScript package is framework agnostic. As such, the package can be used as is with native PHP, or with your favorite framework.
-
-### Laravel 5
-The Vulcan RiveScript package comes with optional support for Laravel 5 by means of a Service Provider and Facade for easy integration.
-
-After installing, open your `app` Laravel config file and add the following:
-
-#### Providers
-```php
-Vulcan\Rivescript\Laravel\RivescriptServiceProvider::class
-```
-
-##### Aliases
-```php
-'RiveScript' => Vulcan\Rivescript\Laravel\Facades\Rivescript::class
-```
