@@ -41,6 +41,11 @@ class ChatCommand extends Command
 
         $message = $helper->ask($input, $output, $question);
 
+        if ($message === '/quit') {
+            $output->writeln('Exiting...');
+            die();
+        }
+
         $this->getBotResponse($input, $output, $message);
     }
 
