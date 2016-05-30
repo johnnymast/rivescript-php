@@ -4,12 +4,16 @@ namespace Vulcan\Rivescript\Interpreter\Triggers;
 
 class Atomic
 {
-    public function parse($trigger, $message)
+    public function parse($key, $trigger, $message)
     {
         if ($trigger === $message) {
-            return true;
+            return [
+                'match' => true,
+                'key'   => $key,
+                'data'  => [],
+            ];
         }
 
-        return false;
+        return ['match' => false];
     }
 }

@@ -19,16 +19,22 @@ class Wildcard
         ]
     ];
 
-    public function parse($trigger, $message)
+    public function parse($key, $trigger, $message)
     {
         foreach ($this->types as $type) {
-            $parsedTrigger = preg_replace($type['pattern'], $type['replacement'], $trigger);
+            $parsedTrigger = preg_replace($type['pattern'], '('.$type['replacement'].')', $trigger);
 
-            if (@preg_match('#^'.$parsedTrigger.'$#', $message, $matches)) {
-                return true;
+            if (@preg_match('#^'.$parsedTrigger.'$#', $message, $stars)) {
+                array_shift($stars);
+
+                return [
+                    'match' => true,
+                    'key'   => $key,
+                    'data'  => ['stars' => $stars],
+                ];
             }
         }
 
-        return false;
+        return ['match' => false];
     }
 }

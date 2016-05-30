@@ -14,7 +14,8 @@ class Rivescript extends Utility
     protected $topic = 'random';
 
     protected $tags = [
-        'Topic'
+        'Topic',
+        'Stars'
     ];
 
     protected $triggers = [
@@ -58,23 +59,22 @@ class Rivescript extends Utility
         if (count($triggers) > 0) {
             foreach ($triggers as $key => $trigger) {
                 foreach ($this->triggers as $class) {
-                    $className    = "\Vulcan\Rivescript\Interpreter\Triggers\\$class";
-                    $triggerClass = new $className;
+                    $class        = "\Vulcan\Rivescript\Interpreter\Triggers\\$class";
+                    $triggerClass = new $class;
 
-                    $found = $triggerClass->parse($trigger['trigger'], $message);
+                    $found = $triggerClass->parse($key, $trigger['trigger'], $message);
 
-                    if ($found === true) {
-                        $foundKey = $key;
+                    if (isset($found['match']) and $found['match'] === true) {
                         break 2;
                     }
                 }
             }
 
-            if (isset($foundKey) and is_int($foundKey)) {
-                $replies = $triggers[$foundKey]['reply'];
+            if (isset($found['key']) and is_int($found['key'])) {
+                $replies = $triggers[$found['key']]['reply'];
 
                 if (count($replies)) {
-                    $reply = $this->parseReply($replies[array_rand($replies)]);
+                    $reply = $this->parseReply($replies[array_rand($replies)], $found['data']);
 
                     return $reply;
                 }
@@ -84,16 +84,16 @@ class Rivescript extends Utility
         return 'No response found.';
     }
 
-    public function parseReply($message)
+    public function parseReply($message, $data = array())
     {
         foreach ($this->tags as $type) {
-            $message = $this->{'tag'.$type}($message);
+            $message = $this->{'tag'.$type}($message, $data);
         }
 
         return $message;
     }
 
-    protected function tagTopic($text)
+    protected function tagTopic($text, $data)
     {
         $pattern = '/{\s*topic\s*=\s*(\w+)\s*}/i';
 
@@ -102,6 +102,19 @@ class Rivescript extends Utility
         if (! empty($matches[1])) {
             $text        = preg_replace($pattern, '', $text);
             $this->topic = $matches[1][0];
+        }
+
+        return $text;
+    }
+
+    protected function tagStars($text, $data)
+    {
+        $pattern = '/(<star>)/';
+
+        preg_match_all($pattern, $text, $matches);
+
+        if (! empty($matches[1])) {
+            $text = preg_replace($pattern, $data['stars'][0], $text);
         }
 
         return $text;
