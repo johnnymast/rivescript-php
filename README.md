@@ -50,3 +50,11 @@ In its most simplest form, a valid RiveScript trigger/response pair looks like t
 + hello bot
 - Hello, human.
 ```
+
+## Whitespace
+A RiveScript Interpreter should ignore leading and trailing whitespace characters on any line. It should also ignore whitespace characters surrounding individual arguments of a RiveScript command, where applicable. That is to say, the following two lines should be interpreted as being exactly the same:
+
+```
+! global debug = 1
+!    global    debug=    1
+```
