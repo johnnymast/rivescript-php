@@ -130,7 +130,9 @@ class Rivescript extends Utility
                 }
             }
 
-            $text = str_replace($search, $replace, $text);
+            if (isset($replace)) {
+                $text = str_replace($search, $replace, $text);
+            }
         }
 
         return $text;
