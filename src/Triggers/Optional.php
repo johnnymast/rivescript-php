@@ -6,6 +6,14 @@ use Vulcan\Rivescript\Contracts\Trigger;
 
 class Optional implements Trigger
 {
+    /**
+     * Parse the trigger.
+     *
+     * @param  integer  $key
+     * @param  string  $trigger
+     * @param  string  $message
+     * @return array
+     */
     public function parse($key, $trigger, $message)
     {
         @preg_match_all('/\[(.*?)\]/', $trigger, $optional);
