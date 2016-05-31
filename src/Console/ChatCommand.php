@@ -30,6 +30,17 @@ class ChatCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->rivescript->loadFile($input->getArgument('brain'));
+        $brain = explode('/', $input->getArgument('brain'));
+        $brain = end($brain);
+
+        $output->writeln('RiveScript Interpreter (PHP) -- Interactive Console');
+        $output->writeln('---------------------------------------------------');
+        $output->writeln('RiveScript Version:       2.0');
+        $output->writeln('Currently Loaded Brain:   '.$brain);
+        $output->writeln('');
+        $output->writeln('You are now chatting with the RiveScript bot. Type a message and press Return');
+        $output->writeln('to send it. When finished, type "/quit" to exit the interactive console.');
+        $output->writeln('');
 
         $this->waitForUserInput($input, $output);
     }
