@@ -53,9 +53,10 @@ The RiveScript PHP interpreter is framework agnostic. As such, the interpreter c
 - [ ] object
 
 ### + Trigger
-- [ ] Atomic
-- [ ] Wildcard
-- [ ] Alternation
+- [x] Atomic
+- [x] Wildcard
+- [x] Alternation
+- [ ] Optional
 - [ ] Arrays
 - [ ] Priority
 
