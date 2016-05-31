@@ -62,7 +62,7 @@ class Rivescript extends Utility
         if (count($triggers) > 0) {
             foreach ($triggers as $key => $trigger) {
                 foreach ($this->triggers as $class) {
-                    $class        = "\Vulcan\Rivescript\Interpreter\Triggers\\$class";
+                    $class        = "\Vulcan\Rivescript\Triggers\\$class";
                     $triggerClass = new $class;
 
                     $found = $triggerClass->parse($key, $trigger['trigger'], $message);
@@ -95,7 +95,7 @@ class Rivescript extends Utility
         ];
 
         foreach ($this->tags as $class) {
-            $class    = "\Vulcan\Rivescript\Interpreter\Tags\\$class";
+            $class    = "\Vulcan\Rivescript\Tags\\$class";
             $tagClass = new $class;
 
             $message = $tagClass->parse($message['response'], $data);

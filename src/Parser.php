@@ -12,15 +12,16 @@ class Parser extends Utility
             'var'    => [],
             'sub'    => [],
             'person' => [],
-            'array'  => []
+            'array'  => [],
         ],
-        'topics'  => [],
-        'objects' => []
+        'topics'   => [],
+        'objects'  => [],
+        'metadata' => [
+            'topic' => 'random',
+        ],
     ];
 
     protected $trigger;
-
-    protected $topic = 'random';
 
     protected $commands = [
         'Topic',
@@ -44,61 +45,24 @@ class Parser extends Utility
 
             if ($line->isInterrupted() or $line->isComment()) continue;
 
-            foreach ($this->commands as $type) {
-                $command = $this->{'command'.$type}($line, $currentCommand);
+            foreach ($this->commands as $class) {
+                $class        = "\Vulcan\Rivescript\Commands\\$class";
+                $commandClass = new $class;
 
-                if (isset($command)) {
-                    $currentCommand = $command;
+                $result = $commandClass->parse($this->tree, $line, $currentCommand);
+
+                if (isset($result['command'])) {
+                    $currentCommand = $result['command'];
                     continue 2;
                 }
+
+                $this->tree = $result['tree'];
             }
         }
 
         $file = null;
 
         return $this->tree;
-    }
-
-    protected function commandTopic($line, $command)
-    {
-        if ($line->command() === '>') {
-            list($command, $topic) = explode(' ', $line->value());
-
-            $this->topic = $topic;
-        }
-
-        if ($line->command() === '<') {
-            $this->topic = 'random';
-        }
-    }
-
-    protected function commandTrigger($line, $command)
-    {
-        if ($line->command() === '+') {
-            if (! isset($this->tree['topics']['random'])) {
-                $this->tree['topics']['random'] = [
-                    'includes' => [],
-                    'inherits' => [],
-                    'triggers' => []
-                ];
-            }
-
-            $this->trigger = [
-                'trigger'   => $line->value(),
-                'reply'     => [],
-                'condition' => [],
-                'redirect'  => null,
-                'previous'  => null,
-            ];
-
-            $this->tree['topics'][$this->topic]['triggers'][] = $this->trigger;
-
-            $this->trigger['key'] = max(array_keys($this->tree['topics'][$this->topic]['triggers']));
-
-            return null;
-        }
-
-        return $command;
     }
 
     protected function commandResponse($line, $command)
@@ -112,5 +76,10 @@ class Parser extends Utility
         }
 
         return $command;
+    }
+
+    public function setTree($tree)
+    {
+        $this->tree = $tree;
     }
 }

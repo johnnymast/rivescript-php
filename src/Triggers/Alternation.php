@@ -1,8 +1,10 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter\Triggers;
+namespace Vulcan\Rivescript\Triggers;
 
-class Alternation
+use Vulcan\Rivescript\Contracts\Trigger;
+
+class Alternation implements Trigger
 {
     public function parse($key, $trigger, $message)
     {

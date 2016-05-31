@@ -1,8 +1,10 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter\Triggers;
+namespace Vulcan\Rivescript\Triggers;
 
-class Atomic
+use Vulcan\Rivescript\Contracts\Trigger;
+
+class Atomic implements Trigger
 {
     public function parse($key, $trigger, $message)
     {

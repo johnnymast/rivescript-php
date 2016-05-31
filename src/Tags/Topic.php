@@ -1,8 +1,10 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter\Tags;
+namespace Vulcan\Rivescript\Tags;
 
-class Topic
+use Vulcan\Rivescript\Contracts\Tag;
+
+class Topic implements Tag
 {
     /**
      * Regex expression pattern.
@@ -16,7 +18,7 @@ class Topic
      *
      * @param  string  $response
      * @param  array  $data
-     * @return string
+     * @return array
      */
     public function parse($response, $data)
     {

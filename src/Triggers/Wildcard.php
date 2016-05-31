@@ -1,8 +1,10 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter\Triggers;
+namespace Vulcan\Rivescript\Triggers;
 
-class Wildcard
+use Vulcan\Rivescript\Contracts\Trigger;
+
+class Wildcard implements Trigger
 {
     protected $types = [
         'alpha' => [
