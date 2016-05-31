@@ -61,8 +61,8 @@ The RiveScript PHP interpreter is framework agnostic. As such, the interpreter c
 - [ ] Priority
 
 ### - Response
-- [ ] Atomic
-- [ ] Random
+- [x] Atomic
+- [x] Random
 - [ ] Weighted Random
 
 ---
