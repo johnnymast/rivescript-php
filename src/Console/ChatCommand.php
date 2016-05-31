@@ -52,7 +52,7 @@ class ChatCommand extends Command
 
         $message = $helper->ask($input, $output, $question);
 
-        $this->parseConsoleCommands($message, $output);
+        $this->parseConsoleCommands($input, $output, $message);
 
         $this->getBotResponse($input, $output, $message);
     }
@@ -68,11 +68,24 @@ class ChatCommand extends Command
         $this->waitForUserInput($input, $output);
     }
 
-    protected function parseConsoleCommands($message, $output)
+    protected function parseConsoleCommands($input, $output, $message)
     {
         if ($message === '/quit') {
             $output->writeln('Exiting...');
             die();
+        }
+
+        if ($message === '/help') {
+            $output->writeln('');
+            $output->writeln('<comment>Usage:</comment>');
+            $output->writeln('  Type a message and press Return to send it.');
+            $output->writeln('');
+            $output->writeln('<comment>Commands:</comment>');
+            $output->writeln('  <info>/help</info>        Show this text');
+            $output->writeln('  <info>/quit</info>        Quit the interactive console');
+            $output->writeln('');
+
+            $this->waitForUserInput($input, $output);
         }
     }
 }
