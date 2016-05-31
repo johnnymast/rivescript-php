@@ -11,11 +11,13 @@ class Rivescript extends Utility
 
     public $tree;
 
-    protected $topic = 'random';
+    protected $metadata = [
+        'topic' => 'random',
+    ];
 
     protected $tags = [
         'Topic',
-        'Stars'
+        'Star'
     ];
 
     protected $triggers = [
@@ -55,7 +57,7 @@ class Rivescript extends Utility
 
     public function reply($user, $message)
     {
-        $triggers = $this->tree['topics'][$this->topic]['triggers'];
+        $triggers = $this->tree['topics'][$this->getMetadata('topic')]['triggers'];
 
         if (count($triggers) > 0) {
             foreach ($triggers as $key => $trigger) {
@@ -87,55 +89,37 @@ class Rivescript extends Utility
 
     public function parseReply($message, $data = array())
     {
-        foreach ($this->tags as $type) {
-            $message = $this->{'tag'.$type}($message, $data);
+        $message = [
+            'response' => $message,
+            'metadata' => []
+        ];
+
+        foreach ($this->tags as $class) {
+            $class    = "\Vulcan\Rivescript\Interpreter\Tags\\$class";
+            $tagClass = new $class;
+
+            $message = $tagClass->parse($message['response'], $data);
+
+            $this->syncMetadata($message['metadata']);
         }
 
-        return $message;
+        return $message['response'];
     }
 
-    protected function tagTopic($text, $data)
+    public function syncMetadata($collection)
     {
-        $pattern = '/{\s*topic\s*=\s*(\w+)\s*}/i';
-
-        preg_match_all($pattern, $text, $matches);
-
-        if (! empty($matches[1])) {
-            $text        = preg_replace($pattern, '', $text);
-            $this->topic = $matches[1][0];
+        foreach ($collection as $key => $value) {
+            $this->setMetadata($key, $value);
         }
-
-        return $text;
     }
 
-    protected function tagStars($text, $data)
+    public function getMetadata($key)
     {
-        $pattern = '/<star(([0-9])?)>/';
+        return $this->metadata[$key];
+    }
 
-        preg_match_all($pattern, $text, $matches);
-
-        if (isset($matches[1])) {
-            $search = $matches[0];
-
-            foreach ($matches[1] as $match) {
-                if (empty($match)) {
-                    $match = 0;
-                } else {
-                    $match--;
-                }
-
-                if (isset($data['stars'][$match])) {
-                    $replace[] = $data['stars'][$match];
-                } else {
-                    $replace[] = '';
-                }
-            }
-
-            if (isset($replace)) {
-                $text = str_replace($search, $replace, $text);
-            }
-        }
-
-        return $text;
+    public function setMetadata($key, $value)
+    {
+        $this->metadata[$key] = $value;
     }
 }

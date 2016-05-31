@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Tags;
+namespace Vulcan\Rivescript\Interpreter\Tags;
 
 class Topic
 {
@@ -11,15 +11,25 @@ class Topic
      */
     public $pattern = '/{\s*topic\s*=\s*(\w+)\s*}/i';
 
-    public function parse($text, $data)
+    /**
+     * Parse the response.
+     *
+     * @param  string  $response
+     * @param  array  $data
+     * @return string
+     */
+    public function parse($response, $data)
     {
-        preg_match($this->pattern, $text, $matches);
+        preg_match_all($this->pattern, $response, $matches);
 
-        if ($matches[0]) {
-            $text          = preg_replace($this->pattern, '', $text);
-            $data['topic'] = $matches[0];
+        if (! empty($matches[1])) {
+            $response          = preg_replace($this->pattern, '', $response);
+            $metadata['topic'] = $matches[1][0];
         }
 
-        return [$text, $data];
+        return [
+            'response' => $response,
+            'metadata' => isset($metadata) ? $metadata : []
+        ];
     }
 }
