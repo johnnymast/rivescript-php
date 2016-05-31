@@ -22,6 +22,50 @@ The RiveScript PHP interpreter is framework agnostic. As such, the interpreter c
 
 ---
 
+# Roadmap
+
+## Interpreter
+- [x] Format
+- [x] Whitespace
+- [ ] Standard Global Variables
+- [ ] Sort +Triggers
+- [ ] Sort %Previous
+- [ ] Sort Replies
+- [ ] Syntax Checking
+
+## Tag Priority
+- [ ] Within BEGIN/Request
+- [ ] Within +Trigger
+- [ ] Within Replies
+
+## Commands
+- [ ] % Previous
+- [ ] ^ Continue
+- [ ] @ Redirect
+- [ ] * Condition
+- [x] // Comment
+
+### ! Definition
+
+### > Label
+- [ ] begin
+- [x] topic
+- [ ] object
+
+### + Trigger
+- [ ] Atomic
+- [ ] Wildcard
+- [ ] Alternation
+- [ ] Arrays
+- [ ] Priority
+
+### - Response
+- [ ] Atomic
+- [ ] Random
+- [ ] Weighted Random
+
+---
+
 # Working Draft
 RiveScript is an interpreted scripting language for giving responses to chatterbots and other intelligent chatting entities in a simple trigger/reply format. The scripting language is intended to be simplistic and easy to learn and manage.
 
