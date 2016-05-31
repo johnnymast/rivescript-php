@@ -17,7 +17,8 @@ class Parser extends Utility
         'topics'   => [],
         'objects'  => [],
         'metadata' => [
-            'topic' => 'random',
+            'topic'   => 'random',
+            'trigger' => null,
         ],
     ];
 
@@ -63,23 +64,5 @@ class Parser extends Utility
         $file = null;
 
         return $this->tree;
-    }
-
-    protected function commandResponse($line, $command)
-    {
-        if ($line->command() === '-') {
-            $this->trigger['reply'][] = $line->value();
-
-            $this->tree['topics'][$this->topic]['triggers'][$this->trigger['key']] = $this->trigger;
-
-            return null;
-        }
-
-        return $command;
-    }
-
-    public function setTree($tree)
-    {
-        $this->tree = $tree;
     }
 }

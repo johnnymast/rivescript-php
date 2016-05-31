@@ -30,6 +30,7 @@ class Trigger implements Command
             $tree['topics'][$currentTopic]['triggers'][]            = $trigger;
             $key                                                    = max(array_keys($tree['topics'][$currentTopic]['triggers']));
             $tree['topics'][$currentTopic]['triggers'][$key]['key'] = $key;
+            $tree['metadata']['trigger']                            = $tree['topics'][$currentTopic]['triggers'][$key];
 
             return ['tree' => $tree];
         }
