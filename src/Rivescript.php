@@ -83,12 +83,6 @@ class Rivescript extends Utility
 
                 if (count($replies)) {
                     $key   = array_rand($replies);
-
-                    print_r($key);
-                    print_r("\n");
-                    print_r($replies);
-                    print_r("\n");
-
                     $reply = $this->parseReply($replies[$key], $found['data']);
 
                     return $reply;
