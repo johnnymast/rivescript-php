@@ -17,8 +17,8 @@ class Parser extends Utility
         'topics'   => [],
         'objects'  => [],
         'metadata' => [
-            'topic'   => 'random',
-            'trigger' => null,
+            'topic'     => 'random',
+            'trigger'   => null,
         ],
     ];
 
@@ -27,7 +27,8 @@ class Parser extends Utility
     protected $commands = [
         'Topic',
         'Trigger',
-        'Response'
+        'Response',
+        'Redirect',
     ];
 
     /**

@@ -4,7 +4,7 @@ namespace Vulcan\Rivescript\Commands;
 
 use Vulcan\Rivescript\Contracts\Command;
 
-class Response implements Command
+class Redirect implements Command
 {
     /**
      * Parse the command.
@@ -16,13 +16,12 @@ class Response implements Command
      */
     public function parse($tree, $line, $command)
     {
-        if ($line->command() === '-') {
-            $topic              = $tree['metadata']['topic'];
-            $key                = $tree['metadata']['trigger']['key'];
-            $trigger            = $tree['topics'][$topic]['triggers'][$key];
-            $trigger['reply'][] = $line->value();
+        if ($line->command() === '@') {
+            $topic               = $tree['metadata']['topic'];
+            $trigger             = $tree['metadata']['trigger'];
+            $trigger['redirect'] = $line->value();
 
-            $tree['topics'][$topic]['triggers'][$key] = $trigger;
+            $tree['topics'][$topic]['triggers'][$trigger['key']] = $trigger;
 
             return ['tree' => $tree];
         }

@@ -57,6 +57,7 @@ class Rivescript extends Utility
 
     public function reply($user, $message)
     {
+        $message  = $this->prepareMessage($message);
         $triggers = $this->tree['topics'][$this->getMetadata('topic')]['triggers'];
 
         if (count($triggers) > 0) {
@@ -76,8 +77,19 @@ class Rivescript extends Utility
             if (isset($found['key']) and is_int($found['key'])) {
                 $replies = $triggers[$found['key']]['reply'];
 
+                if (isset($triggers[$found['key']]['redirect'])) {
+                    return $this->reply($user, $triggers[$found['key']]['redirect']);
+                }
+
                 if (count($replies)) {
-                    $reply = $this->parseReply($replies[array_rand($replies)], $found['data']);
+                    $key   = array_rand($replies);
+
+                    print_r($key);
+                    print_r("\n");
+                    print_r($replies);
+                    print_r("\n");
+
+                    $reply = $this->parseReply($replies[$key], $found['data']);
 
                     return $reply;
                 }
@@ -121,5 +133,13 @@ class Rivescript extends Utility
     public function setMetadata($key, $value)
     {
         $this->metadata[$key] = $value;
+    }
+
+    protected function prepareMessage($message)
+    {
+        $message = preg_replace("/[^A-Za-z0-9 ]/", '', $message);
+        $message = strtolower($message);
+
+        return $message;
     }
 }
