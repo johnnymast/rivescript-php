@@ -8,13 +8,13 @@
 - Yo!
 - Hey!
 
-+ yo
++ hi
 @ hello
 
 + (are you|you) (okay|alright|good)
 - I'm <star2>!
 
-+ i am # years old
++ (i am # years old|im #)
 - Wow, <star>?!
 
 + how are you
@@ -29,13 +29,11 @@
 - Well then, I won't talk to you until you take that back. {topic=apology}
 
 > topic apology
+    + sorry
+    - Okay, I guess I'll forgive you then. {topic=random}
 
-+ sorry
-- Okay, I guess I'll forgive you then. {topic=random}
-
-+ *
-- I won't discuss anything else until you apologize
-
+    + *
+    - I won't discuss anything else until you apologize
 < topic
 
 + *

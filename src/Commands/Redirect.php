@@ -18,10 +18,11 @@ class Redirect implements Command
     {
         if ($line->command() === '@') {
             $topic               = $tree['metadata']['topic'];
-            $trigger             = $tree['metadata']['trigger'];
+            $key                 = $tree['metadata']['trigger']['key'];
+            $trigger             = $tree['topics'][$topic]['triggers'][$key];
             $trigger['redirect'] = $line->value();
 
-            $tree['topics'][$topic]['triggers'][$trigger['key']] = $trigger;
+            $tree['topics'][$topic]['triggers'][$key] = $trigger;
 
             return ['tree' => $tree];
         }
