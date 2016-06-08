@@ -1,5 +1,14 @@
 ! version = 2.0
 
+! sub what's  = what is
+! sub i'm     = i am
+! sub im      = i am
+! sub what're = what are
+! sub what'd  = what did
+! sub a/s/l   = age sex location
+! sub brb     = be right back
+! sub afk     = away from keyboard
+
 + hello
 - Hello, human!
 - Hello!
@@ -14,7 +23,7 @@
 + (are you|you) (okay|alright|good)
 - I'm <star2>!
 
-+ (i am # years old|im #)
++ (i am # years old)
 - Wow, <star>?!
 
 + how are you

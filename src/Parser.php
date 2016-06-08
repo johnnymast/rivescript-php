@@ -29,6 +29,7 @@ class Parser extends Utility
         'Trigger',
         'Response',
         'Redirect',
+        'Sub',
     ];
 
     /**
