@@ -41,7 +41,7 @@ The RiveScript PHP interpreter is framework agnostic. As such, the interpreter c
 ## Commands
 - [ ] % Previous
 - [ ] ^ Continue
-- [ ] @ Redirect
+- [x] @ Redirect
 - [ ] * Condition
 - [x] // Comment
 
