@@ -10,6 +10,8 @@ This is a RiveScript interpreter library for PHP. See the below [Working Draft](
 
 The package follows the FIG standards PSR-1, PSR-2, and PSR-4 to ensure a high level of interoperability between shared PHP code.
 
+![Screenshot](screenshot.png)
+
 ## Quick Installation
 Simply install the package through Composer.
 
