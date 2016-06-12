@@ -53,6 +53,12 @@ A copy of the working draft can be found within the `resources` directory of thi
 - [x] // Comment
 
 ### ! Definition
+- [ ] version
+- [ ] global
+- [ ] var
+- [ ] array
+- [x] sub
+- [ ] person
 
 ### > Label
 - [ ] begin
