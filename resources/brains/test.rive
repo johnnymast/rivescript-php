@@ -46,7 +46,7 @@
 - <call>hello world</call>
 
 + weather
-- <call>weather</call>
+- You should expect <call>weather</call> today.
 
 + hi
 @ hello
