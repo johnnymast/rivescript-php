@@ -9,7 +9,7 @@ class ObjectMacro implements Command
     public function parse($tree, $line, $command)
     {
         if ($line->command() === '>') {
-            if (count(explode(' ', $line->value()) === 3)) {
+            if (count(explode(' ', $line->value())) === 3) {
                 list($type, $method, $language) = explode(' ', $line->value());
 
                 if ($type === 'object' and $language === 'php') {
@@ -35,7 +35,8 @@ class ObjectMacro implements Command
         }
 
         else if (! is_null($tree['metadata']['object'])) {
-            $tree['metadata']['object']['code'][] = $line->value();
+            $code                                 = $line->command().$line->value();
+            $tree['metadata']['object']['code'][] = $code;
         }
 
         return [

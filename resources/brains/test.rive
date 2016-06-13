@@ -17,8 +17,14 @@
 - Yo!
 - Hey!
 
-> object test php
+> object hello php
     echo 'Hello world!';
+    echo "\n";
+    echo 'Nice to meet you!';
+< object
+
+> object md5 php
+    echo md5('test');
 < object
 
 + hi

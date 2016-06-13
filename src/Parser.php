@@ -67,8 +67,6 @@ class Parser extends Utility
 
         $file = null;
 
-        dd($this->tree);
-
         return $this->tree;
     }
 }
