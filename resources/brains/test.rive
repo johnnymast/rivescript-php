@@ -27,6 +27,9 @@
     echo md5('test');
 < object
 
++ test
+- <call>md5 hello</call>
+
 + hi
 @ hello
 

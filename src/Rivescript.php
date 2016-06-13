@@ -17,7 +17,8 @@ class Rivescript extends Utility
 
     protected $tags = [
         'Topic',
-        'Star'
+        'Star',
+        'Call',
     ];
 
     protected $triggers = [
@@ -102,7 +103,7 @@ class Rivescript extends Utility
 
         foreach ($this->tags as $class) {
             $class    = "\Vulcan\Rivescript\Tags\\$class";
-            $tagClass = new $class;
+            $tagClass = new $class($this->tree);
 
             $message = $tagClass->parse($message['response'], $data);
 

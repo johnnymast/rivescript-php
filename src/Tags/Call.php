@@ -4,14 +4,14 @@ namespace Vulcan\Rivescript\Tags;
 
 use Vulcan\Rivescript\Contracts\Tag;
 
-class Star implements Tag
+class Call implements Tag
 {
     /**
      * Regex expression pattern.
      *
      * @var string
      */
-    public $pattern = '/<star(([0-9])?)>/i';
+    public $pattern = '/<call>(.*?)<\/call>/i';
 
     protected $tree;
 
@@ -31,22 +31,22 @@ class Star implements Tag
     {
         preg_match_all($this->pattern, $response, $matches);
 
-        if (isset($matches[1])) {
-            $search = $matches[0];
+        if (isset($matches[1][0])) {
+            $macro  = explode(' ', $matches[1][0]);
+            $object = $macro[0];
 
-            foreach ($matches[1] as $match) {
-                if (empty($match)) {
-                    $match = 0;
-                } else {
-                    $match--;
-                }
+            unset($macro[0]);
 
-                if (isset($data['stars'][$match])) {
-                    $replace[] = $data['stars'][$match];
-                } else {
-                    $replace[] = '';
-                }
+            $arguments = implode(' ', $macro);
+
+            if (isset($this->tree['objects'][$object])) {
+                ob_start();
+                    eval($this->tree['objects'][$object]);
+                    $replace = ob_get_contents();
+                ob_end_clean();
             }
+
+            $search = $matches[0][0];
 
             if (isset($replace)) {
                 $response = str_replace($search, $replace, $response);

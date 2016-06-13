@@ -13,6 +13,13 @@ class Topic implements Tag
      */
     public $pattern = '/{\s*topic\s*=\s*(\w+)\s*}/i';
 
+    protected $tree;
+
+    public function __construct($tree)
+    {
+        $this->tree = $tree;
+    }
+
     /**
      * Parse the response.
      *
