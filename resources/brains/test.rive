@@ -27,8 +27,26 @@
     echo md5('test');
 < object
 
+> object weather php
+    $curl = curl_init();
+    $url  = 'api.openweathermap.org/data/2.5/weather?zip=98104,us&APPID=47a469f2bd6e9cb7b316b25c2cd91592';
+
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+    $result = curl_exec($curl);
+    $result = json_decode($result, true);
+
+    curl_close($curl);
+
+    echo $result['weather'][0]['description'];
+< object
+
 + test
-- <call>md5 hello</call>
+- <call>hello world</call>
+
++ weather
+- <call>weather</call>
 
 + hi
 @ hello
