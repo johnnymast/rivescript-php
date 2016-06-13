@@ -42,9 +42,6 @@
     echo $result['weather'][0]['description'];
 < object
 
-+ test
-- <call>hello world</call>
-
 + weather
 - You should expect <call>weather</call> today.
 

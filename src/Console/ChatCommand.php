@@ -33,7 +33,7 @@ class ChatCommand extends Command
         $brain = explode('/', $input->getArgument('brain'));
         $brain = end($brain);
 
-        $output->writeln('RiveScript Interpreter (PHP) -- Interactive Console v0.1');
+        $output->writeln('RiveScript Interpreter (PHP) -- Interactive Console v0.2');
         $output->writeln('--------------------------------------------------------');
         $output->writeln('RiveScript Version:       2.0');
         $output->writeln('Currently Loaded Brain:   '.$brain);
