@@ -17,6 +17,10 @@
 - Yo!
 - Hey!
 
+> object test php
+    echo 'Hello world!';
+< object
+
 + hi
 @ hello
 

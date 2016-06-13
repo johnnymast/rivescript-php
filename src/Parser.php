@@ -19,12 +19,14 @@ class Parser extends Utility
         'metadata' => [
             'topic'     => 'random',
             'trigger'   => null,
+            'object'    => null
         ],
     ];
 
     protected $trigger;
 
     protected $commands = [
+        'ObjectMacro',
         'Topic',
         'Trigger',
         'Response',
@@ -64,6 +66,8 @@ class Parser extends Utility
         }
 
         $file = null;
+
+        dd($this->tree);
 
         return $this->tree;
     }
