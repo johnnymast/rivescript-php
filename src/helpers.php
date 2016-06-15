@@ -9,9 +9,7 @@
 if (! function_exists('dd')) {
     function dd()
     {
-        echo '<pre>'."\n";
-        array_map(function($x) { print_r($x); }, func_get_args());
-        echo '</pre>';
+        array_map(function($x) { print_r($x); echo"\n"; }, func_get_args());
         die;
     }
 }
