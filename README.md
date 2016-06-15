@@ -78,9 +78,11 @@ A copy of the working draft can be found within the `resources` directory of thi
 - [x] Random
 - [ ] Weighted Random
 
-### - Tags
-- [x] `<star>`, `<star1>` - `<starN>`
-- [ ] `<botstar>`, `<botstar1>` - `<botstarN>`
+## Tags
+- [x] `<star>`
+- [ ] `<star1>` - `<starN>`
+- [ ] `<botstar>`
+- [ ] `<botstar1>` - `<botstarN>`
 - [ ] `<input1>` - `<input9>`
 - [ ] `<reply1>` - `<reply9`
 - [ ] `<id>`
