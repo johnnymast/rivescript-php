@@ -4,10 +4,12 @@
 ! sub i'm     = i am
 ! sub im      = i am
 ! sub what're = what are
+! sub what's  = what is
 ! sub what'd  = what did
 ! sub a/s/l   = age sex location
 ! sub brb     = be right back
 ! sub afk     = away from keyboard
+! sub thx     = thanks
 
 + hello
 - Hello, human!
@@ -44,9 +46,26 @@
 
 + weather
 - You should expect <call>weather</call> today.
+- Look's like you should expect <call>weather</call> today.
+- <call>weather</call>
+
++ what does the weather look like
+@ weather
+
++ what is the weather
+@ weather
 
 + hi
 @ hello
+
++ hey
+@ hello
+
++ (thanks|thank you)
+- No problem
+- Anytime
+- You're welcome
+- Certainly
 
 + be right back
 - OK
@@ -55,7 +74,7 @@
 + (are you|you) (okay|alright|good)
 - I'm <star2>!
 
-+ (i am # years old)
++ i am # years old
 - Wow, <star>?!
 
 + how are you

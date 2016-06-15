@@ -64,12 +64,18 @@ class Rivescript extends Utility
         if (count($triggers) > 0) {
             foreach ($triggers as $key => $trigger) {
                 foreach ($this->triggers as $class) {
-                    $class        = "\Vulcan\Rivescript\Triggers\\$class";
-                    $triggerClass = new $class;
+                    $triggerClass = "\Vulcan\Rivescript\Triggers\\$class";
+                    $triggerClass = new $triggerClass;
 
                     $found = $triggerClass->parse($key, $trigger['trigger'], $message);
 
                     if (isset($found['match']) and $found['match'] === true) {
+                        $this->debug('Found match', [
+                            'type'    => $class,
+                            'message' => $message,
+                            'found'   => $found
+                        ]);
+                        
                         break 2;
                     }
                 }

@@ -20,7 +20,7 @@ class Utility
     public function __construct()
     {
         $this->logger = new Logger('rivescript');
-        $this->logger->pushHandler(new StreamHandler(__DIR__.'/rivescript.log', Logger::DEBUG));
+        $this->logger->pushHandler(new StreamHandler(__DIR__.'/../logs/'.date('m-d-y_h-i-s').'.log', Logger::DEBUG));
     }
 
     /**
