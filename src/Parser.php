@@ -17,9 +17,11 @@ class Parser extends Utility
         'topics'   => [],
         'objects'  => [],
         'metadata' => [
-            'topic'     => 'random',
-            'trigger'   => null,
-            'object'    => null
+            'topic'   => 'random',
+            'trigger' => null,
+            'object'  => null,
+            'input'   => array(),
+            'reply'   => array()
         ],
     ];
 
@@ -70,8 +72,14 @@ class Parser extends Utility
 
         $file = null;
 
-        dd($this->tree);
+        $this->trimTree();
 
         return $this->tree;
+    }
+
+    protected function trimTree()
+    {
+        $this->tree['metadata']['trigger'] = null;
+        $this->tree['metadata']['object']  = null;
     }
 }

@@ -59,6 +59,9 @@ class Rivescript extends Utility
     public function reply($user, $message)
     {
         $message  = $this->prepareMessage($message);
+
+        $this->storeInput($message);
+
         $triggers = $this->tree['topics'][$this->getMetadata('topic')]['triggers'];
 
         if (count($triggers) > 0) {
@@ -75,7 +78,7 @@ class Rivescript extends Utility
                             'message' => $message,
                             'found'   => $found
                         ]);
-                        
+
                         break 2;
                     }
                 }
@@ -116,6 +119,8 @@ class Rivescript extends Utility
             $this->syncMetadata($message['metadata']);
         }
 
+        $this->storeReply($message['response']);
+
         return $message['response'];
     }
 
@@ -147,5 +152,29 @@ class Rivescript extends Utility
         $message = preg_replace("/[^A-Za-z0-9 ]/", '', $message);
 
         return $message;
+    }
+
+    protected function storeInput($message)
+    {
+        $input = $this->tree['metadata']['input'];
+
+        array_unshift($input, $message);
+        array_slice($input, 0, 9);
+
+        $this->tree['metadata']['input'] = $input;
+
+        $this->debug('Storing input', ['message' => $message, 'inputs' => $input]);
+    }
+
+    protected function storeReply($message)
+    {
+        $reply = $this->tree['metadata']['reply'];
+
+        array_unshift($reply, $message);
+        array_slice($reply, 0, 9);
+
+        $this->tree['metadata']['reply'] = $reply;
+
+        $this->debug('Storing reply', ['message' => $message, 'replies' => $reply]);
     }
 }
