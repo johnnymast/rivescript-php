@@ -54,11 +54,11 @@ A copy of the working draft can be found within the `resources` directory of thi
 
 ### ! Definition
 - [ ] version
-- [ ] global
-- [ ] var
+- [x] global
+- [x] var
 - [ ] array
 - [x] sub
-- [ ] person
+- [x] person
 
 ### > Label
 - [ ] begin
@@ -77,3 +77,38 @@ A copy of the working draft can be found within the `resources` directory of thi
 - [x] Atomic
 - [x] Random
 - [ ] Weighted Random
+
+### - Tags
+- [x] `<star>`, `<star1>` - `<starN>`
+- [ ] `<botstar>`, `<botstar1>` - `<botstarN>`
+- [ ] `<input1>` - `<input9>`
+- [ ] `<reply1>` - `<reply9`
+- [ ] `<id>`
+- [ ] `<bot>`
+- [ ] `<env>`
+- [ ] `<get>`
+- [ ] `<set>`
+- [ ] `<add>`
+- [ ] `<sub>`
+- [ ] `<mult>`
+- [ ] `<div>`
+- [x] `{topic=...}`
+- [ ] `{weight=...}`
+- [ ] `{@...}`
+- [ ] `<@>`
+- [ ] `{random}...{/random}`
+- [ ] `{person}...{/person}`
+- [ ] `<person>`
+- [ ] `{formal}...{/formal}`
+- [ ] `<formal>`
+- [ ] `{sentence}...{/sentence}`
+- [ ] `<sentence>`
+- [ ] `{uppercase}...{/uppercase}`
+- [ ] `<uppercase>`
+- [ ] `{lowercase}...{/lowercase}`
+- [ ] `<lowercase>`
+- [ ] `{ok}`
+- [ ] `\s`
+- [ ] `\n`
+- [ ] `\/`
+- [ ] `\#`

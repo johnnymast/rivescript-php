@@ -1,5 +1,9 @@
 ! version = 2.0
 
+// VARIABLES
+
+! global debug = 1
+
 ! sub what's  = what is
 ! sub i'm     = i am
 ! sub im      = i am
@@ -11,23 +15,15 @@
 ! sub afk     = away from keyboard
 ! sub thx     = thanks
 
-+ hello
-- Hello, human!
-- Hello!
-- Hi there
-- Hi
-- Yo!
-- Hey!
+! var name = Astrid
+! var location = Cyberspace
 
-> object hello php
-    echo 'Hello world!';
-    echo "\n";
-    echo 'Nice to meet you!';
-< object
+! person you are = I am
+! person i am = you are
+! person you = I
+! person i = you
 
-> object md5 php
-    echo md5('test');
-< object
+// OBJECTS
 
 > object weather php
     $curl = curl_init();
@@ -43,6 +39,16 @@
 
     echo $result['weather'][0]['description'];
 < object
+
+// RANDOM TOPIC TRIGGERS
+
++ hello
+- Hello, human!
+- Hello!
+- Hi there
+- Hi
+- Yo!
+- Hey!
 
 + weather
 - You should expect <call>weather</call> today.
@@ -88,6 +94,11 @@
 + i hate you
 - Well then, I won't talk to you until you take that back. {topic=apology}
 
++ *
+- I don't understand
+
+// TOPICS
+
 > topic apology
     + sorry
     - Okay, I guess I'll forgive you then. {topic=random}
@@ -95,6 +106,3 @@
     + *
     - I won't discuss anything else until you apologize
 < topic
-
-+ *
-- I don't understand

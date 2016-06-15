@@ -8,11 +8,11 @@ class Parser extends Utility
 {
     protected $tree = [
         'begin' => [
-            'global' => [],
-            'var'    => [],
-            'sub'    => [],
-            'person' => [],
-            'array'  => [],
+            'global'  => [],
+            'var'     => [],
+            'sub'     => [],
+            'person'  => [],
+            'array'   => [],
         ],
         'topics'   => [],
         'objects'  => [],
@@ -31,7 +31,10 @@ class Parser extends Utility
         'Trigger',
         'Response',
         'Redirect',
-        'Sub',
+        'Variable',
+        'VariableGlobal',
+        'VariablePerson',
+        'VariableSubstitute'
     ];
 
     /**
@@ -66,6 +69,8 @@ class Parser extends Utility
         }
 
         $file = null;
+
+        dd($this->tree);
 
         return $this->tree;
     }

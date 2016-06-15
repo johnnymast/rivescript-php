@@ -4,7 +4,7 @@ namespace Vulcan\Rivescript\Commands;
 
 use Vulcan\Rivescript\Contracts\Command;
 
-class Sub implements Command
+class VariablePerson implements Command
 {
     /**
      * Parse the command.
@@ -19,14 +19,14 @@ class Sub implements Command
         if ($line->command() === '!') {
             $type = strtok($line->value(), ' ');
 
-            if ($type === 'sub') {
-                $value             = str_replace('sub', '', $line->value());
-                list($sub, $value) = explode('=', $value);
+            if ($type === 'person') {
+                $value             = str_replace('person', '', $line->value());
+                list($key, $value) = explode('=', $value);
 
-                $sub   = trim($sub);
-                $value = trim($value);
+                $key      = trim($key);
+                $value    = trim($value);
 
-                $tree['begin']['sub'][$sub] = $value;
+                $tree['begin']['person'][$key] = $value;
             }
         }
 
