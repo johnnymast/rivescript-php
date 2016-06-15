@@ -3,8 +3,6 @@
 [![Source](http://img.shields.io/badge/source-vulcan--project/rivescript--php-blue.svg?style=flat-square)](https://github.com/vulcan-project/rivescript-php)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://tldrlegal.com/license/mit-license)
 
-**Note:** This is still in very early development. Don't have much to show right now.
-
 This is a RiveScript interpreter library for PHP. See the below [Working Draft](#working-draft) section for more information.
 
 The package follows the FIG standards PSR-1, PSR-2, and PSR-4 to ensure a high level of interoperability between shared PHP code.
