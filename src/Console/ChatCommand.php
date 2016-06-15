@@ -75,6 +75,10 @@ class ChatCommand extends Command
             die();
         }
 
+        if ($message === '/reload') {
+            return $this->execute($input, $output);
+        }
+
         if ($message === '/help') {
             $output->writeln('');
             $output->writeln('<comment>Usage:</comment>');
@@ -82,6 +86,7 @@ class ChatCommand extends Command
             $output->writeln('');
             $output->writeln('<comment>Commands:</comment>');
             $output->writeln('  <info>/help</info>        Show this text');
+            $output->writeln('  <info>/reload</info>      Reload the interactive console');
             $output->writeln('  <info>/quit</info>        Quit the interactive console');
             $output->writeln('');
 
