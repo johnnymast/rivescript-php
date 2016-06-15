@@ -23,7 +23,6 @@ class Rivescript extends Utility
 
     protected $triggers = [
         'Atomic',
-        'Alternation',
         'Wildcard'
     ];
 
