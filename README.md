@@ -63,7 +63,7 @@ A copy of the working draft can be found within the `resources` directory of thi
 ### > Label
 - [ ] begin
 - [x] topic
-- [ ] object
+- [x] object
 
 ### + Trigger
 - [x] Atomic
