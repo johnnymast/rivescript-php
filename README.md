@@ -80,7 +80,7 @@ A copy of the working draft can be found within the `resources` directory of thi
 
 ## Tags
 - [x] `<star>`
-- [ ] `<star1>` - `<starN>`
+- [x] `<star1>` - `<starN>`
 - [ ] `<botstar>`
 - [ ] `<botstar1>` - `<botstarN>`
 - [ ] `<input1>` - `<input9>`
