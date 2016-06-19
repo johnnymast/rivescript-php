@@ -13,10 +13,7 @@ class Str
      */
     public static function removeWhitespace($line)
     {
-        $line = trim($line);
-        preg_replace('/( )+/', ' ', $line);
-
-        return $line;
+        return  preg_replace('/( )+/', ' ', trim($line));
     }
 
     /**

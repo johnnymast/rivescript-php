@@ -4,7 +4,7 @@ namespace Vulcan\Rivescript;
 
 use SplFileObject;
 
-class Parser extends Utility
+class Parser
 {
     protected $tree = [
         'begin' => [

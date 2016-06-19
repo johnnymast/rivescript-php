@@ -58,7 +58,7 @@ class Line
 
     protected function process()
     {
-        $this->removeWhitespace();
+        $this->line = remove_whitespace($this->line);
 
         foreach ($this->blocks as $block) {
             $this->{'block'.$block}();
@@ -82,16 +82,16 @@ class Line
 
     protected function blockComment()
     {
-        if ($this->startsWith('//')) {
+        if (starts_with($this->line, '//')) {
             $this->interrupted = true;
-        } elseif ($this->startsWith('#')) {
-            // $this->warning('Using the # symbol for comments is deprecated');
+        } elseif (starts_with($this->line, '#')) {
+            log_warning('Using the # symbol for comments is deprecated');
             $this->interrupted = true;
-        } elseif ($this->startsWith('/*')) {
-            if ($this->endsWith('*/')) return null;
+        } elseif (starts_with($this->line, '/*')) {
+            if (ends_with($this->line, '*/')) return null;
 
             $this->isComment = true;
-        } elseif ($this->endsWith('*/')) {
+        } elseif (ends_with($this->line, '*/')) {
             $this->isComment = false;
         }
     }
@@ -120,39 +120,5 @@ class Line
     public function isInterrupted()
     {
         return $this->interrupted;
-    }
-
-    /**
-     * Trim leading and trailing whitespace as well as
-     * whitespace surrounding individual arguments.
-     *
-     * @return string
-     */
-    public function removeWhitespace()
-    {
-        $this->line = trim($this->line);
-        $this->line = preg_replace('/( )+/', ' ', $this->line);
-    }
-
-    /**
-     * Determine if string starts with the supplied needle.
-     *
-     * @param string  $needle
-     * @return bool
-     */
-    public function startsWith($needle)
-    {
-        return $needle === '' or strrpos($this->line, $needle, -strlen($this->line)) !== false;
-    }
-
-    /**
-     * Determine if string ends with the supplied needle.
-     *
-     * @param string  $needle
-     * @return bool
-     */
-    public function endsWith($needle)
-    {
-        return $needle === '' or (($temp = strlen($this->line) - strlen($needle)) >= 0 and strpos($this->line, $needle, $temp) !== false);
     }
 }
