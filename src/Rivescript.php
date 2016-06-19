@@ -2,7 +2,7 @@
 
 namespace Vulcan\Rivescript;
 
-class Rivescript extends Utility
+class Rivescript
 {
     /**
      * @var Parser
@@ -33,8 +33,6 @@ class Rivescript extends Utility
      */
     public function __construct()
     {
-        parent::__construct();
-
         $this->parser = new Parser;
     }
 
@@ -72,7 +70,7 @@ class Rivescript extends Utility
                     $found = $triggerClass->parse($key, $trigger['trigger'], $message);
 
                     if (isset($found['match']) and $found['match'] === true) {
-                        $this->debug('Found match', [
+                        log_debug('Found match', [
                             'type'    => $class,
                             'message' => $message,
                             'found'   => $found
@@ -162,7 +160,7 @@ class Rivescript extends Utility
 
         $this->tree['metadata']['input'] = $input;
 
-        $this->debug('Storing input', ['message' => $message, 'inputs' => $input]);
+        log_debug('Storing input', ['message' => $message, 'inputs' => $input]);
     }
 
     protected function storeReply($message)
@@ -174,6 +172,6 @@ class Rivescript extends Utility
 
         $this->tree['metadata']['reply'] = $reply;
 
-        $this->debug('Storing reply', ['message' => $message, 'replies' => $reply]);
+        log_debug('Storing reply', ['message' => $message, 'replies' => $reply]);
     }
 }
