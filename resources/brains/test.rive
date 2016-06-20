@@ -4,7 +4,7 @@
 
 ! global debug = 1
 
-! sub what's  = what is
+! sub whats   = what is
 ! sub i'm     = i am
 ! sub im      = i am
 ! sub what're = what are
@@ -43,7 +43,14 @@
 // RANDOM TOPIC TRIGGERS
 
 + hello
-- Hello! My name is <bot name>
+- Hello!
+- Hi there
+
++ what is your name
+- My name is <bot name>
+- I am <bot name>
+- I am known as <bot name>
+- You may call me <bot name>
 
 + weather
 - You should expect <call>weather</call> today.
