@@ -84,7 +84,7 @@ A copy of the working draft can be found within the `resources` directory of thi
 - [ ] `<input1>` - `<input9>`
 - [ ] `<reply1>` - `<reply9`
 - [ ] `<id>`
-- [ ] `<bot>`
+- [x] `<bot>`
 - [ ] `<env>`
 - [ ] `<get>`
 - [ ] `<set>`
