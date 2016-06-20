@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "symfony/console": "~2.0"
+        "symfony/console": "~2.0",
+        "gherkins/regexpbuilderphp": "^0.7.5"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.0",

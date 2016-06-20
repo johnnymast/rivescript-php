@@ -19,6 +19,7 @@ class Rivescript
         'Topic',
         'Star',
         'Call',
+        'Bot',
     ];
 
     protected $triggers = [

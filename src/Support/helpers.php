@@ -2,7 +2,7 @@
 
 use Vulcan\Rivescript\Support\Logger;
 use Vulcan\Rivescript\Support\Str;
-use Vulcan\Rivescript\Support\VerbalExpressions;
+use Gherkins\RegExpBuilderPHP\RegExpBuilder;
 
 /**
  * Dump the passed variable(s) and end the script.
@@ -58,7 +58,7 @@ if (! function_exists('regex')) {
      */
     function regex()
     {
-        return new VerbalExpressions;
+        return new RegExpBuilder;
     }
 }
 
