@@ -29,7 +29,10 @@ class ChatCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->rivescript->loadFile($input->getArgument('brain'));
+        $brains = $this->parseFiles($input->getArgument('brain'));
+
+        $this->rivescript->load($brains);
+
         $brain = explode('/', $input->getArgument('brain'));
         $brain = end($brain);
 
@@ -92,5 +95,22 @@ class ChatCommand extends Command
 
             $this->waitForUserInput($input, $output);
         }
+    }
+
+    private function parseFiles($files)
+    {
+        if (is_dir($files)) {
+            $directory = realpath($files);
+            $files     = [];
+            $brains    = glob($directory.'/*.rive');
+
+            foreach ($brains as $brain) {
+                $files[] = $brain;
+            }
+
+            return $files;
+        }
+
+        return (array) $files;
     }
 }

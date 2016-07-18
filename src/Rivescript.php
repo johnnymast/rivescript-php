@@ -9,7 +9,7 @@ class Rivescript
      */
     protected $parser;
 
-    public $tree;
+    public $tree = null;
 
     protected $metadata = [
         'topic' => 'random',
@@ -49,9 +49,13 @@ class Rivescript
      *
      * @param array|string  $file
      */
-    public function loadFile($file)
+    public function load($files)
     {
-        $this->tree = $this->parser->process($file);
+        $files = (! is_array($files)) ? (array) $files : $files;
+
+        foreach ($files as $file) {
+            $this->tree = $this->parser->process($file, $this->tree);
+        }
     }
 
     public function reply($user, $message)

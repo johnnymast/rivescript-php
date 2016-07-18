@@ -44,8 +44,10 @@ class Parser
      *
      * @param string  $file
      */
-    public function process($file)
+    public function process($file, $tree = null)
     {
+        $this->setTree($tree);
+
         $file       = new SplFileObject($file);
         $lineNumber = 1;
 
@@ -81,5 +83,12 @@ class Parser
     {
         $this->tree['metadata']['trigger'] = null;
         $this->tree['metadata']['object']  = null;
+    }
+
+    private function setTree($tree)
+    {
+        if (! is_null($tree)) {
+            $this->tree = $tree;
+        }
     }
 }
