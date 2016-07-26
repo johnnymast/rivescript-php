@@ -26,8 +26,16 @@
 // OBJECTS
 
 > object weather php
+    if (! isset($args[0])) {
+        $zip = 98104;
+    } else {
+        $zip = (int) $args[0];
+    }
+
+    $appID = '47a469f2bd6e9cb7b316b25c2cd91592';
+
     $curl = curl_init();
-    $url  = 'api.openweathermap.org/data/2.5/weather?zip=98104,us&APPID=47a469f2bd6e9cb7b316b25c2cd91592';
+    $url  = 'api.openweathermap.org/data/2.5/weather?zip='.$zip.',us&APPID='.$appID;
 
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -56,6 +64,9 @@
 - You should expect <call>weather</call> today.
 - Look's like you should expect <call>weather</call> today.
 - <call>weather</call>
+
++ weather # zip
+- <call>weather <star></call>
 
 + what does the weather look like
 @ weather

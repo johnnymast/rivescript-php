@@ -60,7 +60,7 @@ class Rivescript
 
     public function reply($user, $message)
     {
-        $message  = $this->prepareMessage($message);
+        $message = $this->prepareMessage($message);
 
         $this->storeInput($message);
 

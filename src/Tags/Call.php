@@ -37,7 +37,7 @@ class Call implements Tag
 
             unset($macro[0]);
 
-            $arguments = implode(' ', $macro);
+            $args = array_values($macro);
 
             if (isset($this->tree['objects'][$object])) {
                 ob_start();
