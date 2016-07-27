@@ -42,6 +42,7 @@ class Call implements Tag
             if (isset($this->tree['objects'][$object])) {
                 ob_start();
                     eval($this->tree['objects'][$object]);
+
                     $replace = ob_get_contents();
                 ob_end_clean();
             }

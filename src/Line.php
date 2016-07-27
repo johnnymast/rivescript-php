@@ -98,8 +98,7 @@ class Line
 
     protected function blockCommand()
     {
-        if (strlen($this->line) < 2) {
-            // $this->warning("Weird single-character line #$linenumber found.");
+        if (strlen($this->line) === 0) {
             $this->interrupted = true;
             return;
         }
