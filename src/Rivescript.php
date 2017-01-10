@@ -67,7 +67,8 @@ class Rivescript
         if (count($triggers) > 0) {
             foreach ($triggers as $key => $trigger) {
                 foreach ($this->triggers as $class) {
-                    $triggerClass = "\Vulcan\Rivescript\Triggers\\$class";
+                    $triggerClass = "\\Vulcan\\Rivescript\\Triggers\\$class";
+                    /** @var \Vulcan\Rivescript\Contracts\Trigger $triggerClass */
                     $triggerClass = new $triggerClass;
 
                     $found = $triggerClass->parse($key, $trigger['trigger'], $message);
@@ -88,7 +89,8 @@ class Rivescript
                 $replies = $triggers[$found['key']]['reply'];
 
                 if (isset($triggers[$found['key']]['redirect'])) {
-                    return $this->reply($user, $triggers[$found['key']]['redirect']);
+                    $message = $this->parseReply($triggers[$found['key']]['redirect'], $found['data']);
+                    return $this->reply($user, $message);
                 }
 
                 if (count($replies)) {
@@ -111,7 +113,8 @@ class Rivescript
         ];
 
         foreach ($this->tags as $class) {
-            $class    = "\Vulcan\Rivescript\Tags\\$class";
+            $class    = "\\Vulcan\\Rivescript\\Tags\\$class";
+            /** @var \Vulcan\Rivescript\Contracts\Tag $tagClass */
             $tagClass = new $class($this->tree);
 
             $message = $tagClass->parse($message['response'], $data);
@@ -149,6 +152,7 @@ class Rivescript
             $message = str_replace($find, $replace, $message);
         }
 
+        $message = remove_whitespace($message);
         $message = preg_replace('/[^\pL\d\s]+/u', '', $message);
 
         return $message;
