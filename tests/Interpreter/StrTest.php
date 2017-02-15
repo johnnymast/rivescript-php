@@ -1,19 +1,24 @@
 <?php
 
-class UtilityTest extends PHPUnit_Framework_TestCase
+namespace Tests\Interpreter;
+
+use PHPUnit_Framework_TestCase;
+use Vulcan\Rivescript\Support\Str;
+
+class StrTest extends PHPUnit_Framework_TestCase
 {
     public function testRemoveWhitespace()
     {
-        $utility = new \Vulcan\Rivescript\Utility;
-        $line   = ' + hello   ';
+        $utility = new Str;
+        $line    = ' + hello   ';
 
         $this->assertEquals('+ hello', $utility->removeWhitespace($line));
     }
 
     public function testStartsWith()
     {
-        $utility = new \Vulcan\Rivescript\Utility;
-        $haystack = '/* This is a comment *//';
+        $utility  = new Str;
+        $haystack = '/* This is a comment */';
         $needle   = '/*';
 
         $this->assertEquals(true, $utility->startsWith($haystack, $needle));
@@ -21,7 +26,7 @@ class UtilityTest extends PHPUnit_Framework_TestCase
 
     public function testEndsWith()
     {
-        $utility = new \Vulcan\Rivescript\Utility;
+        $utility  = new Str;
         $haystack = '/* This is a comment */';
         $needle   = '*/';
 

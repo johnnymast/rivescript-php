@@ -11,8 +11,12 @@
          syntaxCheck="false"
 >
     <testsuites>
-        <testsuite name="Rivescript Test Suite">
-            <directory>./tests/</directory>
+        <testsuite name="interpreter">
+            <directory>./tests/Interpreter/</directory>
+        </testsuite>
+
+        <testsuite name="responses">
+            <directory>./tests/Responses/</directory>
         </testsuite>
     </testsuites>
     <filter>

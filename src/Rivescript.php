@@ -23,6 +23,7 @@ class Rivescript
     ];
 
     protected $triggers = [
+        'Arr',
         'Atomic',
         'Wildcard'
     ];

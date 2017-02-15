@@ -28,6 +28,7 @@ class Parser
     protected $trigger;
 
     protected $commands = [
+        'Arr',
         'ObjectMacro',
         'Topic',
         'Trigger',

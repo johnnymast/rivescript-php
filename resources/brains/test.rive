@@ -1,136 +1,30 @@
 ! version = 2.0
 
-// VARIABLES
-
-! global debug = 1
-
-! sub whats   = what is
-! sub i'm     = i am
-! sub im      = i am
-! sub what're = what are
-! sub what's  = what is
-! sub what'd  = what did
-! sub a/s/l   = age sex location
-! sub brb     = be right back
-! sub afk     = away from keyboard
-! sub thx     = thanks
-
-! var name = Astrid
+// Bot Variables
+! var name     = Rivescript Test Bot
+! var age      = 9000
+! var gender   = androgynous
 ! var location = Cyberspace
+! var phone    = 555-1234
+! var email    = test@mydomain.com
 
-! person you are = I am
-! person i am = you are
-! person you = I
-! person i = you
-
-// OBJECTS
-
-> object weather php
-    if (! isset($args[0])) {
-        $zip = 98104;
-    } else {
-        $zip = (int) $args[0];
-    }
-
-    $appID = '47a469f2bd6e9cb7b316b25c2cd91592';
-
-    $curl = curl_init();
-    $url  = 'api.openweathermap.org/data/2.5/weather?zip='.$zip.',us&APPID='.$appID;
-
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-    $result = curl_exec($curl);
-    $result = json_decode($result, true);
-
-    curl_close($curl);
-
-    echo $result['weather'][0]['description'];
-< object
-
-// RANDOM TOPIC TRIGGERS
-
-+ hello
-- Hello!
-- Hi there
++ hello bot
+- Hello human.
 
 + what is your name
-- My name is <bot name>
-- I am <bot name>
-- I am known as <bot name>
-- You may call me <bot name>
+- You can call me <bot name>.
 
-+ weather
-- You should expect <call>weather</call> today.
-- Look's like you should expect <call>weather</call> today.
-- <call>weather</call>
-
-+ weather # zip
-- <call>weather <star></call>
-
-+ what does the weather look like
-@ weather
-
-+ what is the weather
-@ weather
-
-+ hi
-@ hello
-
-+ hey
-@ hello
-
-+ (thanks|thank you)
-- No problem
-- Anytime
-- You're welcome
-- Certainly
-
-+ be right back
-- OK
-- Sure thing!
-
-+ (are you|you) (okay|alright|good)
-- I'm <star2>!
-
-+ i am # years old
-- Wow, <star>?!
-
-+ how are you
-- I'm doing great
-- I'm good!
-- Doing awesome
-
-+ my name is _
-- Nice to meet you, <star>!
++ my favorite thing in the world is *
+- Why do you like <star> so much?
 
 + * told me to say *
-- Why would <star1> tell you to say "<star2>"?
-- Did you "<star2>" after <star1> told you to?
+- Why would <star1> have told you to say <star2>?
 
-+ where is *
-- Where it belongs.
-- Where you left it.
-- Where the heart is.
++ i think *
+- Do you think <star> a lot?
 
-+ who is *
-- I don't know who <star> is.
++ i am * years old
+- Tell me that as a number instead of spelled out like "<star>".
 
-+ i hate you
-- Well then, I won't talk to you until you take that back. {topic=apology}
-
-+ *
-- I don't understand
-- What do you mean?
-- Huh?
-- I'm sorry, but I don't understand
-
-// TOPICS
-
-> topic apology
-    + sorry
-    - Okay, I guess I'll forgive you then. {topic=random}
-
-    + *
-    - I won't discuss anything else until you apologize
-< topic
++ i am # years old
+- <set age=<star>>I will remember that you are <star> years old.
