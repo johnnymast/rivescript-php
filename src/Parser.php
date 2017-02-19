@@ -62,13 +62,11 @@ class Parser
 
             foreach ($this->commands as $class) {
                 $class        = "\\Vulcan\\Rivescript\\Commands\\$class";
-                /** @var \Vulcan\Rivescript\Contracts\Command $commandClass */
                 $commandClass = new $class;
 
                 $result = $commandClass->parse($this->tree, $line, $currentCommand);
 
                 if (isset($result['command'])) {
-                    /** @noinspection PhpUnusedLocalVariableInspection */
                     $currentCommand = $result['command'];
                     continue 2;
                 }

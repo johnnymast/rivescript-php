@@ -1,0 +1,20 @@
+{
+  "name": "rivescript-php",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vulcan-project/rivescript-php.git"
+  },
+  "author": "Shea Lewis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vulcan-project/rivescript-php/issues"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-notify": "^3.0.0",
+    "gulp-phpunit": "^0.22.2",
+    "gulp-run": "^1.7.1"
+  }
+}
