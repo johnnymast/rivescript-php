@@ -13,20 +13,15 @@
 ! var phone    = 555-1234
 ! var email    = test@mydomain.com
 
-/******************************************************************************
- * Basic Trigger Testing                                                      *
- ******************************************************************************/
+// Atomic Replies
 
-/* Atomic Reply
-
-   Human says:     hello bot
-   Expected reply: Hello human.
-*/
 + hello bot
 - Hello human.
 
 + what is your name
 - You can call me <bot name>.
+
+// Wildcard Replies
 
 + my favorite thing in the world is *
 - Why do you like <star> so much?
@@ -38,7 +33,7 @@
 - Do you think <star> a lot?
 
 + i am * years old
-- Tell me that as a number instead of spelled out like "<star>".
+- Tell me that as a number instead of spelled out like "<star>"
 
 + i am # years old
-- <set age=<star>>I will remember that you are <star> years old.
+- I will remember that you are <star> years old.

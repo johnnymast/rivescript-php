@@ -69,7 +69,6 @@ class Rivescript
             foreach ($triggers as $key => $trigger) {
                 foreach ($this->triggers as $class) {
                     $triggerClass = "\\Vulcan\\Rivescript\\Triggers\\$class";
-                    /** @var \Vulcan\Rivescript\Contracts\Trigger $triggerClass */
                     $triggerClass = new $triggerClass;
 
                     $found = $triggerClass->parse($key, $trigger['trigger'], $message);
