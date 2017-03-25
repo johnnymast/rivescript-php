@@ -50,8 +50,6 @@ class Arr implements Command
             }
         }
 
-        // dd ($tree['begin']['array']);
-
         return [
             'command' => $command,
             'tree'    => $tree

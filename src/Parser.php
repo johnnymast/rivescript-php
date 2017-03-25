@@ -79,6 +79,8 @@ class Parser
 
         $this->trimTree();
 
+        dd($this->tree);
+
         return $this->tree;
     }
 
