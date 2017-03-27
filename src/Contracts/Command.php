@@ -7,10 +7,9 @@ interface Command
     /**
      * Parse the command.
      *
-     * @param  array  $tree
-     * @param  object  $line
-     * @param  string  $command
+     * @param  Node  $node
+     * @param  String  $command
      * @return array
      */
-    public function parse($tree, $line, $command);
+    public function parse($node, $command);
 }

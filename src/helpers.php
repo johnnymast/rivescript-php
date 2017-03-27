@@ -2,15 +2,28 @@
 
 use Vulcan\Rivescript\Support\Logger;
 use Vulcan\Rivescript\Support\Str;
+use Vulcan\Rivescript\Support\Synapse;
 use Vulcan\VerbalExpressions\VerbalExpressions;
 
-/**
- * Dump the passed variable(s) and end the script.
- *
- * @param  dynamic  mixed
- * @return void
- */
+if (! function_exists('synapse')) {
+    /**
+     * Get the available Synapse instance.
+     *
+     * @return Synapse
+     */
+    function synapse()
+    {
+        return Synapse::getInstance();
+    }
+}
+
 if (! function_exists('dd')) {
+    /**
+     * Dump the passed variable(s) and end the script.
+     *
+     * @param  dynamic  mixed
+     * @return void
+     */
     function dd()
     {
         array_map(function($x) { print_r($x); echo"\n"; }, func_get_args());
@@ -33,6 +46,13 @@ if (! function_exists('ends_with')) {
 }
 
 if (! function_exists('log_debug')) {
+    /**
+     * Log the message and contextual array as a new debug entry.
+     *
+     * @param  String  $message
+     * @param  Array  $context
+     * @return Logger
+     */
     function log_debug($message, array $context = array())
     {
         $logger = new Logger;
@@ -42,6 +62,13 @@ if (! function_exists('log_debug')) {
 }
 
 if (! function_exists('log_warning')) {
+    /**
+     * Log the message and contextual array as a new warning entry.
+     *
+     * @param  String  $message
+     * @param  Array  $context
+     * @return Logger
+     */
     function log_warning($message, array $context = array())
     {
         $logger = new Logger;

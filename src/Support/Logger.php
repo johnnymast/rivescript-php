@@ -24,8 +24,8 @@ class Logger
     /**
      * Adds a log record at the DEBUG level.
      *
-     * @param  string  $message The log message
-     * @param  array  $context The log context
+     * @param  String  $message The log message
+     * @param  Array  $context The log context
      * @return Boolean  Whether the record has been processed
      */
     public function debug($message, array $context = array())
@@ -36,8 +36,8 @@ class Logger
     /**
      * Adds a log record at the WARNING level.
      *
-     * @param  string  $message The log message
-     * @param  array  $context The log context
+     * @param  String  $message The log message
+     * @param  Array  $context The log context
      * @return Boolean  Whether the record has been processed
      */
     public function warning($message, array $context = array())

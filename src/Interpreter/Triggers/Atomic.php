@@ -1,10 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Triggers;
+namespace Vulcan\Rivescript\Interpreter\Triggers;
 
-use Vulcan\Rivescript\Contracts\Trigger;
-
-class Atomic implements Trigger
+class Atomic
 {
     /**
      * Parse the trigger.
@@ -14,12 +12,11 @@ class Atomic implements Trigger
      * @param  string  $message
      * @return array
      */
-    public function parse($key, $trigger, $message)
+    public function parse($trigger, $input)
     {
-        if ($trigger === $message) {
+        if ($trigger === $input->source()) {
             return [
                 'match' => true,
-                'key'   => $key,
                 'data'  => [],
             ];
         }

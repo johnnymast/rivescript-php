@@ -8,20 +8,20 @@ class Str
      * Trim leading and trailing whitespace as well as
      * whitespace surrounding individual arguments.
      *
-     * @param string  $line
-     * @return string
+     * @param  String  $string
+     * @return String
      */
-    public static function removeWhitespace($line)
+    public static function removeWhitespace($string)
     {
-        return preg_replace('/[\pC\pZ]+/u', ' ', trim($line));
+        return preg_replace('/[\pC\pZ]+/u', ' ', trim($string));
     }
 
     /**
      * Determine if string starts with the supplied needle.
      *
-     * @param string  $haystack
-     * @param string  $needle
-     * @return bool
+     * @param  String  $haystack
+     * @param  String  $needle
+     * @return Boolean
      */
     public static function startsWith($haystack, $needle)
     {
@@ -31,9 +31,9 @@ class Str
     /**
      * Determine if string ends with the supplied needle.
      *
-     * @param string  $haystack
-     * @param string  $needle
-     * @return bool
+     * @param  String  $haystack
+     * @param  String  $needle
+     * @return Boolean
      */
     public static function endsWith($haystack, $needle)
     {

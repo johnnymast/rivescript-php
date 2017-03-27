@@ -12,9 +12,10 @@
     "url": "https://github.com/vulcan-project/rivescript-php/issues"
   },
   "devDependencies": {
+    "clear": "0.0.1",
     "gulp": "^3.9.1",
+    "gulp-exec": "^2.1.3",
     "gulp-notify": "^3.0.0",
-    "gulp-phpunit": "^0.22.2",
-    "gulp-run": "^1.7.1"
+    "gulp-phpunit": "^0.22.2"
   }
 }

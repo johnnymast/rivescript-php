@@ -5,11 +5,7 @@
 >
     <testsuites>
         <testsuite name="interpreter">
-            <directory>./tests/Interpreter/</directory>
-        </testsuite>
-
-        <testsuite name="responses">
-            <directory>./tests/Responses/</directory>
+            <directory>./tests/</directory>
         </testsuite>
     </testsuites>
     <filter>
