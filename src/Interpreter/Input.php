@@ -54,15 +54,11 @@ class Input
         $this->source = mb_strtolower($this->original);
 
         synapse()->memory->substitute()->each(function($replace, $needle) {
-            $pattern = '/\b\\'.$needle.'\b';
-
-            dd($pattern);
-            $this->source = preg_replace($pattern, $replace, $this->source);
+            $needle       = '/\b'.addslashes($needle).'/\b';
+            $this->source = regex()->find($needle)->replace($this->source, $replace);
         });
 
         $this->source = remove_whitespace($this->source);
         $this->source = preg_replace('/[^\pL\d\s]+/u', '', $this->source);
-
-        var_dump($this->source);
     }
 }
