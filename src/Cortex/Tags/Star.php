@@ -2,9 +2,7 @@
 
 namespace Vulcan\Rivescript\Cortex\Tags;
 
-use Vulcan\Rivescript\Contracts\Tag;
-
-class Star implements Tag
+class Star extends Tag
 {
     /**
      * Regex expression pattern.
@@ -22,6 +20,18 @@ class Star implements Tag
      */
     public function parse($source)
     {
+        if ($this->hasMatches($source)) {
+            $matches = $this->getMatches($source);
+            $stars   = synapse()->memory->shortTerm()->get('stars');
+
+            foreach ($matches as $key => $match) {
+                $needle = $match[0];
+                $index  = (empty($match[1]) ? 0 : $match[1] - 1);
+
+                $source = str_replace($match[0], $stars[$index], $source);
+            }
+        }
+
         return $source;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Vulcan\Rivescript\Cortex\Triggers;
 
-class Wildcard
+use Vulcan\Collections\Collection;
+
+class Wildcard extends Trigger
 {
     /**
      * Parse the trigger.
@@ -14,27 +16,27 @@ class Wildcard
     public function parse($trigger, $input)
     {
         $wildcards = [
-            '/^\*$/'            => '<zerowidthstar>',
-            '/\*/'              => '.+?',
+            '/\*$/'             => '.*?',
+            '/\*/'              => '\\w+?',
             '/#/'               => '\\d+?',
-            '/_/'               => '\\w+?',
+            '/_/'               => '[a-z]?',
             '/<zerowidthstar>/' => '.*?'
         ];
 
         foreach ($wildcards as $pattern => $replacement) {
             $parsedTrigger = preg_replace($pattern, '('.$replacement.')', $trigger);
 
-            if (@preg_match('#^'.$parsedTrigger.'$#u', $message, $stars)) {
+            if (@preg_match_all('#^'.$parsedTrigger.'$#u', $input->source(), $stars)) {
                 array_shift($stars);
 
-                return [
-                    'match' => true,
-                    'key'   => $key,
-                    'data'  => ['stars' => $stars],
-                ];
+                $stars = Collection::make($stars)->flatten()->all();
+
+                synapse()->memory->shortTerm()->put('stars', $stars);
+
+                return $this->triggerFound();
             }
         }
 
-        return ['match' => false];
+        return $this->triggerNotFound();
     }
 }
