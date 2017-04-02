@@ -1,9 +1,8 @@
 <?php
 
+use Vulcan\Rivescript\Cortex\Synapse;
 use Vulcan\Rivescript\Support\Logger;
 use Vulcan\Rivescript\Support\Str;
-use Vulcan\Rivescript\Support\Synapse;
-use Vulcan\VerbalExpressions\VerbalExpressions;
 
 if (! function_exists('synapse')) {
     /**
@@ -74,18 +73,6 @@ if (! function_exists('log_warning')) {
         $logger = new Logger;
 
         return $logger->warning($message, $context);
-    }
-}
-
-if (! function_exists('regex')) {
-    /**
-     * Return a new instance of VerbalExpressions.
-     *
-     * @return VerbalExpressions
-     */
-    function regex()
-    {
-        return new VerbalExpressions;
     }
 }
 

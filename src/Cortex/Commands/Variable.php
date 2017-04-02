@@ -1,10 +1,10 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter\Commands;
+namespace Vulcan\Rivescript\Cortex\Commands;
 
 use Vulcan\Rivescript\Contracts\Command;
 
-class VariableSubstitute implements Command
+class Variable implements Command
 {
     /**
      * Parse the command.
@@ -18,14 +18,14 @@ class VariableSubstitute implements Command
         if ($node->command() === '!') {
             $type = strtok($node->value(), ' ');
 
-            if ($type === 'sub') {
-                $value             = str_replace('sub', '', $node->value());
+            if ($type === 'var') {
+                $value             = str_replace('var', '', $node->value());
                 list($key, $value) = explode('=', $value);
 
                 $key   = trim($key);
                 $value = trim($value);
 
-                synapse()->memory->substitute()->put($key, $value);
+                synapse()->memory->variables()->put($key, $value);
             }
         }
     }

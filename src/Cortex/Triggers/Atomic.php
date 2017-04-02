@@ -1,8 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter\Triggers;
+namespace Vulcan\Rivescript\Cortex\Triggers;
 
-class Atomic
+class Atomic extends Trigger
 {
     /**
      * Parse the trigger.
@@ -15,12 +15,9 @@ class Atomic
     public function parse($trigger, $input)
     {
         if ($trigger === $input->source()) {
-            return [
-                'match' => true,
-                'data'  => [],
-            ];
+            return $this->triggerFound();
         }
 
-        return ['match' => false];
+        return $this->triggerNotFound();
     }
 }

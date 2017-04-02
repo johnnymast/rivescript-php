@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter;
+namespace Vulcan\Rivescript\Cortex;
 
 class Input
 {
@@ -51,14 +51,12 @@ class Input
      */
     protected function cleanOriginalSource()
     {
+        $patterns     = synapse()->memory->substitute()->keys()->all();
+        $replacements = synapse()->memory->substitute()->values()->all();
+
         $this->source = mb_strtolower($this->original);
-
-        synapse()->memory->substitute()->each(function($replace, $needle) {
-            $needle       = '/\b'.addslashes($needle).'/\b';
-            $this->source = regex()->find($needle)->replace($this->source, $replace);
-        });
-
-        $this->source = remove_whitespace($this->source);
+        $this->source = preg_replace($patterns, $replacements, $this->source);
         $this->source = preg_replace('/[^\pL\d\s]+/u', '', $this->source);
+        $this->source = remove_whitespace($this->source);
     }
 }

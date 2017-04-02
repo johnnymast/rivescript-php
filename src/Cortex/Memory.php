@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter;
+namespace Vulcan\Rivescript\Cortex;
 
 use Vulcan\Collections\Collection;
 

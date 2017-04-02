@@ -2,16 +2,11 @@
 
 namespace Vulcan\Rivescript;
 
-use Vulcan\Rivescript\Interpreter\Input;
-use Vulcan\Rivescript\Interpreter\Output;
+use Vulcan\Rivescript\Cortex\Input;
+use Vulcan\Rivescript\Cortex\Output;
 
 class Rivescript
 {
-    /**
-     * @var Synapse
-     */
-    protected $synapse;
-
     /**
      * Create a new Rivescript instance.
      */

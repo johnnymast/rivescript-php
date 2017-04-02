@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter;
+namespace Vulcan\Rivescript\Cortex;
 
 use SplFileObject;
 Use Vulcan\Collections\Collection;
@@ -39,7 +39,7 @@ class Brain
             if ($node->isInterrupted() or $node->isComment()) continue;
 
             $commands->each(function($command) use ($node, $currentCommand) {
-                $class        = "\\Vulcan\\Rivescript\\Interpreter\\Commands\\$command";
+                $class        = "\\Vulcan\\Rivescript\\Cortex\\Commands\\$command";
                 $commandClass = new $class;
 
                 $result = $commandClass->parse($node, $currentCommand);

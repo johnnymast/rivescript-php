@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Interpreter\Commands;
+namespace Vulcan\Rivescript\Cortex\Commands;
 
 use Vulcan\Rivescript\Contracts\Command;
 

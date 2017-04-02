@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Support;
+namespace Vulcan\Rivescript\Cortex;
 
 class Synapse
 {
