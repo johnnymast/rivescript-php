@@ -39,3 +39,15 @@ $synapse->tags     = Vulcan\Collections\Collection::make(['Bot', 'Star']);
 
 $synapse->memory = new Vulcan\Rivescript\Cortex\Memory;
 $synapse->brain  = new Vulcan\Rivescript\Cortex\Brain;
+
+/*
+|--------------------------------------------------------------------------
+| Autload Additional Files
+|--------------------------------------------------------------------------
+|
+| Now we will autoload some files to aid in using the Rivescript
+| interpreter.
+|
+*/
+
+include('helpers.php');

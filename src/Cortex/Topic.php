@@ -14,7 +14,7 @@ class Topic
     /**
      * @var Array
      */
-    protected $triggers;
+    public $triggers;
 
     /**
      * Create a new Branch instance.
@@ -35,5 +35,10 @@ class Topic
     public function triggers()
     {
         return $this->triggers;
+    }
+
+    public function setTriggers($triggers)
+    {
+        $this->triggers = $triggers;
     }
 }

@@ -19,7 +19,7 @@ class Output
     /**
      * @var String
      */
-    protected $output;
+    protected $output = 'Error: Response could not be determined.';
 
     /**
      * Create a new Output instance.
@@ -40,6 +40,8 @@ class Output
     {
         synapse()->brain->topic()->triggers()->each(function($data, $trigger) {
             $this->searchTriggers($trigger);
+
+            if ($this->output !== 'Error: Response could not be determined.') return false;
         });
 
         return $this->output;
@@ -59,29 +61,25 @@ class Output
 
             $found = $triggerClass->parse($trigger, $this->input);
 
-            if ($found['match'] === true) {
-                $this->data = $found['data'];
+            if ($found === true) {
+                $this->getResponse($trigger);
 
-                return $this->getResponse($trigger);
+                return false;
             }
         });
-
-        return false;
     }
 
     /**
      * Fetch a response from the found trigger.
      *
      * @param  String  $trigger;
-     * @return Boolean
+     * @return void
      */
     protected function getResponse($trigger)
     {
         $trigger      = synapse()->brain->topic()->triggers()->get($trigger);
         $key          = array_rand($trigger['responses']);
         $this->output = $this->parseResponse($trigger['responses'][$key]);
-
-        return true;
     }
 
     /**

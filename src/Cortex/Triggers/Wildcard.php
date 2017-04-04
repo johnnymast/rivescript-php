@@ -26,7 +26,7 @@ class Wildcard extends Trigger
         foreach ($wildcards as $pattern => $replacement) {
             $parsedTrigger = preg_replace($pattern, '('.$replacement.')', $trigger);
 
-            if (@preg_match_all('#^'.$parsedTrigger.'$#u', $input->source(), $stars)) {
+            if (@preg_match_all('/'.$parsedTrigger.'$/u', $input->source(), $stars)) {
                 array_shift($stars);
 
                 $stars = Collection::make($stars)->flatten()->all();

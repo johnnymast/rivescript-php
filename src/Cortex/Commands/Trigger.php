@@ -17,9 +17,36 @@ class Trigger implements Command
     {
         if ($node->command() === '+') {
             $topic = synapse()->memory->shortTerm()->get('topic') ?: 'random';
+            $topic = synapse()->brain->topic($topic);
 
-            synapse()->brain->topic($topic)->triggers()->put($node->value(), []);
+            $tag = $this->tagTrigger($node->value());
+
+            $topic->triggers->put($node->value(), []);
+
+            $topic->triggers = $this->sortTriggers($topic->triggers);
+            
             synapse()->memory->shortTerm()->put('trigger', $node->value());
         }
+    }
+
+    protected function tagTrigger($trigger)
+    {
+        return '';
+    }
+
+    protected function sortTriggers($triggers)
+    {
+        $sortedTriggers = $triggers->sortByKey(function($current, $previous) {
+            if ($current === $previous) {
+                return 0;
+            }
+
+            $currentWordCount  = count(explode(' ', $current));
+            $previousWordCount = count(explode(' ', $previous));
+
+            return ($currentWordCount < $previousWordCount) ? -1 : 1;
+        })->reverse();
+
+        return $sortedTriggers;
     }
 }

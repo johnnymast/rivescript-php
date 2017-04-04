@@ -12,7 +12,7 @@ class WildcardResponseTest extends ResponseTest
 
         $this->assertEquals('Why do you like programming so much?', $response);
     }
-    
+
     public function testWildcardReplyTwoStar()
     {
         $response = $this->rivescript->reply('John told me to say hello');
@@ -39,5 +39,19 @@ class WildcardResponseTest extends ResponseTest
         $response = $this->rivescript->reply('I am 20 years old');
 
         $this->assertEquals('I will remember that you are 20 years old.', $response);
+    }
+
+    public function testCatchAllReply()
+    {
+        $response = $this->rivescript->reply('aesfaeisfhliuashefaef');
+
+        $this->assertEquals('I\'m sorry but I don\'t understand.', $response);
+    }
+
+    public function testCatchAllReplyMultipleWords()
+    {
+        $response = $this->rivescript->reply('lorem ipsum dolar amit');
+
+        $this->assertEquals('I\'m sorry but I don\'t understand.', $response);
     }
 }

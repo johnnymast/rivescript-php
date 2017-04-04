@@ -6,18 +6,13 @@ use Vulcan\Rivescript\Contracts\Trigger as TriggerContract;
 
 abstract class Trigger implements TriggerContract
 {
-    public function triggerFound($data = [])
+    public function triggerFound()
     {
-        return [
-            'match' => true,
-            'data'  => $data
-        ];
+        return true;
     }
 
     public function triggerNotFound()
     {
-        return [
-            'match' => false
-        ];
+        return false;
     }
 }
