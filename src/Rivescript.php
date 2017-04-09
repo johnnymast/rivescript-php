@@ -27,8 +27,6 @@ class Rivescript
         foreach ($files as $file) {
             synapse()->brain->teach($file);
         }
-
-        // dd(synapse()->brain);
     }
 
     public function reply($message, $user = null)
