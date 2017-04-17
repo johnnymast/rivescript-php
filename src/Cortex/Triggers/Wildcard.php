@@ -15,6 +15,8 @@ class Wildcard extends Trigger
      */
     public function parse($trigger, $input)
     {
+        $trigger = $this->parseTags($trigger);
+        
         $wildcards = [
             '/\*$/'             => '.*?',
             '/\*/'              => '\\w+?',

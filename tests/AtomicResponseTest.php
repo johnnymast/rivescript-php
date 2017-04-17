@@ -17,6 +17,6 @@ class AtomicResponseTest extends ResponseTest
     {
         $response = $this->rivescript->reply('what is your name?');
 
-        $this->assertEquals('You can call me Rivescript Test Bot.', $response);
+        $this->assertEquals('You can call me Beta.', $response);
     }
 }

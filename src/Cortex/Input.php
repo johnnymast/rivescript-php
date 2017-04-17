@@ -33,11 +33,21 @@ class Input
         $this->cleanOriginalSource();
     }
 
+    /**
+     * Return the source input.
+     *
+     * @return string
+     */
     public function source()
     {
         return $this->source;
     }
 
+    /**
+     * Return the current user speaking.
+     *
+     * @return mixed
+     */
     public function user()
     {
         return $this->user;

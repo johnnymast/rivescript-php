@@ -15,4 +15,22 @@ abstract class Trigger implements TriggerContract
     {
         return false;
     }
+
+    /**
+     * Parse the response through the available tags.
+     *
+     * @param  String  $response
+     * @return String
+     */
+    protected function parseTags($trigger)
+    {
+        synapse()->tags->each(function($tag) use (&$trigger) {
+            $class = "\\Vulcan\\Rivescript\\Cortex\\Tags\\$tag";
+            $tagClass = new $class('trigger');
+
+            $trigger = $tagClass->parse($trigger);
+        });
+
+        return mb_strtolower($trigger);
+    }
 }

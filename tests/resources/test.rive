@@ -6,7 +6,7 @@
 ! version = 2.0
 
 // Bot Variables
-! var name     = Rivescript Test Bot
+! var name     = Beta
 ! var age      = 9000
 ! var gender   = androgynous
 ! var location = Cyberspace
@@ -94,15 +94,14 @@
 ! sub gtg       = got to go
 ! sub g2g       = got to go
 
-// Atomic Replies
-
 + hello bot
 - Hello human.
 
 + what is your name
 - You can call me <bot name>.
 
-// Wildcard Replies
++ <bot name>
+- What can I do for you?
 
 + my favorite thing in the world is *
 - Why do you like <star> so much?

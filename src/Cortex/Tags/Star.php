@@ -5,11 +5,16 @@ namespace Vulcan\Rivescript\Cortex\Tags;
 class Star extends Tag
 {
     /**
+     * @var array
+     */
+    protected $allowedSources = ['response'];
+
+    /**
      * Regex expression pattern.
      *
      * @var string
      */
-    public $pattern = '/<star(([0-9])?)>/i';
+    protected $pattern = '/<star(([0-9])?)>/i';
 
     /**
      * Parse the response.
@@ -20,6 +25,8 @@ class Star extends Tag
      */
     public function parse($source)
     {
+        if (! $this->sourceAllowed()) return $source;
+        
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
             $stars   = synapse()->memory->shortTerm()->get('stars');
