@@ -30,7 +30,7 @@ class Output
     }
 
     /**
-     * Process the corrent output response by the interpreter.
+     * Process the correct output response by the interpreter.
      *
      * @return mixed
      */
@@ -80,7 +80,12 @@ class Output
     protected function getResponse($trigger)
     {
         $trigger = synapse()->brain->topic()->triggers()->get($trigger);
-        $key = array_rand($trigger['responses']);
+
+        if (isset($trigger['redirect'])) {
+            return $this->getResponse($trigger['redirect']);
+        }
+
+        $key          = array_rand($trigger['responses']);
         $this->output = $this->parseResponse($trigger['responses'][$key]);
     }
 
