@@ -3,5 +3,5 @@ preset: laravel
 risky: false
 
 enabled:
-    align_double_arrow
-    align_equals
+    - align_double_arrow
+    - align_equals
