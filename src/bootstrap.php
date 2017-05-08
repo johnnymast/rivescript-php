@@ -23,9 +23,24 @@ $synapse = new Vulcan\Rivescript\Cortex\Synapse();
 |
 */
 
-$synapse->commands = Vulcan\Collections\Collection::make(['Trigger', 'Response', 'Variable', 'VariableSubstitute', 'Redirect']);
-$synapse->triggers = Vulcan\Collections\Collection::make(['Atomic', 'Wildcard']);
-$synapse->tags     = Vulcan\Collections\Collection::make(['Bot', 'Star']);
+$synapse->commands = Vulcan\Collections\Collection::make([
+    'Redirect',
+    'Response',
+    'Topic',
+    'Trigger',
+    'Variable',
+    'VariableSubstitute',
+]);
+
+$synapse->triggers = Vulcan\Collections\Collection::make([
+    'Atomic',
+    'Wildcard'
+]);
+
+$synapse->tags = Vulcan\Collections\Collection::make([
+    'Bot',
+    'Star','Topic'
+]);
 
 /*
 |--------------------------------------------------------------------------

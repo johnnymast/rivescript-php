@@ -123,3 +123,14 @@
 
 + *
 - I'm sorry but I don't understand.
+
++ i hate you
+- Well that's mean. I'm not talking again until you say you're sorry.{topic=sorry}
+
+> topic sorry
+    + *
+    - Say you're sorry!
+
+    + sorry
+    - Alright, I'll forgive you.{topic=random}
+< topic
