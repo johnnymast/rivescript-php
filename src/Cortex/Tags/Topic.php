@@ -14,7 +14,7 @@ class Topic extends Tag
      *
      * @var string
      */
-    protected $pattern = '/{\s*topic\s*=\s*(\w+)\s*}/u';
+    protected $pattern = '/\{topic=(.+?)\}/u';
 
     /**
      * Parse the response.

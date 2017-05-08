@@ -23,7 +23,7 @@ class Wildcard extends Trigger
             '/\*/'              => '\\w+?',
             '/#/'               => '\\d+?',
             '/_/'               => '[a-z]?',
-            '/<zerowidthstar>/' => '.*?',
+            '/<zerowidthstar>/' => '^\*$',
         ];
 
         foreach ($wildcards as $pattern => $replacement) {

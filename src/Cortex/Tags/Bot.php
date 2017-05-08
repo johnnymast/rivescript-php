@@ -14,7 +14,7 @@ class Bot extends Tag
      *
      * @var string
      */
-    protected $pattern = '/<bot (.*)>/i';
+    protected $pattern = '/<bot (.+?)>/i';
 
     /**
      * Parse the source.
@@ -30,7 +30,7 @@ class Bot extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source);
+            $matches   = $this->getMatches($source);
             $variables = synapse()->memory->variables();
 
             foreach ($matches as $match) {
