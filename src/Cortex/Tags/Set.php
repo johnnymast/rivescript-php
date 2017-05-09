@@ -4,7 +4,7 @@ namespace Vulcan\Rivescript\Cortex\Tags;
 
 use Vulcan\Rivescript\Cortex\Input;
 
-class Star extends Tag
+class Set extends Tag
 {
     /**
      * @var array
@@ -16,7 +16,7 @@ class Star extends Tag
      *
      * @var string
      */
-    protected $pattern = '/<star(\d+)?>/i';
+    protected $pattern = '/<set (.+?)=(.+?)>/u';
 
     /**
      * Parse the response.
@@ -33,15 +33,10 @@ class Star extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source);
-            $stars   = synapse()->memory->shortTerm()->get('stars');
+            $matches = $this->getMatches($source)[0];
 
-            foreach ($matches as $key => $match) {
-                $needle = $match[0];
-                $index  = (empty($match[1]) ? 0 : $match[1] - 1);
-
-                $source = str_replace($match[0], $stars[$index], $source);
-            }
+            synapse()->memory->user($input->user())->put($matches[1], $matches[2]);
+            $source = str_replace($matches[0], '', $source);
         }
 
         return $source;

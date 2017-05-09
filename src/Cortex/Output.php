@@ -85,7 +85,7 @@ class Output
             return $this->getResponse($trigger['redirect']);
         }
 
-        $key = array_rand($trigger['responses']);
+        $key          = array_rand($trigger['responses']);
         $this->output = $this->parseResponse($trigger['responses'][$key]);
     }
 
@@ -102,7 +102,7 @@ class Output
             $class = "\\Vulcan\\Rivescript\\Cortex\\Tags\\$tag";
             $tagClass = new $class();
 
-            $response = $tagClass->parse($response, $this->data);
+            $response = $tagClass->parse($response, $this->input);
         });
 
         return $response;

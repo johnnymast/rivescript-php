@@ -23,13 +23,13 @@ abstract class Trigger implements TriggerContract
      *
      * @return string
      */
-    protected function parseTags($trigger)
+    protected function parseTags($trigger, $input)
     {
-        synapse()->tags->each(function ($tag) use (&$trigger) {
+        synapse()->tags->each(function ($tag) use (&$trigger, $input) {
             $class = "\\Vulcan\\Rivescript\\Cortex\\Tags\\$tag";
             $tagClass = new $class('trigger');
 
-            $trigger = $tagClass->parse($trigger);
+            $trigger = $tagClass->parse($trigger, $input);
         });
 
         return mb_strtolower($trigger);

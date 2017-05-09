@@ -2,6 +2,8 @@
 
 namespace Vulcan\Rivescript\Cortex\Tags;
 
+use Vulcan\Rivescript\Cortex\Input;
+
 class Bot extends Tag
 {
     /**
@@ -23,14 +25,14 @@ class Bot extends Tag
      *
      * @return string
      */
-    public function parse($source)
+    public function parse($source, Input $input)
     {
         if (! $this->sourceAllowed()) {
             return $source;
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source);
+            $matches   = $this->getMatches($source);
             $variables = synapse()->memory->variables();
 
             foreach ($matches as $match) {

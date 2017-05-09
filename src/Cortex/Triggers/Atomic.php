@@ -15,7 +15,7 @@ class Atomic extends Trigger
      */
     public function parse($trigger, $input)
     {
-        $trigger = $this->parseTags($trigger);
+        $trigger = $this->parseTags($trigger, $input);
 
         if ($trigger === $input->source()) {
             return $this->triggerFound();
