@@ -102,7 +102,7 @@ class Output
             $class = "\\Vulcan\\Rivescript\\Cortex\\Tags\\$tag";
             $tagClass = new $class();
 
-            $response = $tagClass->parse($response, $this->data);
+            $response = $tagClass->parse($response, $this->input);
         });
 
         return $response;

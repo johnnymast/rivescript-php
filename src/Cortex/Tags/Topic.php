@@ -2,6 +2,8 @@
 
 namespace Vulcan\Rivescript\Cortex\Tags;
 
+use Vulcan\Rivescript\Cortex\Input;
+
 class Topic extends Tag
 {
     /**
@@ -24,7 +26,7 @@ class Topic extends Tag
      *
      * @return array
      */
-    public function parse($source)
+    public function parse($source, Input $input)
     {
         if (! $this->sourceAllowed()) {
             return $source;

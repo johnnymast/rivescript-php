@@ -29,7 +29,7 @@ class Rivescript
         }
     }
 
-    public function reply($message, $user = null)
+    public function reply($message, $user = 0)
     {
         $input  = new Input($message, $user);
         $output = new Output($input);

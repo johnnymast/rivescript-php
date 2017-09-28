@@ -22,6 +22,11 @@ class Memory
     protected $variables;
 
     /**
+     * @var Collection
+     */
+    protected $user;
+
+    /**
      * Create a new Memory instance.
      */
     public function __construct()
@@ -29,6 +34,7 @@ class Memory
         $this->shortTerm  = Collection::make([]);
         $this->substitute = Collection::make([]);
         $this->variables  = Collection::make([]);
+        $this->user       = Collection::make([]);
     }
 
     /**
@@ -59,5 +65,21 @@ class Memory
     public function variables()
     {
         return $this->variables;
+    }
+
+    /**
+     * Stored user data.
+     *
+     * @return Collection
+     */
+    public function user($user = 0)
+    {
+        if (! $this->user->exists($user)) {
+            $data = new Collection([]);
+
+            $this->user->put($user, $data);
+        }
+
+        return $this->user->get($user);
     }
 }

@@ -124,6 +124,12 @@
 + *
 - I'm sorry but I don't understand.
 
++ my name is *
+- <set name=<star>>Nice to meet you!
+
++ what is my name
+- You're name is <get name>!
+
 + i hate you
 - Well that's mean. I'm not talking again until you say you're sorry.{topic=sorry}
 

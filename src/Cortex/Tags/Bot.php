@@ -2,6 +2,8 @@
 
 namespace Vulcan\Rivescript\Cortex\Tags;
 
+use Vulcan\Rivescript\Cortex\Input;
+
 class Bot extends Tag
 {
     /**
@@ -23,7 +25,7 @@ class Bot extends Tag
      *
      * @return string
      */
-    public function parse($source)
+    public function parse($source, Input $input)
     {
         if (! $this->sourceAllowed()) {
             return $source;

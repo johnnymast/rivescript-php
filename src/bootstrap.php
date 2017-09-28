@@ -38,8 +38,11 @@ $synapse->triggers = Vulcan\Collections\Collection::make([
 ]);
 
 $synapse->tags = Vulcan\Collections\Collection::make([
+    'Star',
     'Bot',
-    'Star', 'Topic',
+    'Set',
+    'Get',
+    'Topic',
 ]);
 
 /*

@@ -25,7 +25,7 @@ class Input
      * @param string   $source
      * @param int|null $user
      */
-    public function __construct($source, $user = null)
+    public function __construct($source, $user = 0)
     {
         $this->original = $source;
         $this->user     = $user;
