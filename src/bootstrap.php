@@ -29,6 +29,7 @@ $synapse->commands = Vulcan\Collections\Collection::make([
     'Topic',
     'Trigger',
     'Variable',
+    'VariablePerson',
     'VariableSubstitute',
 ]);
 
@@ -60,7 +61,7 @@ $synapse->brain  = new Vulcan\Rivescript\Cortex\Brain();
 
 /*
 |--------------------------------------------------------------------------
-| Autload Additional Files
+| Autoload Additional Files
 |--------------------------------------------------------------------------
 |
 | Now we will autoload some files to aid in using the Rivescript

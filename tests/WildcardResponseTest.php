@@ -41,7 +41,7 @@ class WildcardResponseTest extends ResponseTest
 
     public function testCatchAllReply()
     {
-        $response = $this->rivescript->reply('aesfaeisfhliuashefaef');
+        $response = $this->rivescript->reply('foobarbaz123');
 
         $this->assertEquals('I\'m sorry but I don\'t understand.', $response);
     }

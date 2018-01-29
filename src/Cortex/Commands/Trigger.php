@@ -84,16 +84,16 @@ class Trigger implements Command
         $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
             switch ($data['type']) {
                 case 'atomic':
-                    $data['order'] += 400;
+                    $data['order'] += 4000000;
                     break;
                 case 'alphabetic':
-                    $data['order'] += 300;
+                    $data['order'] += 3000000;
                     break;
                 case 'numeric':
-                    $data['order'] += 200;
+                    $data['order'] += 2000000;
                     break;
                 case 'global':
-                    $data['order'] += 100;
+                    $data['order'] += 1000000;
                     break;
             }
 

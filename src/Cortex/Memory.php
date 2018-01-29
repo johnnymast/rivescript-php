@@ -9,6 +9,11 @@ class Memory
     /**
      * @var Collection
      */
+    protected $person;
+    
+    /**
+     * @var Collection
+     */
     protected $shortTerm;
 
     /**
@@ -34,7 +39,18 @@ class Memory
         $this->shortTerm  = Collection::make([]);
         $this->substitute = Collection::make([]);
         $this->variables  = Collection::make([]);
+        $this->person     = Collection::make([]);
         $this->user       = Collection::make([]);
+    }
+    
+    /**
+     * Stored person variables.
+     *
+     * @return Collection
+     */
+    public function person()
+    {
+        return $this->person;
     }
 
     /**

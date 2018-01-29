@@ -13,6 +13,12 @@
 ! var phone    = 555-1234
 ! var email    = test@mydomain.com
 
+// Person
+! person you are = I am
+! person i am = you are
+! person you = I
+! person i = you
+
 // Substitutes
 ! sub +         = plus
 ! sub -         = minus
