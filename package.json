@@ -1,15 +1,19 @@
 {
   "name": "rivescript-php",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vulcan-project/rivescript-php.git"
+    "url": "git+https://github.com/axiom-labs/rivescript-php.git"
   },
   "author": "Shea Lewis",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vulcan-project/rivescript-php/issues"
+    "url": "https://github.com/axiom-labs/rivescript-php/issues"
+  },
+  "scripts": {
+    "test": "node_modules/gulp/bin/gulp.js"
   },
   "devDependencies": {
     "clear": "0.0.1",

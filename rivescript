@@ -4,9 +4,9 @@
 
 require 'vendor/autoload.php';
 
-use Vulcan\Rivescript\Rivescript;
+use Axiom\Rivescript\Rivescript;
 use Symfony\Component\Console\Application;
-use Vulcan\Rivescript\Console\ChatCommand;
+use Axiom\Rivescript\Console\ChatCommand;
 
 $app        = new Application('Rivescript PHP Interpreter', '2.0');
 $rivescript = new Rivescript;

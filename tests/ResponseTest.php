@@ -3,7 +3,7 @@
 namespace Tests;
 
 use PHPUnit_Framework_TestCase;
-use Vulcan\Rivescript\Rivescript;
+use Axiom\Rivescript\Rivescript;
 
 abstract class ResponseTest extends PHPUnit_Framework_TestCase
 {

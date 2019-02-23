@@ -1,9 +1,9 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex\Tags;
+namespace Axiom\Rivescript\Cortex\Tags;
 
 use LogicException;
-use Vulcan\Rivescript\Contracts\Tag as TagContract;
+use Axiom\Rivescript\Contracts\Tag as TagContract;
 
 abstract class Tag implements TagContract
 {

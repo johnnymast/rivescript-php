@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Contracts;
+namespace Axiom\Rivescript\Contracts;
 
 interface Trigger
 {

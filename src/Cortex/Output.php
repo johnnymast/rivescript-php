@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex;
+namespace Axiom\Rivescript\Cortex;
 
 class Output
 {
@@ -57,7 +57,7 @@ class Output
     protected function searchTriggers($trigger)
     {
         synapse()->triggers->each(function ($class) use ($trigger) {
-            $triggerClass = "\\Vulcan\\Rivescript\\Cortex\\Triggers\\$class";
+            $triggerClass = "\\Axiom\\Rivescript\\Cortex\\Triggers\\$class";
             $triggerClass = new $triggerClass();
 
             $found = $triggerClass->parse($trigger, $this->input);
@@ -99,7 +99,7 @@ class Output
     protected function parseResponse($response)
     {
         synapse()->tags->each(function ($tag) use (&$response) {
-            $class = "\\Vulcan\\Rivescript\\Cortex\\Tags\\$tag";
+            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
             $tagClass = new $class();
 
             $response = $tagClass->parse($response, $this->input);

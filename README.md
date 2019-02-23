@@ -1,5 +1,5 @@
 # RiveScript-PHP
-[![Source](http://img.shields.io/badge/source-vulcan--project/rivescript--php-blue.svg?style=flat-square)](https://github.com/vulcan-project/rivescript-php)
+[![Source](http://img.shields.io/badge/source-axiom--labs/rivescript--php-blue.svg?style=flat-square)](https://github.com/axiom-labs/rivescript-php)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://tldrlegal.com/license/mit-license)
 
 This is a RiveScript interpreter library for PHP. RiveScript is a simple scripting language for chatbots with a friendly, easy to learn syntax.
@@ -10,7 +10,7 @@ The package follows the FIG standards PSR-1, PSR-2, and PSR-4 to ensure a high l
 Simply install the package through Composer.
 
 ```
-composer require vulcan/rivescript
+composer require axiom/rivescript
 ```
 
 ## Integration

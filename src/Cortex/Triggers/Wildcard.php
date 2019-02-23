@@ -1,8 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex\Triggers;
+namespace Axiom\Rivescript\Cortex\Triggers;
 
-use Vulcan\Collections\Collection;
+use Axiom\Collections\Collection;
 
 class Wildcard extends Trigger
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex\Triggers;
+namespace Axiom\Rivescript\Cortex\Triggers;
 
-use Vulcan\Rivescript\Contracts\Trigger as TriggerContract;
+use Axiom\Rivescript\Contracts\Trigger as TriggerContract;
 
 abstract class Trigger implements TriggerContract
 {
@@ -26,7 +26,7 @@ abstract class Trigger implements TriggerContract
     protected function parseTags($trigger, $input)
     {
         synapse()->tags->each(function ($tag) use (&$trigger, $input) {
-            $class = "\\Vulcan\\Rivescript\\Cortex\\Tags\\$tag";
+            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
             $tagClass = new $class('trigger');
 
             $trigger = $tagClass->parse($trigger, $input);

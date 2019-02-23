@@ -11,7 +11,7 @@
 |
 */
 
-$synapse = new Vulcan\Rivescript\Cortex\Synapse();
+$synapse = new Axiom\Rivescript\Cortex\Synapse();
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +23,7 @@ $synapse = new Vulcan\Rivescript\Cortex\Synapse();
 |
 */
 
-$synapse->commands = Vulcan\Collections\Collection::make([
+$synapse->commands = Axiom\Collections\Collection::make([
     'Redirect',
     'Response',
     'Topic',
@@ -33,12 +33,12 @@ $synapse->commands = Vulcan\Collections\Collection::make([
     'VariableSubstitute',
 ]);
 
-$synapse->triggers = Vulcan\Collections\Collection::make([
+$synapse->triggers = Axiom\Collections\Collection::make([
     'Atomic',
     'Wildcard',
 ]);
 
-$synapse->tags = Vulcan\Collections\Collection::make([
+$synapse->tags = Axiom\Collections\Collection::make([
     'Star',
     'Bot',
     'Set',
@@ -56,8 +56,8 @@ $synapse->tags = Vulcan\Collections\Collection::make([
 |
 */
 
-$synapse->memory = new Vulcan\Rivescript\Cortex\Memory();
-$synapse->brain  = new Vulcan\Rivescript\Cortex\Brain();
+$synapse->memory = new Axiom\Rivescript\Cortex\Memory();
+$synapse->brain  = new Axiom\Rivescript\Cortex\Brain();
 
 /*
 |--------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex\Triggers;
+namespace Axiom\Rivescript\Cortex\Triggers;
 
 class Atomic extends Trigger
 {

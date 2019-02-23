@@ -1,8 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex\Tags;
+namespace Axiom\Rivescript\Cortex\Tags;
 
-use Vulcan\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input;
 
 class Get extends Tag
 {

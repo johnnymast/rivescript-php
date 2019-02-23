@@ -1,8 +1,8 @@
 <?php
 
-use Vulcan\Rivescript\Support\Str;
-use Vulcan\Rivescript\Cortex\Synapse;
-use Vulcan\Rivescript\Support\Logger;
+use Axiom\Rivescript\Support\Str;
+use Axiom\Rivescript\Cortex\Synapse;
+use Axiom\Rivescript\Support\Logger;
 
 if (! function_exists('synapse')) {
     /**

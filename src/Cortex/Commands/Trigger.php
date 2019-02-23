@@ -1,9 +1,9 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex\Commands;
+namespace Axiom\Rivescript\Cortex\Commands;
 
-use Vulcan\Collections\Collection;
-use Vulcan\Rivescript\Contracts\Command;
+use Axiom\Collections\Collection;
+use Axiom\Rivescript\Contracts\Command;
 
 class Trigger implements Command
 {

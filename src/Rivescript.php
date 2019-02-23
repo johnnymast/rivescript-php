@@ -1,9 +1,9 @@
 <?php
 
-namespace Vulcan\Rivescript;
+namespace Axiom\Rivescript;
 
-use Vulcan\Rivescript\Cortex\Input;
-use Vulcan\Rivescript\Cortex\Output;
+use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Output;
 
 class Rivescript
 {

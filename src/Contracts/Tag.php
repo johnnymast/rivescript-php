@@ -1,8 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Contracts;
+namespace Axiom\Rivescript\Contracts;
 
-use Vulcan\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input;
 
 interface Tag
 {

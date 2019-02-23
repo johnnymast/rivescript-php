@@ -1,8 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex\Commands;
+namespace Axiom\Rivescript\Cortex\Commands;
 
-use Vulcan\Rivescript\Contracts\Command;
+use Axiom\Rivescript\Contracts\Command;
 
 class Redirect implements Command
 {

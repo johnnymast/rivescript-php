@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex;
+namespace Axiom\Rivescript\Cortex;
 
 use SplFileObject;
 
@@ -39,7 +39,7 @@ class Brain
             }
 
             $commands->each(function ($command) use ($node, $currentCommand) {
-                $class = "\\Vulcan\\Rivescript\\Cortex\\Commands\\$command";
+                $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
                 $commandClass = new $class();
 
                 $result = $commandClass->parse($node, $currentCommand);

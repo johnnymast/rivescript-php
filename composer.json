@@ -1,7 +1,7 @@
 {
-    "name": "vulcan/rivescript",
+    "name": "axiom/rivescript",
     "description": "RiveScript interpreter library for PHP with Laravel support. RiveScript is a scripting language for chatterbots, making it easy to write trigger/response pairs for building up a bot's intelligence.",
-    "keywords": ["rivescript", "bot", "ai", "chatterbot", "vulcan"],
+    "keywords": ["rivescript", "bot", "ai", "chatterbot", "axiom"],
     "license": "MIT",
     "authors": [
         {
@@ -13,7 +13,7 @@
         "php": ">=7.1",
         "symfony/console": "~3.0",
         "symfony/finder": "^3.2",
-        "vulcan/collections": "~1.0"
+        "axiom/collections": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.0",
@@ -24,7 +24,7 @@
             "src\\helpers.php"
         ],
         "psr-4": {
-            "Vulcan\\Rivescript\\": "src/"
+            "Axiom\\Rivescript\\": "src/"
         }
     },
     "autoload-dev": {

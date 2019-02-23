@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex;
+namespace Axiom\Rivescript\Cortex;
 
 class Input
 {

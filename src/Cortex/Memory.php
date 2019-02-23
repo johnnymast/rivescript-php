@@ -1,8 +1,8 @@
 <?php
 
-namespace Vulcan\Rivescript\Cortex;
+namespace Axiom\Rivescript\Cortex;
 
-use Vulcan\Collections\Collection;
+use Axiom\Collections\Collection;
 
 class Memory
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Vulcan\Rivescript\Support;
+namespace Axiom\Rivescript\Support;
 
 class Str
 {
