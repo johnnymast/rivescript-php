@@ -32,16 +32,32 @@ class Memory
     protected $user;
 
     /**
+     * @var Collection
+     */
+    protected $global;
+
+    /**
      * Create a new Memory instance.
      */
     public function __construct()
     {
-        $this->shortTerm  = Collection::make([]);
+        $this->shortTerm = Collection::make([]);
         $this->substitute = Collection::make([]);
-        $this->variables  = Collection::make([]);
-        $this->arrays     = Collection::make([]);
-        $this->person     = Collection::make([]);
-        $this->user       = Collection::make([]);
+        $this->variables = Collection::make([]);
+        $this->global = Collection::make([]);
+        $this->arrays = Collection::make([]);
+        $this->person = Collection::make([]);
+        $this->user = Collection::make([]);
+    }
+
+    /**
+     * Stored person variables.
+     *
+     * @return Collection
+     */
+    public function global()
+    {
+        return $this->global;
     }
 
     /**
@@ -101,7 +117,7 @@ class Memory
      */
     public function user($user = 0)
     {
-        if (! $this->user->has($user)) {
+        if (!$this->user->has($user)) {
             $data = new Collection([]);
 
             $this->user->put($user, $data);
