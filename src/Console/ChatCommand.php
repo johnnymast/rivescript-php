@@ -2,8 +2,10 @@
 
 namespace Axiom\Rivescript\Console;
 
+use Axiom\Rivescript\Exceptions\ParseException;
 use Axiom\Rivescript\Rivescript;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,7 +21,7 @@ class ChatCommand extends Command
     /**
      * Create a new ChatCommand instance.
      *
-     * @param  Rivescript  $rivescript
+     * @param Rivescript $rivescript
      */
     public function __construct(Rivescript $rivescript)
     {
@@ -43,41 +45,51 @@ class ChatCommand extends Command
     /**
      * Execute the console command.
      *
-     * @param  InputInterface  $input
-     * @param  OutputInterface  $output
+     * @param InputInterface $input
+     * @param OutputInterface $output
      * @return null
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $source = $this->loadFiles($input->getArgument('source'));
+        try {
 
-        $this->rivescript->load($source);
+            $source = $this->loadFiles($input->getArgument('source'));
 
-        $loadedSource = explode('/', $input->getArgument('source'));
-        $loadedSource = end($loadedSource);
+            $this->rivescript->load($source);
 
-        $output->writeln('RiveScript Interpreter (PHP) -- Interactive Console v2.0');
-        $output->writeln('--------------------------------------------------------');
-        $output->writeln('RiveScript Version:       2.0');
-        $output->writeln('Currently Loaded Source:  '.$loadedSource);
-        $output->writeln('');
-        $output->writeln('You are now chatting with a RiveScript bot. Type a message and press Return');
-        $output->writeln('to send it. When finished, type "/quit" to exit the interactive console.');
-        $output->writeln('');
+            $loadedSource = explode('/', $input->getArgument('source'));
+            $loadedSource = end($loadedSource);
 
-        $this->waitForUserInput($input, $output);
+            $output->writeln('RiveScript Interpreter (PHP) -- Interactive Console v2.0');
+            $output->writeln('--------------------------------------------------------');
+            $output->writeln('RiveScript Version:       2.0');
+            $output->writeln('Currently Loaded Source:  ' . $loadedSource);
+            $output->writeln('');
+            $output->writeln('You are now chatting with a RiveScript bot. Type a message and press Return');
+            $output->writeln('to send it. When finished, type "/quit" to exit the interactive console.');
+            $output->writeln('');
+
+            $this->waitForUserInput($input, $output);
+
+        } catch (ParseException $e) {
+
+            $error = "<error>{$e->getMessage()}</error>";
+            $output->writeln($error);
+
+            log_warning($e->getMessage());
+        }
     }
 
     /**
      * Wait and listen for user input.
      *
-     * @param  InputInterface  $input
-     * @param  OutputInterface  $output
+     * @param InputInterface $input
+     * @param OutputInterface $output
      * @return null
      */
     protected function waitForUserInput(InputInterface $input, OutputInterface $output)
     {
-        $helper   = $this->getHelper('question');
+        $helper = $this->getHelper('question');
         $question = new Question('<info>You > </info>');
 
         $message = $helper->ask($input, $output, $question);
@@ -90,9 +102,9 @@ class ChatCommand extends Command
     /**
      * Listen for console commands before passing message to interpreter.
      *
-     * @param  InputInterface  $input
-     * @param  OutputInterface  $output
-     * @param  string  $message
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param string $message
      * @return null
      */
     protected function listenForConsoleCommands(InputInterface $input, OutputInterface $output, $message)
@@ -126,18 +138,18 @@ class ChatCommand extends Command
     /**
      * Pass along user message to interpreter and fetch a reply.
      *
-     * @param  InputInterface  $input
-     * @param  OutputInterface  $output
-     * @param  string  $message
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param string $message
      * @return null
      */
     protected function getBotResponse(InputInterface $input, OutputInterface $output, $message)
     {
-        $bot      = 'Bot > ';
-        $reply    = $this->rivescript->reply($message);
+        $bot = 'Bot > ';
+        $reply = $this->rivescript->reply($message);
         $response = "<info>{$reply}</info>";
 
-        $output->writeln($bot.$response);
+        $output->writeln($bot . $response);
 
         $this->waitForUserInput($input, $output);
     }
@@ -145,15 +157,15 @@ class ChatCommand extends Command
     /**
      * Load and return an array of files.
      *
-     * @param  string  $files
+     * @param string $files
      * @return array
      */
     private function loadFiles($files)
     {
         if (is_dir($files)) {
             $directory = realpath($files);
-            $files     = [];
-            $brains    = glob($directory.'/*.rive');
+            $files = [];
+            $brains = glob($directory . '/*.rive');
 
             foreach ($brains as $brain) {
                 $files[] = $brain;
@@ -162,6 +174,6 @@ class ChatCommand extends Command
             return $files;
         }
 
-        return (array) $files;
+        return (array)$files;
     }
 }
