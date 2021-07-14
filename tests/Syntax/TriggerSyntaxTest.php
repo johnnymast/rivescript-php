@@ -4,7 +4,7 @@ namespace Tests;
 
 use Axiom\Rivescript\Cortex\Node;
 
-class LabelTriggerTest extends ResponseTest
+class TriggerSyntaxTest extends ResponseTest
 {
     public function testNotImplemented()
     {
