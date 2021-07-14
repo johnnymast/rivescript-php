@@ -19,7 +19,10 @@
 ! var location = Cyberspace
 ! var phone    = 555-1234
 ! var email    = test@mydomain.com
+<<<<<<<<< Temporary merge branch 1
+=========
 ! var points   = 0
+>>>>>>>>> Temporary merge branch 2
 
 // Substitutions
 ! sub +         = plus
@@ -653,6 +656,9 @@
 - This should have the value of <env topics> my name is <bot name>
 
 + test bot
+- <bot unkown> <bot name>
+
+
 - <bot unkown> <bot>
 
 
