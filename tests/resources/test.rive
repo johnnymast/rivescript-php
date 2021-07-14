@@ -110,7 +110,7 @@
 + hi there
 @ hello bot
 
-+ what is your global topic
++ what is your global topic?
 - The topic is <env topic>.
 
 + what is your name
@@ -119,7 +119,7 @@
 + <bot name>
 - What can I do for you?
 
-+ what is defined under bleep
++ what is defined under bleep?
 - The value defined is <bot bleep>.
 
 + my favorite thing in the world is *
