@@ -4,7 +4,7 @@ namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Input;
 
-class Bot extends Tag
+class Env extends Tag
 {
     /**
      * @var array
@@ -16,7 +16,7 @@ class Bot extends Tag
      *
      * @var string
      */
-    protected $pattern = '/<bot (.+?)>/i';
+    protected $pattern = '/<env (.+?)>/i';
 
     /**
      * Parse the source.
@@ -27,21 +27,17 @@ class Bot extends Tag
      */
     public function parse($source, Input $input)
     {
-        if (! $this->sourceAllowed()) {
+        if (!$this->sourceAllowed()) {
             return $source;
         }
 
         if ($this->hasMatches($source)) {
-            $matches   = $this->getMatches($source);
-            $variables = synapse()->memory->variables();
+            $matches = $this->getMatches($source);
+            $variables = synapse()->memory->global();
 
             foreach ($matches as $match) {
-                $value = 'undefined';
-
-                if (isset($variables[$match[1]]) == true) {
-                    $value = $variables[$match[1]];
-                }
-                $source = str_replace($match[0], $value , $source);
+                $value = (isset($variables[$match[1]]) == true) ? $variables[$match[1]] : 'undefined';
+                $source = str_replace($match[0], $value, $source);
             }
         }
 

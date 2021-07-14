@@ -31,6 +31,7 @@ $synapse->commands = Axiom\Collections\Collection::make([
     'Variable',
     'VariablePerson',
     'VariableSubstitute',
+    'VariableGlobal',
     'VariableArray',
 ]);
 
@@ -46,6 +47,7 @@ $synapse->tags = Axiom\Collections\Collection::make([
     'Set',
     'Get',
     'Topic',
+    'Env',
 ]);
 
 /*
@@ -59,7 +61,7 @@ $synapse->tags = Axiom\Collections\Collection::make([
 */
 
 $synapse->memory = new Axiom\Rivescript\Cortex\Memory();
-$synapse->brain  = new Axiom\Rivescript\Cortex\Brain();
+$synapse->brain = new Axiom\Rivescript\Cortex\Brain();
 
 /*
 |--------------------------------------------------------------------------

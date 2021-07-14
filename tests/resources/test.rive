@@ -5,6 +5,10 @@
 
 ! version = 2.0
 
+// Global Variables
+
+! global topic = sensation
+
 // Bot Variables
 ! var name     = Beta
 ! var age      = 9000
@@ -106,11 +110,17 @@
 + hi there
 @ hello bot
 
++ what is your global topic?
+- The topic is <env topic>.
+
 + what is your name
 - You can call me <bot name>.
 
 + <bot name>
 - What can I do for you?
+
++ what is defined under bleep?
+- The value defined is <bot bleep>.
 
 + my favorite thing in the world is *
 - Why do you like <star> so much?
