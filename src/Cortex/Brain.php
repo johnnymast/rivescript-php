@@ -2,6 +2,7 @@
 
 namespace Axiom\Rivescript\Cortex;
 
+use Axiom\Rivescript\Exceptions\ParseException;
 use SplFileObject;
 
 class Brain
@@ -10,6 +11,8 @@ class Brain
      * @var Branch
      */
     protected $topics;
+
+    protected $strict = false;
 
     /**
      * Create a new instance of Brain.
@@ -23,16 +26,18 @@ class Brain
      * Teach the brain contents of a new file source.
      *
      * @param string $file
+     * @throws ParseException
      */
     public function teach($file)
     {
         $commands   = synapse()->commands;
-        $file       = new SplFileObject($file);
+        $script       = new SplFileObject($file);
         $lineNumber = 0;
 
-        while (! $file->eof()) {
+        while (! $script->eof()) {
             $currentCommand = null;
-            $node           = new Node($file->fgets(), $lineNumber++);
+            $line           = $script->fgets();
+            $node           = new Node($line, $lineNumber++);
 
             if ($node->isInterrupted() or $node->isComment()) {
                 continue;

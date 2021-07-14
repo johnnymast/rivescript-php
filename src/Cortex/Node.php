@@ -35,10 +35,16 @@ class Node
     protected $isComment = false;
 
     /**
+     * @var bool
+     */
+    protected $allowUtf8 = false;
+
+
+    /**
      * Create a new Source instance.
      *
-     * @param string $source
-     * @param int    $number
+     * @param  string  $source
+     * @param  int  $number
      */
     public function __construct($source, int $number)
     {

@@ -1,8 +1,3 @@
-/*
-	RiveScript 2 Test Suite -- Designed to demonstrate all the
-	functionality that RiveScript 2 is supposed to support.
-*/
-
 ! version = 2.0
 
 // Global Variables
@@ -110,7 +105,7 @@
 + hi there
 @ hello bot
 
-+ what is your global topic?
++ what is your global topic
 - The topic is <env topic>.
 
 + what is your name
@@ -119,7 +114,7 @@
 + <bot name>
 - What can I do for you?
 
-+ what is defined under bleep?
++ what is defined under bleep
 - The value defined is <bot bleep>.
 
 + my favorite thing in the world is *
@@ -156,3 +151,36 @@
     + sorry
     - Alright, I'll forgive you.{topic=random}
 < topic
+
+
+// Tags
+
++ set points
+- <set points=4>Done!
+
++ how many points do i have
+- You have <get points> points.
+
++ give me 5 points
+- <add points=5>I've added 5 points to your account.
+
++ add * points
+- <add points=<star>>it has been done. <star> points have been added.
+
++ remove 5 points
+- <sub points=5>I've removed 5 points to your account.
+
++ remove * points from total
+- <sub points=<star>>I've removed <star> points to your account.
+
++ multiply points by 9
+- <mult points=9>I've multiplied your points points by 9.
+
++ mult by *
+- <mult points=<star>>Your points have been multiplied by <star>
+
++ divide points by 7
+- <div points=7>I've divided your points points by 7.
+
++ divide by *
+- <div points=<star>>Your points have been divided by <star>
