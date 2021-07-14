@@ -4,7 +4,7 @@ namespace Tests;
 
 use Axiom\Rivescript\Cortex\Node;
 
-class ConditionSyntaxTest extends ResponseTest
+class ConditionSyntax extends ResponseTest
 {
     public function testNotImplemented()
     {

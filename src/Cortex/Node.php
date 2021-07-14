@@ -155,6 +155,16 @@ class Node
     }
 
     /**
+     * Enable the UTF8 mode.
+     *
+     * @param  bool  $allowUtf8 True of false.
+     */
+    public function setAllowUtf8(bool $allowUtf8): void
+    {
+        $this->allowUtf8 = $allowUtf8;
+    }
+
+    /**
      * Check the syntax
      *
      * @return string
@@ -242,9 +252,9 @@ class Node
             # * Condition
             #   Syntax for a conditional is as follows:
             #   * value symbol value => response
-            if ($this->matchesPattern("/^.+?\s*(==|eq|!=|ne|<>|<|<=|>|>=)\s*.+?=>.+?$/", $this->value) == false) {
-                return "Invalid format for !Condition: should be like `* value symbol value => response`";
-            }
+//            if ($this->matchesPattern("/^.+?\s*(==|eq|!=|ne|<>|<|<=|>|>=)\s*.+?=>.+?$/", $this->value) == false) {
+//                return "Invalid format for !Condition: should be like `* value symbol value => response`";
+//            }
         }
     }
 
