@@ -43,18 +43,6 @@ class Brain
                 continue;
             }
 
-            $error = $node->checkSyntax();
-
-            if ($error) {
-                $line = str_replace(["\r", "\n"], '', $line);
-                $syntax_error = "Syntax error in {$file} line {$lineNumber}: {$error} (near: $line)";
-                if ($this->strict === true) {
-                    die($syntax_error);
-                } else {
-                    throw new ParseException($syntax_error);
-                }
-            }
-
             $commands->each(function ($command) use ($node, $currentCommand) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
                 $commandClass = new $class();

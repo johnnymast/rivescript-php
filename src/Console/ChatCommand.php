@@ -2,7 +2,6 @@
 
 namespace Axiom\Rivescript\Console;
 
-use Axiom\Rivescript\Exceptions\ParseException;
 use Axiom\Rivescript\Rivescript;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
