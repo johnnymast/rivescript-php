@@ -48,10 +48,6 @@ $synapse->tags = Axiom\Collections\Collection::make([
     'Get',
     'Topic',
     'Env',
-    'Add',
-    'Sub',
-    'Mult',
-    'Div',
 ]);
 
 /*

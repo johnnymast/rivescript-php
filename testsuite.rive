@@ -19,7 +19,6 @@
 ! var location = Cyberspace
 ! var phone    = 555-1234
 ! var email    = test@mydomain.com
-! var points   = 0
 
 // Substitutions
 ! sub +         = plus
@@ -653,55 +652,4 @@
 - This should have the value of <env topics> my name is <bot name>
 
 + test bot
-- <bot unkown> <bot>
-
-
-// This one has multiple wildcards in it
-+ _ told me to say *
-- So did you say "<star2>" because "<star1>" told you to?
-
-+ test id
-- Oke here it is <id>
-
-+ hello random
-- Hello there!{weight=50}
-- Hi.
-
-
-+ insert swear word here
-- Omg you're mean! I'm not talking to you until you apologize.{topic=apology}
-
-> topic apology
-	+ *
-	- Not until you apologize.
-	- Say you're sorry.
-	- Apologize for being so mean.
-
-	+ [*] (sorry|apologize) [*]
-	- Okay, I'll forgive you.{topic=random}
-< topic
-
-
-+ set test *
-- <set name=<star>>Nice to meet you, <star>.
-
-+ set points
-- <set points=4>Done!
-
-+ how many points do i have?
-- You have <get points> points.
-
-+ give me 5 points
-- <add points=5>I've added 5 points to your account.
-
-+ remove 5 points
-- <sub points=5>I've removed 5 points to your account.
-
-+ mult by *
-- <mult points=<star>>it has been done
-
-+ my name is *
-- <set name=<star>>Nice to meet you!
-
-+ what is my name
-- Your name is <get name>!
+- <bot unkown> <bot name>
