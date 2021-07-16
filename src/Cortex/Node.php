@@ -252,9 +252,9 @@ class Node
             # * Condition
             #   Syntax for a conditional is as follows:
             #   * value symbol value => response
-//            if ($this->matchesPattern("/^.+?\s*(==|eq|!=|ne|<>|<|<=|>|>=)\s*.+?=>.+?$/", $this->value) == false) {
-//                return "Invalid format for !Condition: should be like `* value symbol value => response`";
-//            }
+            if ($this->matchesPattern("/.+?\s(==|eq|!=|ne|<>|<|<=|>|>=)\s.+?=>.+?$/", $this->value) == false) {
+                return "Invalid format for !Condition: should be like `* value symbol value => response`";
+            }
         }
     }
 
