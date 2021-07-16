@@ -1,3 +1,8 @@
+/*
+	RiveScript 2 Test Suite -- Designed to demonstrate all the
+	functionality that RiveScript 2 is supposed to support.
+*/
+
 ! version = 2.0
 
 // Global Variables
