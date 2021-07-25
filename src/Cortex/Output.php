@@ -2,6 +2,8 @@
 
 namespace Axiom\Rivescript\Cortex;
 
+use phpDocumentor\Reflection\Types\Collection;
+
 class Output
 {
     /**
@@ -22,7 +24,7 @@ class Output
     /**
      * Create a new Output instance.
      *
-     * @param Input $input
+     * @param  Input  $input
      */
     public function __construct(Input $input)
     {
@@ -36,13 +38,15 @@ class Output
      */
     public function process()
     {
-        synapse()->brain->topic()->triggers()->each(function ($data, $trigger) {
-            $this->searchTriggers($trigger);
+        synapse()->brain->topic()->triggers()->each(
+            function ($data, $trigger) {
+                $this->searchTriggers($trigger);
 
-            if ($this->output !== 'Error: Response could not be determined.') {
-                return false;
+                if ($this->output !== 'Error: Response could not be determined.') {
+                    return false;
+                }
             }
-        });
+        );
 
         return $this->output;
     }
@@ -50,30 +54,32 @@ class Output
     /**
      * Search through available triggers to find a possible match.
      *
-     * @param string $trigger
+     * @param  string  $trigger
      *
      * @return bool
      */
     protected function searchTriggers($trigger)
     {
-        synapse()->triggers->each(function ($class) use ($trigger) {
-            $triggerClass = "\\Axiom\\Rivescript\\Cortex\\Triggers\\$class";
-            $triggerClass = new $triggerClass();
+        synapse()->triggers->each(
+            function ($class) use ($trigger) {
+                $triggerClass = "\\Axiom\\Rivescript\\Cortex\\Triggers\\$class";
+                $triggerClass = new $triggerClass($this->input);
 
-            $found = $triggerClass->parse($trigger, $this->input);
+                $found = $triggerClass->parse($trigger, $this->input);
 
-            if ($found === true) {
-                $this->getResponse($trigger);
+                if ($found === true) {
+                    $this->getResponse($trigger);
 
-                return false;
+                    return false;
+                }
             }
-        });
+        );
     }
 
     /**
      * Fetch a response from the found trigger.
      *
-     * @param string $trigger;
+     * @param  string  $trigger  ;
      *
      * @return void
      */
@@ -85,25 +91,30 @@ class Output
             return $this->getResponse($trigger['redirect']);
         }
 
-        $key          = array_rand($trigger['responses']);
-        $this->output = $this->parseResponse($trigger['responses'][$key]);
+        $responses = $trigger['responses']->process();
+        $this->output = $this->parseResponse($responses);
+
+//        $key = array_rand($trigger['responses']);
+//        $this->output = $this->parseResponse($trigger['responses'][$key]);
     }
 
     /**
      * Parse the response through the available tags.
      *
-     * @param string $response
+     * @param  string  $response
      *
      * @return string
      */
     protected function parseResponse($response)
     {
-        synapse()->tags->each(function ($tag) use (&$response) {
-            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
-            $tagClass = new $class();
+        synapse()->tags->each(
+            function ($tag) use (&$response) {
+                $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
+                $tagClass = new $class();
 
-            $response = $tagClass->parse($response, $this->input);
-        });
+                $response = $tagClass->parse($response, $this->input);
+            }
+        );
 
         return $response;
     }

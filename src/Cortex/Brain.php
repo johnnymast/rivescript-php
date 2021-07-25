@@ -20,6 +20,7 @@ class Brain
     public function __construct()
     {
         $this->createTopic('random');
+        $this->createTopic('condition');
     }
 
     /**

@@ -17,6 +17,12 @@ class Topic
     public $triggers;
 
     /**
+     * @var
+     */
+    public $responses;
+
+
+    /**
      * Create a new Branch instance.
      *
      * @param string $name
@@ -25,6 +31,7 @@ class Topic
     {
         $this->name     = $name;
         $this->triggers = new Collection([]);
+        $this->responses = new Collection([]);
     }
 
     /**
@@ -37,6 +44,18 @@ class Topic
         return $this->triggers;
     }
 
+    /**
+     * Return the responses associated with this branch.
+     *
+     * @return array
+     */
+    public function responses() {
+        return $this->responses;
+    }
+
+    /**
+     * @param $triggers
+     */
     public function setTriggers($triggers)
     {
         $this->triggers = $triggers;

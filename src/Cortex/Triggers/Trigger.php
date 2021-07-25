@@ -6,6 +6,7 @@ use Axiom\Rivescript\Contracts\Trigger as TriggerContract;
 
 abstract class Trigger implements TriggerContract
 {
+
     public function triggerFound()
     {
         return true;
@@ -14,6 +15,16 @@ abstract class Trigger implements TriggerContract
     public function triggerNotFound()
     {
         return false;
+    }
+
+    /**
+     * Return the input.
+     *
+     * @return mixed
+     */
+    public function getInput()
+    {
+        return $this->input;
     }
 
     /**

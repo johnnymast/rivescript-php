@@ -76,6 +76,16 @@ class Node
         return $this->value;
     }
 
+
+    /**
+     * Returns the node's source.
+     *
+     * @return string
+     */
+    public function source() {
+        return $this->source;
+    }
+
     /**
      * Returns the node's line number.
      *

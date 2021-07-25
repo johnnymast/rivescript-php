@@ -34,6 +34,8 @@ class Rivescript
         $input  = new Input($message, $user);
         $output = new Output($input);
 
+        synapse()->input = $input;
+
         return $output->process();
     }
 }

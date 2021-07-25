@@ -23,36 +23,61 @@ $synapse = new Axiom\Rivescript\Cortex\Synapse();
 |
 */
 
-$synapse->commands = Axiom\Collections\Collection::make([
-    'Redirect',
-    'Response',
-    'Topic',
-    'Trigger',
-    'Variable',
-    'VariablePerson',
-    'VariableSubstitute',
-    'VariableGlobal',
-    'VariableArray',
-]);
+$synapse->commands = Axiom\Collections\Collection::make(
+    [
+        'Redirect',
+        'Response',
+        'Topic',
+        'Trigger',
+        'Variable',
+        'VariablePerson',
+        'VariableSubstitute',
+        'VariableGlobal',
+        'VariableArray'
+    ]
+);
 
-$synapse->triggers = Axiom\Collections\Collection::make([
-    'Atomic',
-    'Wildcard',
-    'Arrays'
-]);
+$synapse->triggers = Axiom\Collections\Collection::make(
+    [
+        'Atomic',
+        'Wildcard',
+        'Arrays'
+    ]
+);
 
-$synapse->tags = Axiom\Collections\Collection::make([
-    'Star',
-    'Bot',
-    'Set',
-    'Get',
-    'Topic',
-    'Env',
-    'Add',
-    'Sub',
-    'Mult',
-    'Div',
-]);
+$synapse->tags = Axiom\Collections\Collection::make(
+    [
+        'Star',
+        'Bot',
+        'Set',
+        'Get',
+        'Topic',
+        'Env',
+        'Add',
+        'Sub',
+        'Mult',
+        'Div',
+    ]
+);
+
+$synapse->responses = Axiom\Collections\Collection::make(
+    [
+        'Atomic',
+        'Condition',
+        'Weighted'
+    ]
+);
+
+$synapse->conditions = Axiom\Collections\Collection::make(
+    [
+        'Equals',
+        'NotEquals',
+        'LessThan',
+        'LessOrEqualTo',
+        'GreaterThan',
+        'GreaterThanOrEqual',
+    ]
+);
 
 /*
 |--------------------------------------------------------------------------
