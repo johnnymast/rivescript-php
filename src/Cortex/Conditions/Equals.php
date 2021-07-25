@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Handle the equals condition.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Conditions
+ * @author       Johnny Mast <mastjohnny@gmail.com>
+ */
 
 namespace Axiom\Rivescript\Cortex\Conditions;
 
@@ -7,6 +15,10 @@ use Axiom\Rivescript\Contracts\Condition as ConditionContract;
 use Axiom\Rivescript\Cortex\Input;
 use Axiom\Rivescript\Cortex\Node;
 
+/**
+ * Class Equals
+ * @package Axiom\Rivescript\Cortex\Conditions
+ */
 class Equals extends Condition implements ConditionContract
 {
     /**

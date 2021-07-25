@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file handles the Atomic responses.
+ * Handle the not equals condition.
  *
  * @package      Rivescript-php
  * @subpackage   Core

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file handles the Atomic responses.
+ * Handle the greater than or equal to condition.
  *
  * @package      Rivescript-php
  * @subpackage   Core
@@ -14,7 +14,7 @@ namespace Axiom\Rivescript\Cortex\Conditions;
 use Axiom\Rivescript\Contracts\Condition as ConditionContract;
 
 /**
- * Class NotEquals
+ * Class GreaterThanOrEqual
  * @package Axiom\Rivescript\Cortex\Conditions
  */
 class GreaterThanOrEqual extends Condition implements ConditionContract

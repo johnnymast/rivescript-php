@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file handles the Atomic responses.
+ * Handle the less than condition.
  *
  * @package      Rivescript-php
  * @subpackage   Core
@@ -14,7 +14,7 @@ namespace Axiom\Rivescript\Cortex\Conditions;
 use Axiom\Rivescript\Contracts\Condition as ConditionContract;
 
 /**
- * Class NotEquals
+ * Class LessThan
  * @package Axiom\Rivescript\Cortex\Conditions
  */
 class LessThan extends Condition implements ConditionContract
