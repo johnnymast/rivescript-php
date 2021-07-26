@@ -11,10 +11,10 @@
 
 namespace Tests\ResponseQueue;
 
-
 use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem;
+use Tests\ResponseTest;
 
-class ResponseQueueItemTest
+class ResponseQueueItemTest extends ResponseTest
 {
     public function testConstructorSetsValues()
     {
@@ -24,17 +24,16 @@ class ResponseQueueItemTest
 
         $queueItem = new ResponseQueueItem($command, $type, $order);
 
-//        $expected = $command;
-//        $actual = $queueItem->command;
-//        $this->assertEquals($expected, $actual);
-//
-//        $expected = $type;
-//        $actual = $queueItem->type;
-//        $this->assertEquals($expected, $actual);
-//
-//        $expected = $order;
-//        $actual = $queueItem->order;
-//        $this->assertEquals($expected, $actual);
+        $expected = $command;
+        $actual = $queueItem->command;
+        $this->assertEquals($expected, $actual);
 
+        $expected = $type;
+        $actual = $queueItem->type;
+        $this->assertEquals($expected, $actual);
+
+        $expected = $order;
+        $actual = $queueItem->order;
+        $this->assertEquals($expected, $actual);
     }
 }

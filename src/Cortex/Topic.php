@@ -21,7 +21,6 @@ class Topic
      */
     public $responses;
 
-
     /**
      * Create a new Branch instance.
      *

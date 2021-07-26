@@ -111,7 +111,7 @@ class ResponseQueue extends Collection
             }
         );
 
-        return mb_strtolower($response);
+        return $response;
     }
 
     /**
@@ -173,6 +173,9 @@ class ResponseQueue extends Collection
     {
         $this->responses = $this->determineResponseOrder($this->responses);
 
+//        echo "REPONSES\n";
+//        print_r($this->responses);
+//        exit;
         $validResponses = new Collection([]);
         foreach ($this->responses as $response => $item) {
             $result = $this->validateResponse($response, $item);
@@ -187,11 +190,8 @@ class ResponseQueue extends Collection
 
         $validResponses = $this->sortResponses($validResponses);
 
-        print_r($validResponses);
-
-
         if ($validResponses->count() > 0) {
-            return key($validResponses->first());
+            return $validResponses->keys()->first();
         }
 
         return false;
