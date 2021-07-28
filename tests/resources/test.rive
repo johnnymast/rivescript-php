@@ -185,3 +185,80 @@
 
 + divide by *
 - <div points=<star>>Your points have been divided by <star>
+
+// Success Conditions
+
+// Equals
+
++ do you think 1 equals 1
+* 1 == 1 => yes that is correct, 1 equals 1
+- No this is not correct
+
++ do you think 2 equals 2
+*  2 eq 2 => yes that is correct, 2 equals 2
+- No this is not correct
+
++ do you think * equals *
+*  <star1> eq <star2> => yes that is correct, <star1> equals <star2>
+- No this is not correct
+
++ is your name Beta
+* <bot name> eq Beta => Yes indeed, my name is <bot name>
+- No that is the incorrect answer, my age is <bot age>
+
+// Not equals
+
++ is it correct that 4 not equals 2
+* 4 != 2 => yes that is correct, 4 does not equals 2
+- Your statement is correct
+
++ is it correct that 5 not equals 2
+*  5 ne 3 => yes that is correct, 5 does not equals 2
+- Your statement is correct
+
++ is it correct that 6 not equals 1
+*  6 <> 1 => yes that is correct, 6 does not equals 1
+- Your statement is correct
+
++ what do you think * not equals *
+*  <star1> ne <star2> => yes that is correct, <star1> does not equal <star2>
+- No this is not correct
+
+
+// Failing conditions
+
+// Equals
+
++ do you think 4 equals 2
+*  4 == 2 => yes that is correct, 4 equals 2
+- No this is not correct
+
++ do you think 5 equals 3
+*  5 == 3 => yes that is correct, 5 equals 3
+- No this is not correct. 5 equals 5 not 3
+
++ is your name Hal
+* <bot name> eq Hal => Yes indeed, my name is Hal
+- No that is the incorrect answer, my name is <bot name>
+
++ is your name Hal
+* <bot name> eq Hal => Yes indeed, my name is Hal
+- No that is the incorrect answer, my name is <bot name>
+
+// Not Equals
+
++ is it correct that 90 not equals 90
+* 90 != 90 => yes that is correct, 90 does not equals 90
+- Your statement is incorrect 90 does match 90.
+
++ is it correct that 81 not equals 81
+* 81 ne 81 => yes that is correct, 81 does not equals 81
+- Your statement is incorrect 81 does match 81.
+
++ is it correct that 72 not equals 72
+* 72 <> 72 => yes that is correct, 72 does not equals 72
+- Your statement is incorrect 72 does match 72.
+
++ what do you think is * not equals 102
+*  <star1> ne 102 => yes that is correct, <star1> does not equal 102
+- Your statement is incorrect <star1> does match 102.
