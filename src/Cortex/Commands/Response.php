@@ -23,6 +23,9 @@ class Response implements Command
 
             $trigger['responses']->attach($node);
 
+         //   echo "Attach: {$node->value()} to {$topic}\n";
+
+
             synapse()->brain->topic($topic)->triggers()->put($key, $trigger);
         }
     }

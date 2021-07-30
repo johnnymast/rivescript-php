@@ -41,7 +41,7 @@ class TriggerSyntaxTest extends ResponseTest
     public function testTriggerValidValueUTF8Mode()
     {
         $node = new Node("+ this is valid", 0);
-        $node->setAllowUtf8(true);
+      //  $node->setAllowUtf8(true);
 
         $expected = null;
         $actual = $node->checkSyntax();
