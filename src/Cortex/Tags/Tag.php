@@ -24,7 +24,7 @@ abstract class Tag implements TagContract
     {
         $this->sourceType = $sourceType;
 
-        if (! isset($this->allowedSources)) {
+        if (!isset($this->allowedSources)) {
             throw new LogicException(get_class($this).' must have an "allowedSources" property declared.');
         }
     }
@@ -34,7 +34,7 @@ abstract class Tag implements TagContract
      *
      * @return bool
      */
-    public function sourceAllowed()
+    public function sourceAllowed(): bool
     {
         return in_array($this->sourceType, $this->allowedSources);
     }
@@ -42,11 +42,11 @@ abstract class Tag implements TagContract
     /**
      * Does the source have any matches?
      *
-     * @param string $source
+     * @param  string  $source
      *
      * @return bool
      */
-    protected function hasMatches($source)
+    protected function hasMatches(string $source): bool
     {
         return $this->matchesPattern($this->pattern, $source);
     }
@@ -54,11 +54,11 @@ abstract class Tag implements TagContract
     /**
      * Get the regular expression matches from the source.
      *
-     * @param string $source
+     * @param  string  $source
      *
      * @return array
      */
-    protected function getMatches($source)
+    protected function getMatches(string $source): arrays
     {
         return $this->getMatchesFromPattern($this->pattern, $source);
     }

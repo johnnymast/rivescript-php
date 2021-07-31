@@ -1,10 +1,20 @@
 <?php
 
+/**
+ * Test the Add tag from the Add class.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Tests
+ * @category     Tags
+ * @author       Johnny Mast <mastjohnny@gmail.com>
+ */
+
 namespace Tests;
 
 class AddTagTest extends ResponseTest
 {
-    public function testAddTagSettingValue() {
+    public function testAddTagSettingValue()
+    {
         $response = $this->rivescript->reply('give me 5 points');
         $this->assertEquals('I\'ve added 5 points to your account.', $response);
 
@@ -12,7 +22,8 @@ class AddTagTest extends ResponseTest
         $this->assertEquals('You have 5 points.', $response);
     }
 
-    public function testAddTagAfterSettingValue() {
+    public function testAddTagAfterSettingValue()
+    {
         $response = $this->rivescript->reply('set points');
         $this->assertEquals('Done!', $response);
 
@@ -35,7 +46,8 @@ class AddTagTest extends ResponseTest
         $this->assertEquals('I\'ve added 5 points to your account.', $response);
     }
 
-    public function testAddTagWithStarTag() {
+    public function testAddTagWithStarTag()
+    {
         $response = $this->rivescript->reply('set points');
         $this->assertEquals('Done!', $response);
 

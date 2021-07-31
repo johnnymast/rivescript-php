@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Class Div handling the <env> (global variables) tag.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Tags
+ * @author       Johnny Mast <mastjohnny@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Input;
@@ -19,13 +28,14 @@ class Env extends Tag
     protected $pattern = '/<env (.+?)>/i';
 
     /**
-     * Parse the source.
+     * Parse the response.
      *
-     * @param string $source
+     * @param  string  $source  The string containing the Tag.
+     * @param  Input   $input   The input information.
      *
      * @return string
      */
-    public function parse($source, Input $input)
+    public function parse(string $source, Input $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;

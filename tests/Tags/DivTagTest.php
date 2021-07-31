@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Test the Div tag from the Div class.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Tests
+ * @category     Tags
+ * @author       Johnny Mast <mastjohnny@gmail.com>
+ */
+
 namespace Tests;
 
 class DivTagTest extends ResponseTest

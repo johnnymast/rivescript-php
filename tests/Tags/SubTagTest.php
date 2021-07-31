@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Test the Sub tag from the Sub class.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Tests
+ * @category     Tags
+ * @author       Johnny Mast <mastjohnny@gmail.com>
+ */
+
 namespace Tests;
 
 class SubTagTest extends ResponseTest

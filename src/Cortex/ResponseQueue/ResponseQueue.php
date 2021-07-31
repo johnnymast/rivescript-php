@@ -68,8 +68,8 @@ class ResponseQueue extends Collection
     /**
      * Check if a response is allowed to be returned by the bot or not.
      *
-     * @param  string             $response  The response to validate.
-     * @param  ResponseQueueItem  $item      The ResponseQueueItem.
+     * @param  string  $response  The response to validate.
+     * @param  ResponseQueueItem  $item  The ResponseQueueItem.
      * @return false|mixed
      */
     private function validateResponse(string $response, ResponseQueueItem $item)
@@ -184,9 +184,6 @@ class ResponseQueue extends Collection
                 $validResponses->put($result, $item);
             }
         }
-
-        // TODO: multiple atomic makes it random
-        // FIXME: Handle if returned false.
 
         $validResponses = $this->sortResponses($validResponses);
 
