@@ -1,8 +1,3 @@
-/*
-	RiveScript 2 Test Suite -- Designed to demonstrate all the
-	functionality that RiveScript 2 is supposed to support.
-*/
-
 /******************************************************************************
  * "begin.rs" Command Testing                                                 *
  ******************************************************************************/
@@ -425,6 +420,7 @@
 * <get age> <  18        => You're too young to do much of anything.
 - This reply shouldn't happen.
 
+! global age = 12
 /* Conditionals
    ------------
    Human says:     Am I 18 years old?

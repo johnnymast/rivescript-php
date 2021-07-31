@@ -4,6 +4,7 @@ namespace Axiom\Rivescript\Cortex\Commands;
 
 use Axiom\Collections\Collection;
 use Axiom\Rivescript\Contracts\Command;
+use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
 
 class Trigger implements Command
 {
@@ -24,7 +25,7 @@ class Trigger implements Command
 
             $data = [
                 'type'      => $type,
-                'responses' => [],
+                'responses' => new ResponseQueue(),
             ];
 
             $topic->triggers->put($node->value(), $data);
@@ -82,22 +83,24 @@ class Trigger implements Command
     protected function determineTypeCount($triggers)
     {
         $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
-            switch ($data['type']) {
-                case 'atomic':
-                    $data['order'] += 4000000;
-                    break;
-                case 'alphabetic':
-                    $data['order'] += 3000000;
-                    break;
-                case 'numeric':
-                    $data['order'] += 2000000;
-                    break;
-                case 'global':
-                    $data['order'] += 1000000;
-                    break;
-            }
+            if (isset($data['type'])) {
+                switch ($data['type']) {
+                    case 'atomic':
+                        $data['order'] += 4000000;
+                        break;
+                    case 'alphabetic':
+                        $data['order'] += 3000000;
+                        break;
+                    case 'numeric':
+                        $data['order'] += 2000000;
+                        break;
+                    case 'global':
+                        $data['order'] += 1000000;
+                        break;
+                }
 
-            $triggers->put($trigger, $data);
+                $triggers->put($trigger, $data);
+            }
         });
 
         return $triggers;

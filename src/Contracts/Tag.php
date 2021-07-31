@@ -9,10 +9,10 @@ interface Tag
     /**
      * Parse the response.
      *
-     * @param string $source
-     * @param Input $input
+     * @param  string  $source  The string containing the Tag.
+     * @param  Input   $input   The input information.
      *
      * @return array
      */
-    public function parse($source, Input $input);
+    public function parse(string $source, Input $input);
 }

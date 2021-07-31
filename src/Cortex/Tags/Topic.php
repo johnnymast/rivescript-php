@@ -21,14 +21,14 @@ class Topic extends Tag
     /**
      * Parse the response.
      *
-     * @param string $response
-     * @param array  $data
+     * @param  string  $source  The string containing the Tag.
+     * @param  Input   $input   The input information.
      *
-     * @return array
+     * @return string
      */
-    public function parse($source, Input $input)
+    public function parse(string $source, Input $input): string
     {
-        if (! $this->sourceAllowed()) {
+        if (!$this->sourceAllowed()) {
             return $source;
         }
 

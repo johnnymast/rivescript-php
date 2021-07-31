@@ -2,11 +2,14 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
+use Axiom\Rivescript\Traits\Regex;
 use LogicException;
 use Axiom\Rivescript\Contracts\Tag as TagContract;
 
 abstract class Tag implements TagContract
 {
+    use Regex;
+
     /**
      * @var string
      */
@@ -15,13 +18,13 @@ abstract class Tag implements TagContract
     /**
      * Create a new Tag instance.
      *
-     * @param string $sourceType
+     * @param  string  $sourceType
      */
-    final public function __construct($sourceType = 'response')
+    final public function __construct(string $sourceType = 'response')
     {
         $this->sourceType = $sourceType;
 
-        if (! isset($this->allowedSources)) {
+        if (!isset($this->allowedSources)) {
             throw new LogicException(get_class($this).' must have an "allowedSources" property declared.');
         }
     }
@@ -31,7 +34,7 @@ abstract class Tag implements TagContract
      *
      * @return bool
      */
-    public function sourceAllowed()
+    public function sourceAllowed(): bool
     {
         return in_array($this->sourceType, $this->allowedSources);
     }
@@ -39,30 +42,24 @@ abstract class Tag implements TagContract
     /**
      * Does the source have any matches?
      *
-     * @param string $source
+     * @param  string  $source
      *
      * @return bool
      */
-    protected function hasMatches($source)
+    protected function hasMatches(string $source): bool
     {
-        preg_match_all($this->pattern, $source, $matches);
-
-        return isset($matches[0][0]);
+        return $this->matchesPattern($this->pattern, $source);
     }
 
     /**
      * Get the regular expression matches from the source.
      *
-     * @param string $source
+     * @param  string  $source
      *
      * @return array
      */
-    protected function getMatches($source)
+    protected function getMatches(string $source): arrays
     {
-        if ($this->hasMatches($source)) {
-            preg_match_all($this->pattern, $source, $matches, PREG_SET_ORDER);
-
-            return $matches;
-        }
+        return $this->getMatchesFromPattern($this->pattern, $source);
     }
 }
