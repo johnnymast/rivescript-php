@@ -26,7 +26,7 @@ class Star extends Tag
      *
      * @return string
      */
-    public function parse(string $source, Input $input): star
+    public function parse(string $source, Input $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;
