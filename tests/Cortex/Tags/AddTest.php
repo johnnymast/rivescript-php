@@ -9,9 +9,11 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests;
+namespace Tests\Cortex\Tags;
 
-class AddTagTest extends ResponseTest
+use Tests\ResponseTest;
+
+class AddTest extends ResponseTest
 {
     public function testAddTagSettingValue()
     {

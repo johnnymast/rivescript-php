@@ -9,7 +9,7 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests\Conditions;
+namespace Tests\Cortex\Responses\Condition;
 
 use Tests\ResponseTest;
 

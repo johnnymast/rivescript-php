@@ -9,7 +9,7 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests\ResponseQueue;
+namespace Tests\Cortex\ResponseQueue;
 
 use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem;
 use Tests\ResponseTest;

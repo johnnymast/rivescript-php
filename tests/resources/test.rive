@@ -362,3 +362,10 @@
 + final question 200 is greater than or equal to 201
 * 200 >= 201 => Yes that is correct
 - No that is incorrect. 200 is not greater number than 201.
+
+
+// Weighted responses
+
++ weight test
+- i am 2 kilo{weight=2000}
+- i am 1 kilo{weight=1000}

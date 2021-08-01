@@ -9,9 +9,11 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests;
+namespace Tests\Cortex\Tags;
 
-class DivTagTest extends ResponseTest
+use Tests\ResponseTest;
+
+class DivTest extends ResponseTest
 {
     public function testDivTagSettingValue()
     {

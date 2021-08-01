@@ -9,7 +9,7 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests\Conditions;
+namespace Tests\Cortex\Responses\Condition;
 
 use Tests\ResponseTest;
 
@@ -51,7 +51,7 @@ class LessOrEqualThanTest extends ResponseTest
     {
         $expected = "No that is incorrect. 16 is the greater number.";
         $actual = $this->rivescript->reply('Do you think 16 is less than 15');
-//
+
         $this->assertEquals($expected, $actual);
     }
 
