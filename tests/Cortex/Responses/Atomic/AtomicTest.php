@@ -11,15 +11,18 @@
 
 namespace Tests\Cortex\Response\Weighted;
 
-use Tests\ResponseTest;
+use Axiom\Rivescript\Rivescript;
 
-class AtomicTest extends ResponseTest
-{
-    public function testCorrectWeightIsPrioritized()
-    {
-        $expected = "Hello human.";
-        $actual = $this->rivescript->reply('hello bot');
+uses()
+    ->beforeEach(function () {
+        $this->rivescript = new Rivescript();
+        $this->rivescript->load(__DIR__.'/../../../resources/test.rive');
+    })
+    ->group('responses');
 
-        $this->assertEquals($expected, $actual);
-    }
-}
+it('prioritizes the correct weight', function() {
+    $expected = "Hello human.";
+    $actual = $this->rivescript->reply('hello bot');
+
+    $this->assertEquals($expected, $actual);
+});

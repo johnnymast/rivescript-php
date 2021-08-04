@@ -11,39 +11,39 @@
 
 namespace Tests\Cortex\Responses\Condition;
 
-use Tests\ResponseTest;
+use Axiom\Rivescript\Rivescript;
 
-class LessThanTest extends ResponseTest
-{
-    public function testSuccessLessThanCondition()
-    {
-        $expected = "Yes that is correct.";
-        $actual = $this->rivescript->reply('Would you think 2 is less then 5');
+uses()
+    ->beforeEach(function () {
+        $this->rivescript = new Rivescript();
+        $this->rivescript->load(__DIR__.'/../../../resources/conditions/conditions.rive');
+    })
+    ->group('responses');
 
-        $this->assertEquals($expected, $actual);
-    }
+it('passes valid < condition', function () {
+    $expected = "Yes that is correct.";
+    $actual = $this->rivescript->reply('Would you think 2 is less then 5');
 
-    public function testSuccessLessThanWithStarSymbolCondition()
-    {
-        $expected = "Yes that is correct. 31 is less than 33.";
-        $actual = $this->rivescript->reply('Would you think 31 is less then 33');
+    $this->assertEquals($expected, $actual);
+});
 
-        $this->assertEquals($expected, $actual);
-    }
+it('passes valid < condition using *', function () {
+    $expected = "Yes that is correct. 31 is less than 33.";
+    $actual = $this->rivescript->reply('Would you think 31 is less then 33');
 
-    public function testFailingLessThanCondition()
-    {
-        $expected = "No that is incorrect. It is the other way around 15 is greater then 5.";
-        $actual = $this->rivescript->reply('Do you think 15 is less than 5');
+    $this->assertEquals($expected, $actual);
+});
 
-        $this->assertEquals($expected, $actual);
-    }
+it('rejects invalid < condition', function () {
+    $expected = "No that is incorrect. It is the other way around 15 is greater then 5.";
+    $actual = $this->rivescript->reply('Do you think 15 is less than 5');
 
-    public function testFailingLessThanWithStarSymbolCondition()
-    {
-        $expected = "No that is incorrect.";
-        $actual = $this->rivescript->reply('Do you think 10 is less then 2');
+    $this->assertEquals($expected, $actual);
+});
 
-        $this->assertEquals($expected, $actual);
-    }
-}
+it('rejects invalid < condition using *', function () {
+    $expected = "No that is incorrect.";
+    $actual = $this->rivescript->reply('Do you think 10 is less then 2');
+
+    $this->assertEquals($expected, $actual);
+});
