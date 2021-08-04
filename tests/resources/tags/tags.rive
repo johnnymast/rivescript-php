@@ -1,0 +1,51 @@
+
+// Global Variables
+
+! global topic = sensation
+
+// Bot Variables
+! var name     = Beta
+
+// Tags
+
++ set points
+- <set points=4>Done!
+
++ how many points do i have
+- You have <get points> points.
+
++ give me 5 points
+- <add points=5>I've added 5 points to your account.
+
++ add * points
+- <add points=<star>>it has been done. <star> points have been added.
+
++ remove 5 points
+- <sub points=5>I've removed 5 points to your account.
+
++ remove * points from total
+- <sub points=<star>>I've removed <star> points to your account.
+
++ multiply points by 9
+- <mult points=9>I've multiplied your points points by 9.
+
++ mult by *
+- <mult points=<star>>Your points have been multiplied by <star>
+
++ divide points by 7
+- <div points=7>I've divided your points points by 7.
+
++ divide by *
+- <div points=<star>>Your points have been divided by <star>
+
++ what is your global topic
+- The topic is <env topic>.
+
++ what is your name
+- You can call me <bot name>.
+
++ my name is *
+- <set name=<star>>Nice to meet you!
+
++ what is my name
+- Your name is <get name>!

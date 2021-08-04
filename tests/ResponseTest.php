@@ -2,17 +2,17 @@
 
 namespace Tests;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Axiom\Rivescript\Rivescript;
 
-abstract class ResponseTest extends PHPUnit_Framework_TestCase
+abstract class ResponseTest extends TestCase
 {
     /**
      * @var Rivescript
      */
     protected $rivescript;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->rivescript = new Rivescript();
 

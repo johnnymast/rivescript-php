@@ -11,17 +11,14 @@
 
 namespace Tests\Cortex\Tags;
 
-use Tests\ResponseTest;
+uses()
+    ->group('tags');
 
-class SetTest extends ResponseTest
-{
-    public function testSetTagValue()
-    {
-        $name = "settest";
-        $this->rivescript->reply("my name is {$name}");
+it('can set user variables', function () {
+    $name = "settest";
+    $this->rivescript->reply("my name is {$name}");
 
-        $expected = "Your name is {$name}!";
-        $actual = $this->rivescript->reply("what is my name");
-        $this->assertEquals($expected, $actual);
-    }
-}
+    $expected = "Your name is {$name}!";
+    $actual = $this->rivescript->reply("what is my name");
+    $this->assertEquals($expected, $actual);
+});

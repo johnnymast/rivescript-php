@@ -11,14 +11,11 @@
 
 namespace Tests\Cortex\Tags;
 
-use Tests\ResponseTest;
+uses()
+    ->group('tags');
 
-class EnvTest extends ResponseTest
-{
-    public function testEnvTagValue()
-    {
-        $expected = "The topic is sensation.";
-        $actual = $this->rivescript->reply("what is your global topic");
-        $this->assertEquals($expected, $actual);
-    }
-}
+it('can read global variables.', function() {
+    $expected = "The topic is sensation.";
+    $actual = $this->rivescript->reply("what is your global topic");
+    $this->assertEquals($expected, $actual);
+});

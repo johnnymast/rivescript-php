@@ -1,78 +1,71 @@
 <?php
 
+/**
+ * Test the syntax for labels.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Tests
+ * @category     Syntax
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Tests;
 
 use Axiom\Rivescript\Cortex\Node;
 
-class LabelSyntaxTest extends ResponseTest
-{
-    public function testMissingValue()
-    {
-        $node = new Node("! version", 0);
+uses()
+    ->group('syntax');
 
-        $expected = "Invalid format for !Definition line: must be '! type name = value' OR '! type = value'";
-        $actual = $node->checkSyntax();
+it('passes valid begin', function () {
+    $node = new Node("> begin", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-    public function testInvalidBeginWithExtraParameters()
-    {
-        $node = new Node("> begin bleep", 0);
+    $this->assertEquals($expected, $actual);
+});
 
-        $expected = "The 'begin' label takes no additional arguments, should be verbatim '> begin'";
-        $actual = $node->checkSyntax();
+it('passes valid topic', function () {
+    $node = new Node("> topic test", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-    public function testInvalidTopicWithExtraUppercaseParameters()
-    {
-        $node = new Node("> topic UpercaseName", 0);
+    $this->assertEquals($expected, $actual);
+});
 
-        $expected = "Topics should be lowercased and contain only numbers and letters!";
-        $actual = $node->checkSyntax();
+it('passes valid object', function () {
+    $node = new Node("> object encode perl2", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-    public function testInvalidObjectDefinition()
-    {
-        $node = new Node("> object test Code", 0);
+    $this->assertEquals($expected, $actual);
+});
 
-        $expected = "Objects can only contain numbers and lowercase letters!";
-        $actual = $node->checkSyntax();
+it('rejects invalid begin with extra parameters', function () {
+    $node = new Node("> begin bleep", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = "The 'begin' label takes no additional arguments, should be verbatim '> begin'";
+    $actual = $node->checkSyntax();
 
-    public function testValidBegin()
-    {
-        $node = new Node("> begin", 0);
+    $this->assertEquals($expected, $actual);
+});
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+it('rejects invalid topics with uppercase parameters', function () {
+    $node = new Node("> topic UpercaseName", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = "Topics should be lowercased and contain only numbers and letters!";
+    $actual = $node->checkSyntax();
 
-    public function testValidTopic()
-    {
-        $node = new Node("> topic test", 0);
+    $this->assertEquals($expected, $actual);
+});
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+it('rejects invalid object', function () {
+    $node = new Node("> object test Code", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = "Objects can only contain numbers and lowercase letters!";
+    $actual = $node->checkSyntax();
 
-    public function testValidObject()
-    {
-        $node = new Node("> object encode perl2", 0);
-
-        $expected = null;
-        $actual = $node->checkSyntax();
-
-        $this->assertEquals($expected, $actual);
-    }
-}
+    $this->assertEquals($expected, $actual);
+});

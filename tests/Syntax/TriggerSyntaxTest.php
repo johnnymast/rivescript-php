@@ -1,151 +1,146 @@
 <?php
 
-namespace Tests;
+namespace Tests\Syntax;
 
 use Axiom\Rivescript\Cortex\Node;
 
-class TriggerSyntaxTest extends ResponseTest
-{
+uses()
+    ->group('syntax');
 
-    public function testTriggersCanOnlyContainValidCharacters()
-    {
-        $node = new Node("+ this is invalid?", 0);
+it('passes valid characters', function () {
+    $node = new Node("+ this is valid", 0);
 
-        $expected = "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =";
-        $actual = $node->checkSyntax();
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testTriggersCanOnlyContainValidCharactersForUTF8Mode()
-    {
-        $node = new Node("+ this is invalid?.", 0);
-        $node->setAllowUtf8(true);
+it('passes valid characters for UTF8 mode.', function () {
+    $node = new Node("+ this is valid", 0);
+    $node->setAllowUtf8(true);
 
-        $expected = "Triggers can't contain uppercase letters, backslashes or dots in UTF-8 mode.";
-        $actual = $node->checkSyntax();
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testTriggerValidValueNonUTF8Mode()
-    {
-        $node = new Node("+ this is valid", 0);
+it('passes valid angled brackets', function () {
+    $node = new Node("+ this is missing an <opentag>", 0);
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testTriggerValidValueUTF8Mode()
-    {
-        $node = new Node("+ this is valid", 0);
-      //  $node->setAllowUtf8(true);
+it('passes valid curly brackets', function () {
+    $node = new Node("+ this is missing an {opentag}", 0);
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testUnmatchedOpenOrCloseParenthesisBrackets() {
-        $node = new Node("+ this is missing an opentag)", 0);
+it('passes valid parenthesis brackets', function () {
+    $node = new Node("+ this is missing an <opentag>", 0);
 
-        $expected = "Unmatched right parenthesis bracket ()";
-        $actual = $node->checkSyntax();
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
+    $this->assertEquals($expected, $actual);
+});
 
-        $node = new Node("+ this is missing an (opentag", 0);
+it('passes valid square brackets', function () {
+    $node = new Node("+ this is missing an [opentag]", 0);
 
-        $expected = "Unmatched left parenthesis bracket ()";
-        $actual = $node->checkSyntax();
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testValidOpenOrCloseParenthesisBrackets() {
-        $node = new Node("+ this is missing an <opentag>", 0);
+it('rejects invalid characters', function () {
+    $node = new Node("+ this is invalid?", 0);
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+    $expected = "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testUnmatchedOpenOrCloseSquareBrackets() {
-        $node = new Node("+ this is missing an opentag]", 0);
+it('rejects invalid characters for UTF8 mode', function () {
+    $node = new Node("+ this is invalid?.", 0);
+    $node->setAllowUtf8(true);
 
-        $expected = "Unmatched right square bracket []";
-        $actual = $node->checkSyntax();
+    $expected = "Triggers can't contain uppercase letters, backslashes or dots in UTF-8 mode.";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
+    $this->assertEquals($expected, $actual);
+});
 
-        $node = new Node("+ this is missing an [opentag", 0);
+it('rejects unmatched parenthesis brackets', function () {
+    $node = new Node("+ this is missing an opentag)", 0);
 
-        $expected = "Unmatched left square bracket []";
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched right parenthesis bracket ()";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
 
-    public function testValidOpenOrCloseSquareBrackets() {
-        $node = new Node("+ this is missing an [opentag]", 0);
+    $node = new Node("+ this is missing an (opentag", 0);
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched left parenthesis bracket ()";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testUnmatchedOpenOrCloseCurlyBrackets() {
-        $node = new Node("+ this is missing an opentag}", 0);
+it('rejects unmatched square brackets', function () {
+    $node = new Node("+ this is missing an opentag]", 0);
 
-        $expected = "Unmatched right curly bracket {}";
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched right square bracket []";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
+    $this->assertEquals($expected, $actual);
 
-        $node = new Node("+ this is missing an {opentag", 0);
+    $node = new Node("+ this is missing an [opentag", 0);
 
-        $expected = "Unmatched left curly bracket {}";
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched left square bracket []";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
+});
 
-    public function testValidOpenOrCloseCurlyBrackets() {
-        $node = new Node("+ this is missing an {opentag}", 0);
+it('rejects unmatched curly brackets', function () {
+    $node = new Node("+ this is missing an opentag}", 0);
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched right curly bracket {}";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
 
-    public function testUnmatchedOpenOrCloseAngledBrackets() {
-        $node = new Node("+ this is missing an opentag>", 0);
+    $node = new Node("+ this is missing an {opentag", 0);
 
-        $expected = "Unmatched right angled bracket <>";
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched left curly bracket {}";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
+    $this->assertEquals($expected, $actual);
+});
 
-        $node = new Node("+ this is missing an <opentag", 0);
+it('rejects unmatched angled brackets', function () {
+    $node = new Node("+ this is missing an opentag>", 0);
 
-        $expected = "Unmatched left angled bracket <>";
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched right angled bracket <>";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
+    $this->assertEquals($expected, $actual);
 
-    public function testValidOpenOrCloseAngledBrackets() {
-        $node = new Node("+ this is missing an <opentag>", 0);
+    $node = new Node("+ this is missing an <opentag", 0);
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+    $expected = "Unmatched left angled bracket <>";
+    $actual = $node->checkSyntax();
 
-        $this->assertEquals($expected, $actual);
-    }
-}
+    $this->assertEquals($expected, $actual);
+});
