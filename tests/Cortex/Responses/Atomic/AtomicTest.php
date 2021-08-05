@@ -5,7 +5,7 @@
  *
  * @package      Rivescript-php
  * @subpackage   Tests
- * @category     Conditions
+ * @category     Responses
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 

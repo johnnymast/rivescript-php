@@ -1,34 +1,53 @@
 <?php
 
+/**
+ * Input contains information about the client side of the
+ * request.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Cortex
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex;
 
+/**
+ * The Input class.
+ */
 class Input
 {
     /**
+     * The source string.
+     *
      * @var string
      */
     protected $source;
 
     /**
+     * The original source string.
+     *
      * @var string
      */
     protected $original;
 
     /**
-     * @var int|null
+     * The user id.
+     *
+     * @var int
      */
     protected $user;
 
     /**
      * Create a new Input instance.
      *
-     * @param string   $source
-     * @param int|null $user
+     * @param  string  $source  The source string.
+     * @param  int     $user    The user id.
      */
-    public function __construct($source, $user = 0)
+    public function __construct(string $source, int $user = 0)
     {
         $this->original = $source;
-        $this->user     = $user;
+        $this->user = $user;
 
         $this->cleanOriginalSource();
     }
@@ -38,7 +57,7 @@ class Input
      *
      * @return string
      */
-    public function source()
+    public function source(): string
     {
         return $this->source;
     }
@@ -61,7 +80,7 @@ class Input
      */
     protected function cleanOriginalSource()
     {
-        $patterns     = synapse()->memory->substitute()->keys()->all();
+        $patterns = synapse()->memory->substitute()->keys()->all();
         $replacements = synapse()->memory->substitute()->values()->all();
 
         $this->source = mb_strtolower($this->original);;

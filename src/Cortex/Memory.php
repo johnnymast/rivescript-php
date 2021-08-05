@@ -1,32 +1,54 @@
 <?php
 
+/**
+ * A node contains a line from rivescript files.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Cortex
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex;
 
 use Axiom\Collections\Collection;
 
+/**
+ * The memory class.
+ */
 class Memory
 {
     /**
+     * A collection of person variables.
+     *
      * @var Collection
      */
     protected $person;
 
     /**
+     * A collection of short term memory items.
+     *
      * @var Collection
      */
     protected $shortTerm;
 
     /**
+     * A collection of substitutes.
+     *
      * @var Collection
      */
     protected $substitute;
 
     /**
+     * A collection of variables.
+     *
      * @var Collection
      */
     protected $variables;
 
     /**
+     * A collection of user variables.
+     *
      * @var Collection
      */
     protected $user;
@@ -51,11 +73,11 @@ class Memory
     }
 
     /**
-     * Stored person variables.
+     * Stored global variables.
      *
      * @return Collection
      */
-    public function global()
+    public function global(): Collection
     {
         return $this->global;
     }
@@ -65,7 +87,7 @@ class Memory
      *
      * @return Collection
      */
-    public function person()
+    public function person(): Collection
     {
         return $this->person;
     }
@@ -75,7 +97,7 @@ class Memory
      *
      * @return Collection
      */
-    public function shortTerm()
+    public function shortTerm(): Collection
     {
         return $this->shortTerm;
     }
@@ -85,7 +107,7 @@ class Memory
      *
      * @return Collection
      */
-    public function substitute()
+    public function substitute(): Collection
     {
         return $this->substitute;
     }
@@ -95,7 +117,7 @@ class Memory
      *
      * @return Collection
      */
-    public function variables()
+    public function variables(): Collection
     {
         return $this->variables;
     }
@@ -105,7 +127,7 @@ class Memory
      *
      * @return Collection
      */
-    public function arrays()
+    public function arrays(): Collection
     {
         return $this->arrays;
     }
@@ -113,9 +135,11 @@ class Memory
     /**
      * Stored user data.
      *
+     * @param  int  $user  The user to store information for.
+     *
      * @return Collection
      */
-    public function user($user = 0)
+    public function user(int $user = 0): Collection
     {
         if (!$this->user->has($user)) {
             $data = new Collection([]);

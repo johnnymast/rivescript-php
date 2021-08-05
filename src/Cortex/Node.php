@@ -1,52 +1,77 @@
 <?php
 
+/**
+ * A node contains a line from rivescript files.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Cortex
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex;
 
+/**
+ * The Node class.
+ */
 class Node
 {
     /**
+     * The source string for the node.
+     *
      * @var string
      */
     protected $source;
 
     /**
+     * The line number of the node source.
+     *
      * @var int
      */
     protected $number;
 
     /**
+     * The command symbol.
+     *
      * @var string
      */
     protected $command;
 
     /**
+     * The source without the command symbol.
+     *
      * @var string
      */
     protected $value;
 
     /**
+     * Is this line part of a docblock.
+     *
      * @var bool
      */
     protected $isInterrupted = false;
 
     /**
+     * Is this node a comment.
+     *
      * @var bool
      */
     protected $isComment = false;
 
     /**
+     * Is UTF8 modes enabled.
+     *
      * @var bool
      */
     protected $allowUtf8 = false;
-
 
     /**
      * Create a new Source instance.
      *
      * @param  string  $source
-     * @param  int  $number
+     * @param  int     $number
      */
-    public function __construct($source, int $number)
+    public function __construct(string $source, int $number)
     {
         $this->source = remove_whitespace($source);
         $this->number = $number;
@@ -61,7 +86,7 @@ class Node
      *
      * @return string
      */
-    public function command()
+    public function command(): string
     {
         return $this->command;
     }
@@ -76,13 +101,13 @@ class Node
         return $this->value;
     }
 
-
     /**
      * Returns the node's source.
      *
      * @return string
      */
-    public function source() {
+    public function source(): string
+    {
         return $this->source;
     }
 
@@ -91,7 +116,7 @@ class Node
      *
      * @return int
      */
-    public function number()
+    public function number(): int
     {
         return $this->number;
     }
@@ -101,7 +126,7 @@ class Node
      *
      * @return bool
      */
-    public function isComment()
+    public function isComment(): bool
     {
         return $this->isComment;
     }
@@ -111,7 +136,7 @@ class Node
      *
      * @return bool
      */
-    public function isInterrupted()
+    public function isInterrupted(): bool
     {
         return $this->isInterrupted;
     }
@@ -167,7 +192,7 @@ class Node
     /**
      * Enable the UTF8 mode.
      *
-     * @param  bool  $allowUtf8 True of false.
+     * @param  bool  $allowUtf8  True of false.
      */
     public function setAllowUtf8(bool $allowUtf8): void
     {
@@ -177,9 +202,9 @@ class Node
     /**
      * Check the syntax
      *
-     * @return string
+     * @return mixed
      */
-    public function checkSyntax()
+    public function checkSyntax(): string
     {
         if (starts_with($this->source, '!')) {
             # ! Definition
@@ -209,7 +234,6 @@ class Node
             }
         } elseif (starts_with($this->source, '+') || starts_with($this->source, '%')
             || starts_with($this->source, '@')) {
-
             # + Trigger, % Previous, @ Redirect
             #   This one is strict. The triggers are to be run through Perl's regular expression
             #   engine. Therefore it should be acceptable by the regexp engine.
@@ -236,23 +260,43 @@ class Node
                 $chr = $this->value[$i];
 
                 # Count brackets.
-                if ($chr == '(') $parens++ ; if ($chr == ')') $parens--;
-                if ($chr == '[') $square++ ; if ($chr == ']') $square--;
-                if ($chr == '{') $curly++ ; if ($chr == '}') $curly--;
-                if ($chr == '<') $chevron++ ; if ($chr == '>') $chevron--;
+                if ($chr == '(') {
+                    $parens++;
+                }
+                if ($chr == ')') {
+                    $parens--;
+                }
+                if ($chr == '[') {
+                    $square++;
+                }
+                if ($chr == ']') {
+                    $square--;
+                }
+                if ($chr == '{') {
+                    $curly++;
+                }
+                if ($chr == '}') {
+                    $curly--;
+                }
+                if ($chr == '<') {
+                    $chevron++;
+                }
+                if ($chr == '>') {
+                    $chevron--;
+                }
             }
 
             if ($parens) {
-                return "Unmatched " . ($parens > 0 ? "left" : "right") . " parenthesis bracket ()";
+                return "Unmatched ".($parens > 0 ? "left" : "right")." parenthesis bracket ()";
             }
             if ($square) {
-                return "Unmatched " . ($square > 0 ? "left" : "right") . " square bracket []";
+                return "Unmatched ".($square > 0 ? "left" : "right")." square bracket []";
             }
             if ($curly) {
-                return "Unmatched " . ($curly > 0 ? "left" : "right") . " curly bracket {}";
+                return "Unmatched ".($curly > 0 ? "left" : "right")." curly bracket {}";
             }
             if ($chevron) {
-                return "Unmatched " . ($chevron > 0 ? "left" : "right" ) . " angled bracket <>";
+                return "Unmatched ".($chevron > 0 ? "left" : "right")." angled bracket <>";
             }
         } elseif (starts_with($this->source, '-') || starts_with($this->source, '^')
             || starts_with($this->source, '/')) {
@@ -266,12 +310,14 @@ class Node
                 return "Invalid format for !Condition: should be like `* value symbol value => response`";
             }
         }
+
+        return false;
     }
 
     /**
      * Check for patterns in a given string.
      *
-     * @param  string  $regex  The pattern to detect.
+     * @param  string  $regex   The pattern to detect.
      * @param  string  $string  The string that could contain the pattern.
      *
      * @return bool
