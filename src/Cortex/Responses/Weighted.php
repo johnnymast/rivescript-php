@@ -16,7 +16,6 @@ use Axiom\Rivescript\Contracts\Response as ResponseContract;
 
 /**
  * Class Weighted
- * @package Axiom\Rivescript\Cortex\Reponses
  */
 class Weighted extends Response implements ResponseContract
 {

@@ -14,6 +14,10 @@ namespace Axiom\Rivescript\Support;
 use Monolog\Logger as Monolog;
 use Monolog\Handler\StreamHandler;
 
+
+/**
+ * Class Logger
+ */
 class Logger
 {
     /**

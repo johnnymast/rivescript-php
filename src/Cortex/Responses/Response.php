@@ -14,6 +14,9 @@ namespace Axiom\Rivescript\Cortex\Responses;
 use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem;
 use Axiom\Rivescript\Traits\Regex;
 
+/**
+ * Class Response
+ */
 abstract class Response extends \SplObjectStorage
 {
     use Regex;

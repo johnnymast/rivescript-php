@@ -1,40 +1,34 @@
 <?php
+/**
+ * This is the base class for all the Triggers. It
+ * provides help in translating tags in the Triggers.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Triggers
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
 
 namespace Axiom\Rivescript\Cortex\Triggers;
 
 use Axiom\Rivescript\Contracts\Trigger as TriggerContract;
+use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * The Trigger baseclass.
+ */
 abstract class Trigger implements TriggerContract
 {
-
-    public function triggerFound()
-    {
-        return true;
-    }
-
-    public function triggerNotFound()
-    {
-        return false;
-    }
-
-    /**
-     * Return the input.
-     *
-     * @return mixed
-     */
-    public function getInput()
-    {
-        return $this->input;
-    }
 
     /**
      * Parse the response through the available tags.
      *
-     * @param string $response
+     * @param  string  $trigger  The trigger to parse tags on.
+     * @param  Input   $input    Input information.
      *
      * @return string
      */
-    protected function parseTags($trigger, $input)
+    protected function parseTags(string $trigger, Input $input): string
     {
         synapse()->tags->each(function ($tag) use (&$trigger, $input) {
             $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";

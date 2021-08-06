@@ -13,6 +13,9 @@ namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * Class Div
+ */
 class Div extends Tag
 {
     /**

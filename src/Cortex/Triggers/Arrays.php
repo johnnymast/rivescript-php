@@ -1,20 +1,33 @@
 <?php
 
+/**
+ * This class will parse the Arrays Trigger.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Triggers
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex\Triggers;
 
 use Axiom\Collections\Collection;
+use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * Arrays class
+ */
 class Arrays extends Trigger
 {
     /**
      * Parse the trigger.
      *
-     * @param string $trigger
-     * @param string $message
+     * @param  string  $trigger  The trigger to parse.
+     * @param  Input   $input    Input information.
      *
-     * @return array
+     * @return bool
      */
-    public function parse($trigger, $input)
+    public function parse(string $trigger, Input $input): bool
     {
         $trigger = $this->parseTags($trigger, $input);
 
@@ -39,11 +52,11 @@ class Arrays extends Trigger
 
                     synapse()->memory->shortTerm()->put('stars', $stars);
                 }
-                
-                return $this->triggerFound();
+
+                return true;
             }
         }
 
-        return $this->triggerNotFound();
+        return false;
     }
 }

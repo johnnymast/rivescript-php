@@ -1,11 +1,23 @@
 <?php
 
+/**
+ * The abstract class for all the Tags.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Tags
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Traits\Regex;
-use LogicException;
 use Axiom\Rivescript\Contracts\Tag as TagContract;
+use LogicException;
 
+/**
+ * Class Tag
+ */
 abstract class Tag implements TagContract
 {
     use Regex;

@@ -15,7 +15,6 @@ use Axiom\Rivescript\Contracts\Response as ResponseContract;
 
 /**
  * Class Condition
- * @package Axiom\Rivescript\Cortex\Responses
  */
 class Condition extends Response implements ResponseContract
 {

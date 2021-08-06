@@ -8,7 +8,7 @@ interface Response
     /**
      * Parse the response.
      *
-     * @return bool
+     * @return bool|string
      */
     public function parse();
 }

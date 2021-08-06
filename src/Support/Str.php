@@ -11,6 +11,9 @@
 
 namespace Axiom\Rivescript\Support;
 
+/**
+ * Class Str
+ */
 class Str
 {
     /**

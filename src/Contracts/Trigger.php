@@ -2,16 +2,17 @@
 
 namespace Axiom\Rivescript\Contracts;
 
+use Axiom\Rivescript\Cortex\Input;
+
 interface Trigger
 {
     /**
      * Parse the trigger.
      *
-     * @param int    $key
-     * @param string $trigger
-     * @param string $message
+     * @param  string  $trigger  The trigger to parse.
+     * @param  Input   $input    Input information.
      *
-     * @return array
+     * @return bool
      */
-    public function parse($trigger, $input);
+    public function parse(string $trigger, Input $input): bool;
 }

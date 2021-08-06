@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * This class parses the <bot> tag.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Tags
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * Class Bot
+ */
 class Bot extends Tag
 {
     /**
