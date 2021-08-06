@@ -1,22 +1,40 @@
 <?php
 
+/**
+ * The logic for handling Topics.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Cortex
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex;
 
 use Axiom\Collections\Collection;
 
+/**
+ * The Topic class.
+ */
 class Topic
 {
     /**
+     * The name of this Topic.
+     *
      * @var string
      */
     protected $name;
 
     /**
+     * The triggers for this Topic.
+     *
      * @var array
      */
     public $triggers;
 
     /**
+     * The responses for this Topic.
+     *
      * @var
      */
     public $responses;
@@ -24,11 +42,11 @@ class Topic
     /**
      * Create a new Branch instance.
      *
-     * @param string $name
+     * @param  string  $name
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
-        $this->name     = $name;
+        $this->name = $name;
         $this->triggers = new Collection([]);
         $this->responses = new Collection([]);
     }
@@ -36,9 +54,9 @@ class Topic
     /**
      * Return triggers associated with this branch.
      *
-     * @return array
+     * @return Collection
      */
-    public function triggers()
+    public function triggers(): Collection
     {
         return $this->triggers;
     }
@@ -46,17 +64,10 @@ class Topic
     /**
      * Return the responses associated with this branch.
      *
-     * @return array
+     * @return Collection
      */
-    public function responses() {
-        return $this->responses;
-    }
-
-    /**
-     * @param $triggers
-     */
-    public function setTriggers($triggers)
+    public function responses(): Collection
     {
-        $this->triggers = $triggers;
+        return $this->responses;
     }
 }

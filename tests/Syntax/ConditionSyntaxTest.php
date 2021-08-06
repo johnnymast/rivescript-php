@@ -1,63 +1,58 @@
 <?php
 
-namespace Tests;
+/**
+ * Test the syntax for condition definitions.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Tests
+ * @category     Syntax
+ * @author       Johnny Mast <mastjohnny@gmail.com>
+ */
+
+namespace Tests\Syntax;
 
 use Axiom\Rivescript\Cortex\Node;
 
-class ConditionSyntaxTest extends ResponseTest
-{
+uses()
+    ->group('syntax');
 
-    public function testValidConditionLine()
-    {
-        $node = new Node("* <get name> eq <star>    => I know, you told me that already.", 0);
+it('passes valid conditions', function () {
+    $valid = [
+        '==',
+        'eq',
+        '!=',
+        'ne',
+        '<>',
+        '<',
+        '<=',
+        '>',
+        '>='
+    ];
+
+    foreach ($valid as $condition) {
+        $node = new Node("* <get name> {$condition} <star> => Response line", 0);
 
         $expected = null;
         $actual = $node->checkSyntax();
 
         $this->assertEquals($expected, $actual);
     }
+});
 
-    public function testValidConditionLineWithValidConditions()
-    {
-        $valid = [
-            '==',
-            'eq',
-            '!=',
-            'ne',
-            '<>',
-            '<',
-            '<=',
-            '>',
-            '>='
-        ];
+it('rejects invalid response text', function () {
+    $node = new Node("* <get name> eq <star> =>", 0);
 
-        foreach ($valid as $condition) {
-            $node = new Node("* <get name> {$condition} <star> => Response line", 0);
+    $expected = "Invalid format for !Condition: should be like `* value symbol value => response`";
+    $actual = $node->checkSyntax();
 
-            $expected = null;
-            $actual = $node->checkSyntax();
+    $this->assertEquals($expected, $actual);
+});
 
-            $this->assertEquals($expected, $actual);
-        }
-    }
+it('rejects invalid condition', function () {
+    $node = new Node("* <get name> unknown <star> => RESPONSE LINE", 0);
 
-    public function testInvalidConditionWithoutResponseText()
-    {
-        $node = new Node("* <get name> eq <star> =>", 0);
+    $expected = "Invalid format for !Condition: should be like `* value symbol value => response`";
+    $actual = $node->checkSyntax();
 
-        $expected = "Invalid format for !Condition: should be like `* value symbol value => response`";
-        $actual = $node->checkSyntax();
-
-        $this->assertEquals($expected, $actual);
-    }
-
-    public function testInvalidConditionWithoutValidCondition()
-    {
-        $node = new Node("* <get name> unknown <star> => RESPONSE LINE", 0);
-
-        $expected = "Invalid format for !Condition: should be like `* value symbol value => response`";
-        $actual = $node->checkSyntax();
-
-        $this->assertEquals($expected, $actual);
-    }
-}
+    $this->assertEquals($expected, $actual);
+});

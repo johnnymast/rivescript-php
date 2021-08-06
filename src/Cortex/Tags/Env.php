@@ -13,6 +13,9 @@ namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * Class Env
+ */
 class Env extends Tag
 {
     /**

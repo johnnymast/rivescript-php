@@ -18,7 +18,6 @@ use Axiom\Rivescript\Cortex\Node;
 
 /**
  * Class ResponseQueue
- * @package Axiom\Rivescript\Cortex\ResponseQueue
  */
 class ResponseQueue extends Collection
 {
@@ -54,6 +53,7 @@ class ResponseQueue extends Collection
      * Sort the responses by order.
      *
      * @param  Collection  $responses  The array containing the resources.
+     *
      * @return Collection
      */
     private function sortResponses(Collection $responses): Collection
@@ -70,6 +70,7 @@ class ResponseQueue extends Collection
      *
      * @param  string  $response  The response to validate.
      * @param  ResponseQueueItem  $item  The ResponseQueueItem.
+     *
      * @return false|mixed
      */
     private function validateResponse(string $response, ResponseQueueItem $item)

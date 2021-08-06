@@ -1,22 +1,38 @@
 <?php
 
+/**
+ * Output is responsible for outputting a reply.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Cortex
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex;
 
-use phpDocumentor\Reflection\Types\Collection;
-
+/**
+ * The Output class.
+ */
 class Output
 {
     /**
+     * The data to input.
+     *
      * @var array
      */
     protected $data;
 
     /**
+     * Information of where the information came from.
+     *
      * @var Input
      */
     protected $input;
 
     /**
+     * The output string
+     *
      * @var string
      */
     protected $output = 'Error: Response could not be determined.';
@@ -34,9 +50,9 @@ class Output
     /**
      * Process the correct output response by the interpreter.
      *
-     * @return mixed
+     * @return string
      */
-    public function process()
+    public function process(): string
     {
         synapse()->brain->topic()->triggers()->each(
             function ($data, $trigger) {
@@ -54,11 +70,11 @@ class Output
     /**
      * Search through available triggers to find a possible match.
      *
-     * @param  string  $trigger
+     * @param  string  $trigger  The trigger to find responses for.
      *
-     * @return bool
+     * @return void
      */
-    protected function searchTriggers($trigger)
+    protected function searchTriggers(string $trigger)
     {
         synapse()->triggers->each(
             function ($class) use ($trigger) {
@@ -79,11 +95,11 @@ class Output
     /**
      * Fetch a response from the found trigger.
      *
-     * @param  string  $trigger  ;
+     * @param  string  $trigger  The trigger to get a response for.
      *
      * @return void
      */
-    protected function getResponse($trigger)
+    protected function getResponse(string $trigger)
     {
         $trigger = synapse()->brain->topic()->triggers()->get($trigger);
 
@@ -105,7 +121,7 @@ class Output
      *
      * @return string
      */
-    protected function parseResponse($response)
+    protected function parseResponse(string $response): string
     {
         synapse()->tags->each(
             function ($tag) use (&$response) {

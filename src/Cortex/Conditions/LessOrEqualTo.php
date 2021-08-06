@@ -15,7 +15,6 @@ use Axiom\Rivescript\Contracts\Condition as ConditionContract;
 
 /**
  * Class LessOrEqualTo
- * @package Axiom\Rivescript\Cortex\Conditions
  */
 class LessOrEqualTo extends Condition implements ConditionContract
 {
@@ -24,6 +23,7 @@ class LessOrEqualTo extends Condition implements ConditionContract
      * Handle conditions '<=' also known as less or equal to.
      *
      * @param  string  $source
+     *
      * @return false|string
      */
     public function parse(string $source)

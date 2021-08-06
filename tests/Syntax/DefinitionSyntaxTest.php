@@ -1,29 +1,35 @@
 <?php
 
-namespace Tests;
+/**
+ * Test the syntax for condition definitions.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Tests
+ * @category     Syntax
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
+namespace Tests\Syntax;
 
 use Axiom\Rivescript\Cortex\Node;
 
-class DefinitionSyntaxTest extends ResponseTest
-{
-    public function testMissingValue()
-    {
-        $node = new Node("! version", 0);
+uses()
+    ->group('syntax');
 
-        $expected = "Invalid format for !Definition line: must be '! type name = value' OR '! type = value'";
-        $actual = $node->checkSyntax();
+it('passes valid definition', function () {
+    $node = new Node("! version = 2.0", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = null;
+    $actual = $node->checkSyntax();
 
-    public function testValidDefinitionWithoutName()
-    {
-        $node = new Node("! version = 2.0", 0);
+    $this->assertEquals($expected, $actual);
+});
 
-        $expected = null;
-        $actual = $node->checkSyntax();
+it('rejects invalid definition', function () {
+    $node = new Node("! version", 0);
 
-        $this->assertEquals($expected, $actual);
-    }
+    $expected = "Invalid format for !Definition line: must be '! type name = value' OR '! type = value'";
+    $actual = $node->checkSyntax();
 
-}
+    $this->assertEquals($expected, $actual);
+});

@@ -15,7 +15,6 @@ use Axiom\Rivescript\Contracts\Response as ResponseContract;
 
 /**
  * Class Atomic
- * @package Axiom\Rivescript\Cortex\Responses
  */
 class Atomic extends Response implements ResponseContract
 {
@@ -40,7 +39,7 @@ class Atomic extends Response implements ResponseContract
      *
      * @return string
      */
-    function getType(): string
+    public function getType(): string
     {
         return 'atomic';
     }

@@ -14,6 +14,9 @@ namespace Axiom\Rivescript\Cortex\Responses;
 use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem;
 use Axiom\Rivescript\Traits\Regex;
 
+/**
+ * Class Response
+ */
 abstract class Response extends \SplObjectStorage
 {
     use Regex;
@@ -42,7 +45,7 @@ abstract class Response extends \SplObjectStorage
      * @param  string             $source             The response line.
      * @param  ResponseQueueItem  $responseQueueItem  Queue information about the response line.
      */
-    public function __construct(string $source = '', ResponseQueueItem &$responseQueueItem)
+    public function __construct(string $source, ResponseQueueItem &$responseQueueItem)
     {
         $this->source = $source;
         $this->responseQueueItem = $responseQueueItem;

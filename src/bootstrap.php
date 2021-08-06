@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Bootstrap the Rivescript client.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Client
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 /*
 |--------------------------------------------------------------------------
 | Create The Synapse

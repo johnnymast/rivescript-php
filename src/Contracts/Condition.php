@@ -1,11 +1,24 @@
 <?php
 
+/**
+ * Definition of the Condition contract.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Contracts
+ * @author       Johnny Mast <mastjohnny@gmail.com>
+ */
 
 namespace Axiom\Rivescript\Contracts;
 
-use Axiom\Rivescript\Cortex\Node;
-
 interface Condition
 {
+    /**
+     * Parse condition.
+     *
+     * @param  string  $source
+     *
+     * @return false|string
+     */
     public function parse(string $source);
 }

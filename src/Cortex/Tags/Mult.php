@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class Div handling the <div> tag.
+ * Class Mult handling the <mult> tag.
  *
  * @package      Rivescript-php
  * @subpackage   Core
@@ -13,6 +13,9 @@ namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * Class Mult
+ */
 class Mult extends Tag
 {
     /**

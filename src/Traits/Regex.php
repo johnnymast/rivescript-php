@@ -39,14 +39,16 @@ trait Regex
      * @param  string  $pattern  The pattern to match.
      * @param  string  $source   The source to match in.
      *
-     * @return array
+     * @return array|bool
      */
-    protected function getMatchesFromPattern(string $pattern, string $source): array
+    protected function getMatchesFromPattern(string $pattern, string $source)
     {
         if ($this->matchesPattern($pattern, $source)) {
             preg_match_all($pattern, $source, $matches, PREG_SET_ORDER);
 
             return $matches;
         }
+
+        return false;
     }
 }
