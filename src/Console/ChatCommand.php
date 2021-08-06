@@ -51,7 +51,6 @@ class ChatCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-
             $source = $this->loadFiles($input->getArgument('source'));
 
             $this->rivescript->load($source);
@@ -69,9 +68,7 @@ class ChatCommand extends Command
             $output->writeln('');
 
             $this->waitForUserInput($input, $output);
-
         } catch (ParseException $e) {
-
             $error = "<error>{$e->getMessage()}</error>";
             $output->writeln($error);
 

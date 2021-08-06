@@ -50,9 +50,9 @@ class Str
     public static function endsWith(string $haystack, string $needle): bool
     {
         return $needle === '' or (($temp = mb_strlen($haystack) - mb_strlen($needle)) >= 0 and mb_strpos(
-                    $haystack,
-                    $needle,
-                    $temp
-                ) !== false);
+            $haystack,
+            $needle,
+            $temp
+        ) !== false);
     }
 }

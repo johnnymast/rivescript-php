@@ -35,7 +35,6 @@ class Arrays extends Trigger
                 array_shift($stars);
 
                 if ($stars) {
-
                     $stars = Collection::make($stars)->flatten()->all();
 
                     synapse()->memory->shortTerm()->put('stars', $stars);
