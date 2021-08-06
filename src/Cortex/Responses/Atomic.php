@@ -40,7 +40,7 @@ class Atomic extends Response implements ResponseContract
      *
      * @return string
      */
-    function getType(): string
+    public function getType(): string
     {
         return 'atomic';
     }

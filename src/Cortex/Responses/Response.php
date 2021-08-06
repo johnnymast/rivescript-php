@@ -42,7 +42,7 @@ abstract class Response extends \SplObjectStorage
      * @param  string             $source             The response line.
      * @param  ResponseQueueItem  $responseQueueItem  Queue information about the response line.
      */
-    public function __construct(string $source = '', ResponseQueueItem &$responseQueueItem)
+    public function __construct(string $source, ResponseQueueItem &$responseQueueItem)
     {
         $this->source = $source;
         $this->responseQueueItem = $responseQueueItem;
