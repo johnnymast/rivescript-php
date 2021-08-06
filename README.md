@@ -2,7 +2,7 @@
 [![Source](http://img.shields.io/badge/source-axiom--labs/rivescript--php-blue.svg?style=flat-square)](https://github.com/axiom-labs/rivescript-php)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://tldrlegal.com/license/mit-license)
 [![Build & Unit Test](https://github.com/johnnymast/rivescript-php/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnymast/rivescript-php/actions/workflows/phpunit.yml)
-[![Phpcs](https://github.com/johnnymast/rivescript-php/actions/workflows/Phpcs.yaml/badge.svg)](https://github.com/johnnymast/rivescript-php/actions/workflows/Phpcs.yaml)
+[![Build & Unit Test](https://github.com/johnnymast/rivescript-php/actions/workflows/Phpunit.yml/badge.svg)](https://github.com/johnnymast/rivescript-php/actions/workflows/Phpunit.yml)
 
 This is a RiveScript interpreter library for PHP. RiveScript is a simple scripting language for chatbots with a friendly, easy to learn syntax.
 
@@ -45,7 +45,7 @@ Hello Human
 ```
 ---
 
-# Working Draft
+# ***Important***: Working Draft
 
 The RiveScript Working Draft (WD) is a document that defines the standards for how RiveScript should work, from an implementation-agnostic point of view. The Working Draft should be followed when contributing to the RiveScript-PHP interpreter. If any of the current implementations don't do what the Working Draft says they should, this is considered to be a bug and you can file a bug report or send a pull request.
 
