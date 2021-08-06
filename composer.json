@@ -38,5 +38,10 @@
             "dev-develop": "1.0.x-dev"
         }
     },
-    "minimum-stability": "stable"
-}
+    "minimum-stability": "stable",
+    "scripts": {
+        "test": [
+            "pest"
+        ]
+    }
+},
