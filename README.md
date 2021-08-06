@@ -18,6 +18,31 @@ composer require axiom/rivescript
 ## Integration
 The RiveScript PHP interpreter is framework agnostic. As such, the interpreter can be used as is with native PHP, or with your favorite framework.
 
+<i>example.rive</a>
+```rivescript
+
++ hello bot
+- Hello Human
+
+```
+
+```php
+
+require 'vendor/autoload.php';
+use \Axiom\Rivescript\Rivescript;
+
+$message = 'hello bot';
+$rivescript = new Rivescript();
+$rivescript->load('example.rive');
+
+echo $rivescript->reply($message);
+
+```
+
+<i>Output</i>
+```bash
+Hello Human
+```
 ---
 
 # Working Draft
