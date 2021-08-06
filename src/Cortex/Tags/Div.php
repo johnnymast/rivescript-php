@@ -38,7 +38,7 @@ class Div extends Tag
      *
      * @return string
      */
-    public function parse(string $source, Input $input)
+    public function parse(string $source, Input $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;

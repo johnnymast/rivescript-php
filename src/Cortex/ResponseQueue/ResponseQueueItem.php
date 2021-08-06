@@ -13,7 +13,6 @@ namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
 /**
  * Class ResponseQueueItem
- * @package Axiom\Rivescript\Cortex\ResponseQueue
  */
 class ResponseQueueItem
 {

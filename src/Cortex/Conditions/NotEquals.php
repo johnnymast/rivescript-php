@@ -15,7 +15,6 @@ use Axiom\Rivescript\Contracts\Condition as ConditionContract;
 
 /**
  * Class NotEquals
- * @package Axiom\Rivescript\Cortex\Conditions
  */
 class NotEquals extends Condition implements ConditionContract
 {
@@ -24,6 +23,7 @@ class NotEquals extends Condition implements ConditionContract
      * Handle conditions '!=' or its aliases 'ne' and '<>'.
      *
      * @param  string  $source
+     *
      * @return false|string
      */
     public function parse(string $source)

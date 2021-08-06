@@ -15,7 +15,6 @@ use Axiom\Rivescript\Traits\Regex;
 
 /**
  * Class Condition
- * @package Axiom\Rivescript\Cortex\Conditions
  */
 class Condition
 {

@@ -51,7 +51,7 @@ class Brain
         $lineNumber = 0;
 
         while (!$script->eof()) {
-            $currentCommand = null;
+//            $currentCommand = null;
             $line = $script->fgets();
             $node = new Node($line, $lineNumber++);
 
@@ -59,17 +59,19 @@ class Brain
                 continue;
             }
 
-            $commands->each(function ($command) use ($node, $currentCommand) {
+            $commands->each(function ($command) use ($node) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
                 $commandClass = new $class();
 
-                $result = $commandClass->parse($node, $currentCommand);
+//                $result = $commandClass->parse($node, $currentCommand);
 
-                if (isset($result['command'])) {
-                    $currentCommand = $result['command'];
+                $commandClass->parse($node);
 
-                    return false;
-                }
+//                if (isset($result['command'])) {
+////                    $currentCommand = $result['command'];
+////
+////                    return false;
+////                }
             });
         }
     }

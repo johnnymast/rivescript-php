@@ -15,7 +15,6 @@ use Axiom\Rivescript\Contracts\Condition as ConditionContract;
 
 /**
  * Class GreaterThan
- * @package Axiom\Rivescript\Cortex\Conditions
  */
 class GreaterThan extends Condition implements ConditionContract
 {
@@ -24,6 +23,7 @@ class GreaterThan extends Condition implements ConditionContract
      * Handle conditions '>' also known as greater than.
      *
      * @param  string  $source
+     *
      * @return false|string
      */
     public function parse(string $source)

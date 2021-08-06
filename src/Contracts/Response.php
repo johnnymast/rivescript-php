@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Definition of the Response contract.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Contracts
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
 
 namespace Axiom\Rivescript\Contracts;
 
