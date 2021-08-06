@@ -41,7 +41,7 @@
     "minimum-stability": "stable",
     "scripts": {
         "test": [
-            "pest"
+            "vendor/bin/pest"
         ]
     }
 },
