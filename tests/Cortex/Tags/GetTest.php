@@ -11,8 +11,14 @@
 
 namespace Tests\Cortex\Tags;
 
+use Axiom\Rivescript\Rivescript;
+
 uses()
-    ->group('tags');
+    ->beforeEach(function () {
+        $this->rivescript = new Rivescript();
+        $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
+    })
+    ->group('tags');;
 
 it('can get user variables.', function () {
     $name = "gettest";

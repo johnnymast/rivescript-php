@@ -11,7 +11,13 @@
 
 namespace Tests\Cortex\Tags;
 
+use Axiom\Rivescript\Rivescript;
+
 uses()
+    ->beforeEach(function () {
+        $this->rivescript = new Rivescript();
+        $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
+    })
     ->group('tags');
 
 it('can divide a value.', function () {

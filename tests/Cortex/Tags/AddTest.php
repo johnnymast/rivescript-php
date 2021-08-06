@@ -11,8 +11,15 @@
 
 namespace Tests\Cortex\Tags;
 
+use Axiom\Rivescript\Rivescript;
+
 uses()
+    ->beforeEach(function () {
+        $this->rivescript = new Rivescript();
+        $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
+    })
     ->group('tags');
+
 
 it('can add values.', function () {
     $response = $this->rivescript->reply('give me 5 points');
