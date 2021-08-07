@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the <set> tag from the Set class.
+ * Test the <id> tag from the Id class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests
@@ -20,11 +20,9 @@ uses()
     })
     ->group('tags');
 
-it('can set user variables', function () {
-    $name = "settest";
-    $this->rivescript->reply("my name is {$name}");
+it("can return the user id", function () {
+    $expected = "yes the id is local-user";
+    $actual = $this->rivescript->reply('do you have an id');
 
-    $expected = "Your name is {$name}!";
-    $actual = $this->rivescript->reply("what is my name");
-    $this->assertEquals($expected, $actual);
+    $this->assertEquals($actual, $expected);
 });

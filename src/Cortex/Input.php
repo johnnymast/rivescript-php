@@ -42,9 +42,9 @@ class Input
      * Create a new Input instance.
      *
      * @param  string  $source  The source string.
-     * @param  int     $user    The user id.
+     * @param  string  $user    The user identifier.
      */
-    public function __construct(string $source, int $user = 0)
+    public function __construct(string $source, string $user = '0')
     {
         $this->original = $source;
         $this->user = $user;

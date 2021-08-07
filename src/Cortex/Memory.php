@@ -135,11 +135,11 @@ class Memory
     /**
      * Stored user data.
      *
-     * @param  int  $user  The user to store information for.
+     * @param  string  $user  The user to store information for.
      *
      * @return Collection
      */
-    public function user(int $user = 0): Collection
+    public function user(string $user = '0'): Collection
     {
         if (!$this->user->has($user)) {
             $data = new Collection([]);

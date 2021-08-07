@@ -49,3 +49,15 @@
 
 + what is my name
 - Your name is <get name>!
+
++ random word test
+- {random}word1 word2 word3{/random}
+
++ random word test
+- {random}word1 word2 word3{/random}
+
++ random word set test
+- {random}Result set 1|Result set 2|Result set 3{/random}
+
++ do you have an id
+- yes the id is <id>

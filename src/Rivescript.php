@@ -48,7 +48,7 @@ class Rivescript
      * @param  int     $user     The user id.
      * @return string
      */
-    public function reply(string $message, int $user = 0): string
+    public function reply(string $message, string $user = 'local-user'): string
     {
         $input = new Input($message, $user);
         $output = new Output($input);

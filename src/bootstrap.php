@@ -66,6 +66,8 @@ $synapse->tags = Axiom\Collections\Collection::make(
         'Sub',
         'Mult',
         'Div',
+        'Random',
+        "Id"
     ]
 );
 
