@@ -49,3 +49,119 @@
 
 + what is my name
 - Your name is <get name>!
+
++ random word test
+- {random}word1 word2 word3{/random}
+
++ random word test
+- {random}word1 word2 word3{/random}
+
++ random word set test
+- {random}Result set 1|Result set 2|Result set 3{/random}
+
++ do you have an id
+- yes the id is <id>
+
++ what is my last input
+- Your last input is: <input>
+
++ try a undefined input
+- Your last input is: <input2>
+
++ what is input1
+- <input1>
+
++ what is input2
+- <input2>
+
++ what is input3
+- <input3>
+
++ what is input4
+- <input4>
+
++ what is input4
+- <input4>
+
++ what is input5
+- <input5>
+
++ what is input6
+- <input6>
+
++ what is input7
+- <input7>
+
++ what is input8
+- <input8>
+
++ what is input9
+- <input9>
+
++ reset my points
+- <set points=0>Your points are <get points>
+
++ what is your last reply
+- <reply>
+
++ Add point 1
+- <add points=1>Your points are now <get points>
+
++ what is reply1
+- <reply1>
+
++ what is reply2
+- <reply2>
+
++ what is reply3
+- <reply3>
+
++ what is reply4
+- <reply4>
+
++ what is reply5
+- <reply5>
+
++ what is reply6
+- <reply6>
+
++ what is reply7
+- <reply7>
+
++ what is reply8
+- <reply8>
+
++ what is reply9
+- <reply9>
+
++ i hate you
+- Well that's mean. I'm not talking again until you say you're sorry.{topic=sorry}
+
+> topic sorry
+    + *
+    - Say you're sorry!
+
+    + sorry
+    - Alright, I'll forgive you.{topic=random}
+< topic
+
++ my favorite thing in the world is *
+- Why do you like <star> so much?
+
++ *
+- I'm sorry but I don't understand.
+
++ * told me to say *
+- Why would <star1> have told you to say <star2>?
+
++ i think *
+- Do you think <star> a lot?
+
++ i am * years old
+- Tell me that as a number instead of spelled out like "<star>"
+
++ i am # years old
+- I will remember that you are <star> years old.
+
++ <bot name>
+- What can I do for you?

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the Sub tag from the Sub class.
+ * Test the <sub>> tag from the Sub class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests

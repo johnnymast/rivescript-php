@@ -63,7 +63,7 @@ class Output
                 }
             }
         );
-
+        
         return $this->output;
     }
 
@@ -109,6 +109,9 @@ class Output
 
         $responses = $trigger['responses']->process();
         $this->output = $this->parseResponse($responses);
+
+
+        //synapse()->memory->replies()->push($this->output);
 
 //        $key = array_rand($trigger['responses']);
 //        $this->output = $this->parseResponse($trigger['responses'][$key]);

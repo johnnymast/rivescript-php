@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the Sub tag from the Sub class.
+ * Test the <env> tag from the Sub class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests
@@ -20,7 +20,7 @@ uses()
     })
     ->group('tags');
 
-it('can read global variables.', function() {
+it('can read global variables.', function () {
     $expected = "The topic is sensation.";
     $actual = $this->rivescript->reply("what is your global topic");
     $this->assertEquals($expected, $actual);

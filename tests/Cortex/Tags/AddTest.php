@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the Add tag from the Add class.
+ * Test the <add> tag from the Add class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests

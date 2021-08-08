@@ -12,6 +12,7 @@
 namespace Axiom\Rivescript\Cortex;
 
 use Axiom\Collections\Collection;
+use Axiom\Rivescript\Cortex\MiniStack\MiniStack;
 
 /**
  * The memory class.
@@ -38,6 +39,20 @@ class Memory
      * @var Collection
      */
     protected $substitute;
+
+    /**
+     * A Collection of the latest Input's
+     *
+     * @var
+     */
+    protected $inputs;
+
+    /**
+     * A Collection of the latest replies.
+     *
+     * @var
+     */
+    protected $replies;
 
     /**
      * A collection of variables.
@@ -70,6 +85,8 @@ class Memory
         $this->arrays = Collection::make([]);
         $this->person = Collection::make([]);
         $this->user = Collection::make([]);
+        $this->inputs = new MiniStack(9);
+        $this->replies = new MiniStack(9);
     }
 
     /**
@@ -123,6 +140,26 @@ class Memory
     }
 
     /**
+     * Return the latest 9 inputs.
+     *
+     * @return mixed
+     */
+    public function inputs(): MiniStack
+    {
+        return $this->inputs;
+    }
+
+    /**
+     * Return the latest 9 replies.
+     *
+     * @return mixed
+     */
+    public function replies(): MiniStack
+    {
+        return $this->replies;
+    }
+
+    /**
      * Stored arrays.
      *
      * @return Collection
@@ -135,11 +172,11 @@ class Memory
     /**
      * Stored user data.
      *
-     * @param  int  $user  The user to store information for.
+     * @param  string  $user  The user to store information for.
      *
      * @return Collection
      */
-    public function user(int $user = 0): Collection
+    public function user(string $user = '0'): Collection
     {
         if (!$this->user->has($user)) {
             $data = new Collection([]);

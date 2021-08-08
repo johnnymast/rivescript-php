@@ -58,14 +58,19 @@ $synapse->tags = Axiom\Collections\Collection::make(
     [
         'Star',
         'Bot',
-        'Set',
-        'Get',
+
         'Topic',
         'Env',
         'Add',
         'Sub',
         'Mult',
         'Div',
+        'Random',
+        "Id",
+        'Input',
+        'Reply',
+        'Set',
+        'Get',
     ]
 );
 

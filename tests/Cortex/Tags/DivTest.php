@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the Div tag from the Div class.
+ * Test the <div>> tag from the Div class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests

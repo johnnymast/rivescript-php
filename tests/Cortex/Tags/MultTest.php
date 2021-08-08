@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the Mult tag from the Mult class.
+ * Test the <mult> tag from the Mult class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests

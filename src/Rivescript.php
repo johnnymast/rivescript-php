@@ -48,13 +48,20 @@ class Rivescript
      * @param  int     $user     The user id.
      * @return string
      */
-    public function reply(string $message, int $user = 0): string
+    public function reply(string $message, string $user = 'local-user'): string
     {
         $input = new Input($message, $user);
         $output = new Output($input);
 
+
         synapse()->input = $input;
 
-        return $output->process();
+        $output = $output->process();
+
+        synapse()->memory->inputs()->push($message);
+        synapse()->memory->replies()->push($output);
+
+//        var_dump("ADDING {$output}\n");
+        return $output;
     }
 }
