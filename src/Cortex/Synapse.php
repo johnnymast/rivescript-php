@@ -1,7 +1,19 @@
 <?php
 
+/**
+ * Synapse is where all main ingredients of Rivescript are stored.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Cortex
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex;
 
+/**
+ * The Synapse class.
+ */
 class Synapse
 {
     /**
@@ -14,7 +26,7 @@ class Synapse
     /**
      * Static instance object.
      *
-     * @var object
+     * @var Synapse
      */
     public static $instance;
 
@@ -29,9 +41,9 @@ class Synapse
     /**
      * Get the Synapse instance object.
      *
-     * @return object
+     * @return Synapse
      */
-    public static function getInstance()
+    public static function getInstance(): Synapse
     {
         return self::$instance;
     }
@@ -39,9 +51,12 @@ class Synapse
     /**
      * Magic __set method.
      *
+     * @param  string  $key    The key to use to store $value.
+     * @param  mixed   $value  The value to store.
+     *
      * @return void
      */
-    public function __set($key, $value)
+    public function __set(string $key, $value)
     {
         $this->map[$key] = $value;
     }
@@ -49,11 +64,11 @@ class Synapse
     /**
      * Magic __get method.
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return mixed
      */
-    public function __get($key)
+    public function __get(string $key)
     {
         return $this->map[$key];
     }

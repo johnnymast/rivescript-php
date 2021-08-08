@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Bootstrap the Rivescript client.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Client
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 /*
 |--------------------------------------------------------------------------
 | Create The Synapse
@@ -23,28 +32,66 @@ $synapse = new Axiom\Rivescript\Cortex\Synapse();
 |
 */
 
-$synapse->commands = Axiom\Collections\Collection::make([
-    'Redirect',
-    'Response',
-    'Topic',
-    'Trigger',
-    'Variable',
-    'VariablePerson',
-    'VariableSubstitute',
-]);
+$synapse->commands = Axiom\Collections\Collection::make(
+    [
+        'Redirect',
+        'Response',
+        'Topic',
+        'Trigger',
+        'Variable',
+        'VariablePerson',
+        'VariableSubstitute',
+        'VariableGlobal',
+        'VariableArray'
+    ]
+);
 
-$synapse->triggers = Axiom\Collections\Collection::make([
-    'Atomic',
-    'Wildcard',
-]);
+$synapse->triggers = Axiom\Collections\Collection::make(
+    [
+        'Atomic',
+        'Wildcard',
+        'Arrays'
+    ]
+);
 
-$synapse->tags = Axiom\Collections\Collection::make([
-    'Star',
-    'Bot',
-    'Set',
-    'Get',
-    'Topic',
-]);
+$synapse->tags = Axiom\Collections\Collection::make(
+    [
+        'Star',
+        'Bot',
+
+        'Topic',
+        'Env',
+        'Add',
+        'Sub',
+        'Mult',
+        'Div',
+        'Random',
+        "Id",
+        'Input',
+        'Reply',
+        'Set',
+        'Get',
+    ]
+);
+
+$synapse->responses = Axiom\Collections\Collection::make(
+    [
+        'Atomic',
+        'Condition',
+        'Weighted'
+    ]
+);
+
+$synapse->conditions = Axiom\Collections\Collection::make(
+    [
+        'Equals',
+        'NotEquals',
+        'LessThan',
+        'LessOrEqualTo',
+        'GreaterThan',
+        'GreaterThanOrEqual',
+    ]
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +104,7 @@ $synapse->tags = Axiom\Collections\Collection::make([
 */
 
 $synapse->memory = new Axiom\Rivescript\Cortex\Memory();
-$synapse->brain  = new Axiom\Rivescript\Cortex\Brain();
+$synapse->brain = new Axiom\Rivescript\Cortex\Brain();
 
 /*
 |--------------------------------------------------------------------------

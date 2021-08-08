@@ -1,30 +1,40 @@
 <?php
 
+/**
+ * This class parses the Trigger command type.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Commands
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex\Commands;
 
-use Axiom\Collections\Collection;
+use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
 use Axiom\Rivescript\Contracts\Command;
+use Axiom\Collections\Collection;
+use Axiom\Rivescript\Cortex\Node;
 
 class Trigger implements Command
 {
     /**
      * Parse the command.
      *
-     * @param Node   $node
-     * @param string $command
+     * @param  Node  $node  The node is a line from the Rivescript file.
      *
-     * @return array
+     * @return void
      */
-    public function parse($node, $command)
+    public function parse(Node $node)
     {
         if ($node->command() === '+') {
             $topic = synapse()->memory->shortTerm()->get('topic') ?: 'random';
             $topic = synapse()->brain->topic($topic);
-            $type  = $this->determineTriggerType($node->value());
+            $type = $this->determineTriggerType($node->value());
 
             $data = [
-                'type'      => $type,
-                'responses' => [],
+                'type' => $type,
+                'responses' => new ResponseQueue(),
             ];
 
             $topic->triggers->put($node->value(), $data);
@@ -38,16 +48,16 @@ class Trigger implements Command
     /**
      * Determine the type of trigger to aid in sorting.
      *
-     * @param string $trigger
+     * @param  string  $trigger  The trigger to parse.
      *
      * @return string
      */
-    protected function determineTriggerType($trigger)
+    protected function determineTriggerType(string $trigger): string
     {
         $wildcards = [
             'alphabetic' => '/_/',
-            'numeric'    => '/#/',
-            'global'     => '/\*/',
+            'numeric' => '/#/',
+            'global' => '/\*/',
         ];
 
         foreach ($wildcards as $type => $pattern) {
@@ -63,11 +73,11 @@ class Trigger implements Command
      * Sort triggers based on type and word count from
      * largest to smallest.
      *
-     * @param Collection $triggers
+     * @param  Collection  $triggers  A collection of triggers.
      *
      * @return Collection
      */
-    protected function sortTriggers($triggers)
+    protected function sortTriggers(Collection $triggers): Collection
     {
         $triggers = $this->determineWordCount($triggers);
         $triggers = $this->determineTypeCount($triggers);
@@ -79,25 +89,34 @@ class Trigger implements Command
         return $triggers;
     }
 
-    protected function determineTypeCount($triggers)
+    /**
+     * Determine the order in the triggers.
+     *
+     * @param  Collection  $triggers  A collection of triggers.
+     *
+     * @return Collection
+     */
+    protected function determineTypeCount(Collection $triggers): Collection
     {
         $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
-            switch ($data['type']) {
-                case 'atomic':
-                    $data['order'] += 4000000;
-                    break;
-                case 'alphabetic':
-                    $data['order'] += 3000000;
-                    break;
-                case 'numeric':
-                    $data['order'] += 2000000;
-                    break;
-                case 'global':
-                    $data['order'] += 1000000;
-                    break;
-            }
+            if (isset($data['type'])) {
+                switch ($data['type']) {
+                    case 'atomic':
+                        $data['order'] += 4000000;
+                        break;
+                    case 'alphabetic':
+                        $data['order'] += 3000000;
+                        break;
+                    case 'numeric':
+                        $data['order'] += 2000000;
+                        break;
+                    case 'global':
+                        $data['order'] += 1000000;
+                        break;
+                }
 
-            $triggers->put($trigger, $data);
+                $triggers->put($trigger, $data);
+            }
         });
 
         return $triggers;
@@ -107,11 +126,11 @@ class Trigger implements Command
      * Sort triggers based on word count from
      * largest to smallest.
      *
-     * @param Collection $triggers
+     * @param  Collection  $triggers  A collection of triggers.
      *
      * @return Collection
      */
-    protected function determineWordCount($triggers)
+    protected function determineWordCount(Collection $triggers): Collection
     {
         $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
             $data['order'] = count(explode(' ', $trigger));

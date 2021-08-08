@@ -1,9 +1,21 @@
 <?php
 
+/**
+ * This class parses the <bot> tag.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Tags
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * Class Bot
+ */
 class Bot extends Tag
 {
     /**
@@ -19,24 +31,30 @@ class Bot extends Tag
     protected $pattern = '/<bot (.+?)>/i';
 
     /**
-     * Parse the source.
+     * Parse the response.
      *
-     * @param string $source
+     * @param  string  $source  The string containing the Tag.
+     * @param  Input   $input   The input information.
      *
      * @return string
      */
-    public function parse($source, Input $input)
+    public function parse(string $source, Input $input): string
     {
-        if (! $this->sourceAllowed()) {
+        if (!$this->sourceAllowed()) {
             return $source;
         }
 
         if ($this->hasMatches($source)) {
-            $matches   = $this->getMatches($source);
+            $matches = $this->getMatches($source);
             $variables = synapse()->memory->variables();
 
             foreach ($matches as $match) {
-                $source = str_replace($match[0], $variables[$match[1]], $source);
+                $value = 'undefined';
+
+                if (isset($variables[$match[1]]) == true) {
+                    $value = $variables[$match[1]];
+                }
+                $source = str_replace($match[0], $value, $source);
             }
         }
 

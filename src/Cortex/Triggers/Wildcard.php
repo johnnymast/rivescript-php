@@ -1,28 +1,42 @@
 <?php
 
+/**
+ * This class will parse the Wildcard Trigger.
+ *
+ * @package      Rivescript-php
+ * @subpackage   Core
+ * @category     Triggers
+ * @author       Shea Lewis <shea.lewis89@gmail.com>
+ */
+
 namespace Axiom\Rivescript\Cortex\Triggers;
 
 use Axiom\Collections\Collection;
+use Axiom\Rivescript\Cortex\Input;
 
+/**
+ * Wildcard class
+ */
 class Wildcard extends Trigger
 {
+
     /**
      * Parse the trigger.
      *
-     * @param string $trigger
-     * @param string $message
+     * @param  string  $trigger  The trigger to parse.
+     * @param  Input   $input    Input information.
      *
-     * @return array
+     * @return bool
      */
-    public function parse($trigger, $input)
+    public function parse(string $trigger, Input $input): bool
     {
         $trigger = $this->parseTags($trigger, $input);
 
         $wildcards = [
-            '/\*$/'             => '.*?',
-            '/\*/'              => '\\w+?',
-            '/#/'               => '\\d+?',
-            '/_/'               => '[a-z]?',
+            '/\*$/' => '.*?',
+            '/\*/' => '\\w+?',
+            '/#/' => '\\d+?',
+            '/_/' => '[a-z]?',
             '/<zerowidthstar>/' => '^\*$',
         ];
 
@@ -36,10 +50,10 @@ class Wildcard extends Trigger
 
                 synapse()->memory->shortTerm()->put('stars', $stars);
 
-                return $this->triggerFound();
+                return true;
             }
         }
 
-        return $this->triggerNotFound();
+        return false;
     }
 }
