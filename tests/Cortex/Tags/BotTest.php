@@ -20,8 +20,15 @@ uses()
     })
     ->group('tags');
 
-it('can read bot variables.', function () {
+it("can read bot variables.", function () {
     $expected = "You can call me Beta.";
-    $actual =  $this->rivescript->reply('what is your name');
+    $actual =  $this->rivescript->reply("what is your name");
+    $this->assertEquals($expected, $actual);
+});
+
+it("can be used without text behind it", function() {
+    $expected = "What can I do for you?";
+    $actual = $this->rivescript->reply('Beta');
+
     $this->assertEquals($expected, $actual);
 });
