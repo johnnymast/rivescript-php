@@ -37,7 +37,7 @@ it('should favor responses with higher weight.', function () {
     $this->assertEquals($expected, $actual);
 });
 
-it('should work with Atomic responses.', function() {
+it('should work with Atomic responses.', function () {
     $response1 = new Node("- i think it is PHPStorm?", 0);
 
     $queue = new ResponseQueue();
