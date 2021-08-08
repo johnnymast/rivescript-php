@@ -165,3 +165,9 @@
 
 + <bot name>
 - What can I do for you?
+
++ uppercase test 1
+- roger this is {uppercase}uppercase{/uppercase}
+
++ lowercase test 1
+- roger this is {lowercase}LOWERCASE{/lowercase}
