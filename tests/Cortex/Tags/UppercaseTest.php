@@ -35,16 +35,23 @@ it("will transform text between {uppercase} and {/uppercase} (Multi-Word)", func
     $this->assertEquals($expected, $actual);
 });
 
-it("will transform text between <uppercase> and </uppercase> (Single-Word)", function () {
+it("will transform <uppercase> as alias of {uppercase}<star>{/uppercase} (Single-Word)", function () {
     $expected = "roger this is UPPERCASE with single-word with angled brackets.";
-    $actual = $this->rivescript->reply("uppercase test 3");
+    $actual = $this->rivescript->reply("uppercase test 3 uppercase");
 
     $this->assertEquals($expected, $actual);
 });
 
-it("will transform text between <uppercase> and </uppercase> (Multi-Word)", function () {
-    $expected = "roger this is UPPERCASE MULTI-WORD with angled brackets.";
-    $actual = $this->rivescript->reply("uppercase test 4");
+it("will transform <uppercase> as alias of {uppercase}<star>{/uppercase} (Multi-Word)", function () {
+    $expected = "roger this is UPPERCASE MULTIWORD with angled brackets.";
+    $actual = $this->rivescript->reply("uppercase test 4 uppercase multiword");
+
+    $this->assertEquals($expected, $actual);
+});
+
+it("will return undefined if no * is used to translate <uppercase>", function () {
+    $expected = "roger this is undefined with angled brackets.";
+    $actual = $this->rivescript->reply("uppercase test 5");
 
     $this->assertEquals($expected, $actual);
 });

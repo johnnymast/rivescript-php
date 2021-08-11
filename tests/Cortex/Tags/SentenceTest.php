@@ -34,15 +34,15 @@ it("will transform text between {sentence} and {/sentence} to uppercase first ch
     $this->assertEquals($expected, $actual);
 });
 
-it("will transform sentences between <sentence> and </sentence> to uppercase first char (Single-Sentence)", function () {
-    $expected = "roger this is: First sentence with ucfirst. angled bracket";
-    $actual = $this->rivescript->reply("sentence test 3");
+it("will transform <sentence> as alias of {sentence}<star>{/sentence} (Single-Sentence)", function () {
+    $expected = "roger this is: This is my test. angled bracket";
+    $actual = $this->rivescript->reply("sentence test 3 this is my test");
 
     $this->assertEquals($expected, $actual);
 });
 
-it("will transform text between <sentence> and </sentence> to uppercase first char (Multi-Word)", function () {
-    $expected = "roger this is: First sentence with ucfirst.This is the second sentence with ucfirst. angled bracket";
+it("will return undefined if no * is used to translate <sentence>", function () {
+    $expected = "roger this is: undefined. angled bracket";
     $actual = $this->rivescript->reply("sentence test 4");
 
     $this->assertEquals($expected, $actual);

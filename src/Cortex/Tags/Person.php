@@ -28,7 +28,7 @@ class Person extends Tag
      *
      * @var string
      */
-    protected $pattern = '/({|<)person(}|>)/u';
+    protected $pattern = '/({)person(})(.+?)({)\/person(})|(<)person(>)/u';
 
     /**
      * Parse the response.
@@ -46,24 +46,29 @@ class Person extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
-            $stars = synapse()->memory->shortTerm()->get('wildcards');
+            $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
             $patterns = synapse()->memory->person()->keys()->all();
             $replacements = synapse()->memory->person()->values()->all();
 
 
             foreach ($matches as $match) {
-                $index = 0;
+                if ($match[0] == '<person>' and count($wildcards) > 0) {
+                    $sub = preg_replace($patterns, $replacements, $wildcards[0]) ?? 'undefined';
 
-                $sub = preg_replace($patterns, $replacements, $stars[$index]) ?? 'undefined';
-
-                /**
-                 * If nothing is replaced it means
-                 * no person variable has been found.
-                 *
-                 * Set sub (substitute) to 'undefined'
-                 */
-                if ($sub === $stars[$index]) {
+                    /**
+                     * If nothing is replaced it means
+                     * no person variable has been found.
+                     *
+                     * Set sub (substitute) to 'undefined'
+                     */
+                    if ($sub === $wildcards[0]) {
+                        $sub = 'undefined';
+                    }
+                } elseif ($match[1] == '{') {
+                    $key = '/\b'.preg_quote($match[3], '/').'\b/';
+                    $sub = synapse()->memory->person()->get($key) ?? 'undefined';
+                } else {
                     $sub = 'undefined';
                 }
 
