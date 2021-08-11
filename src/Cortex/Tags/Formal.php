@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This class parses the {sentence}/<sentence> tag.
+ * This class parses the {formal}/<formal> tag.
  *
  * @package      Rivescript-php
  * @subpackage   Core
