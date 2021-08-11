@@ -6,7 +6,7 @@
  * @package      Rivescript-php
  * @subpackage   Tests
  * @category     Tags
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
 namespace Tests\Cortex\Tags;
@@ -21,13 +21,30 @@ uses()
     ->group('tags');
 
 
-it("will transform text between {uppercase} and {/uppercase}", function () {
-    $expected = "roger this is UPPERCASE";
+it("will transform text between {uppercase} and {/uppercase} (Single-Word)", function () {
+    $expected = "roger this is UPPERCASE single-word with curly brackets.";
     $actual = $this->rivescript->reply("uppercase test 1");
 
     $this->assertEquals($expected, $actual);
 });
 
-it("will transform text between <uppercase> and </uppercase>", function () {
-    // TODO
+it("will transform text between {uppercase} and {/uppercase} (Multi-Word)", function () {
+    $expected = "roger this is UPPERCASE MULTI-WORD with curly brackets.";
+    $actual = $this->rivescript->reply("uppercase test 2");
+
+    $this->assertEquals($expected, $actual);
+});
+
+it("will transform text between <uppercase> and </uppercase> (Single-Word)", function () {
+    $expected = "roger this is UPPERCASE with single-word with angled brackets.";
+    $actual = $this->rivescript->reply("uppercase test 3");
+
+    $this->assertEquals($expected, $actual);
+});
+
+it("will transform text between <uppercase> and </uppercase> (Multi-Word)", function () {
+    $expected = "roger this is UPPERCASE MULTI-WORD with angled brackets.";
+    $actual = $this->rivescript->reply("uppercase test 4");
+
+    $this->assertEquals($expected, $actual);
 });

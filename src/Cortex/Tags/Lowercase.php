@@ -6,7 +6,7 @@
  * @package      Rivescript-php
  * @subpackage   Core
  * @category     Tags
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
 namespace Axiom\Rivescript\Cortex\Tags;
@@ -28,7 +28,7 @@ class Lowercase extends Tag
      *
      * @var string
      */
-    protected $pattern = '/\{lowercase\}(.+?){\/lowercase\}/u';
+    protected $pattern = '/({|<)lowercase(}|>)(.+?)({|<)\/lowercase(}|>)/u';
 
     /**
      * Parse the response.
@@ -47,8 +47,8 @@ class Lowercase extends Tag
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source)[0];
 
-            if (isset($matches[1]) == true) {
-                $found = $matches[1];
+            if (isset($matches[3]) == true) {
+                $found = $matches[3];
                 $source = str_replace($matches[0], strtolower($found), $source);
             }
         }

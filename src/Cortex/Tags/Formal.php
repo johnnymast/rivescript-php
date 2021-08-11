@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This class parses the {uppercase}/<uppercase> tag.
+ * This class parses the {sentence}/<sentence> tag.
  *
  * @package      Rivescript-php
  * @subpackage   Core
@@ -16,7 +16,7 @@ use Axiom\Rivescript\Cortex\Input;
 /**
  * Random class
  */
-class Uppercase extends Tag
+class Formal extends Tag
 {
     /**
      * @var array
@@ -28,7 +28,7 @@ class Uppercase extends Tag
      *
      * @var string
      */
-    protected $pattern = '/({|<)uppercase(}|>)(.+?)({|<)\/uppercase(}|>)/u';
+    protected $pattern = '/({|<)formal(}|>)(.+?)({|<)\/formal(}|>)/u';
 
     /**
      * Parse the response.
@@ -49,7 +49,7 @@ class Uppercase extends Tag
 
             if (isset($matches[3]) == true) {
                 $found = $matches[3];
-                $source = str_replace($matches[0], strtoupper($found), $source);
+                $source = str_replace($matches[0], ucwords($found), $source);
             }
         }
 

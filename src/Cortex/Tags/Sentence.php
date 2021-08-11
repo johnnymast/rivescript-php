@@ -16,7 +16,7 @@ use Axiom\Rivescript\Cortex\Input;
 /**
  * Random class
  */
-class Uppercase extends Tag
+class Sentence extends Tag
 {
     /**
      * @var array
@@ -28,7 +28,7 @@ class Uppercase extends Tag
      *
      * @var string
      */
-    protected $pattern = '/({|<)uppercase(}|>)(.+?)({|<)\/uppercase(}|>)/u';
+    protected $pattern = '/({|<)sentence(}|>)(.+?)({|<)\/sentence(}|>)/u';
 
     /**
      * Parse the response.
@@ -49,7 +49,20 @@ class Uppercase extends Tag
 
             if (isset($matches[3]) == true) {
                 $found = $matches[3];
-                $source = str_replace($matches[0], strtoupper($found), $source);
+                if (strpos($found, '.') > -1) {
+                    $parts = explode('.', $found);
+                    if (count($parts) > 0) {
+                        array_walk($parts, function (&$part) {
+                            $part = ucfirst(trim($part));
+                        });
+                    }
+
+                    $found = implode('.', $parts);
+                } else {
+                    $found = ucfirst($found);
+                }
+
+                $source = str_replace($matches[0], $found, $source);
             }
         }
 

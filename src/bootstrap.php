@@ -71,6 +71,8 @@ $synapse->tags = Axiom\Collections\Collection::make(
         'Reply',
         'Uppercase',
         'Lowercase',
+        'Sentence',
+        'Formal',
         'Set',
         'Get',
     ]
