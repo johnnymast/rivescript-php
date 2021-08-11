@@ -1,12 +1,12 @@
 <?php
 
 /**
- * This class parses the <star> tag.
+ * This class parses the {formal}/<formal> tag.
  *
  * @package      Rivescript-php
  * @subpackage   Core
  * @category     Tags
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
 namespace Axiom\Rivescript\Cortex\Tags;
@@ -14,21 +14,21 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input;
 
 /**
- * Class Star
+ * Random class
  */
-class Star extends Tag
+class Formal extends Tag
 {
     /**
      * @var array
      */
-    protected $allowedSources = ['response', 'trigger'];
+    protected $allowedSources = ['response'];
 
     /**
      * Regex expression pattern.
      *
      * @var string
      */
-    protected $pattern = '/<star(\d+)?>/i';
+    protected $pattern = '/({)formal(})(.+?)({)\/formal(})|(<)formal(>)/u';
 
     /**
      * Parse the response.
@@ -44,13 +44,21 @@ class Star extends Tag
             return $source;
         }
 
+        //ucwords
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source);
+            $matches = $this->getMatches($source)[0];
             $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
             foreach ($matches as $match) {
-                $index = (empty($match[1]) ? 0 : $match[1] - 1);
-                $source = str_replace($match[0], $wildcards[$index], $source);
+                if ($matches[0] == '<formal>' and count($wildcards) > 0) {
+                    $sub = ucwords($wildcards[0]);
+                } elseif ($matches[1] == '{' && isset($matches[3])) {
+                    $sub = ucwords($matches[3]);
+                } else {
+                    $sub = 'undefined';
+                }
+
+                $source = str_replace($matches[0], $sub, $source);
             }
         }
 
