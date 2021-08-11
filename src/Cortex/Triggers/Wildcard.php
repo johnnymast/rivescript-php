@@ -43,12 +43,12 @@ class Wildcard extends Trigger
         foreach ($wildcards as $pattern => $replacement) {
             $parsedTrigger = preg_replace($pattern, '('.$replacement.')', $trigger);
 
-            if (@preg_match_all('/'.$parsedTrigger.'$/u', $input->source(), $stars)) {
-                array_shift($stars);
+            if (@preg_match_all('/'.$parsedTrigger.'$/u', $input->source(), $wildcards)) {
+                array_shift($wildcards);
 
-                $stars = Collection::make($stars)->flatten()->all();
+                $wildcards = Collection::make($wildcards)->flatten()->all();
 
-                synapse()->memory->shortTerm()->put('stars', $stars);
+                synapse()->memory->shortTerm()->put('wildcards', $wildcards);
 
                 return true;
             }

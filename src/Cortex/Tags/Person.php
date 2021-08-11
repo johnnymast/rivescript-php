@@ -46,7 +46,7 @@ class Person extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
-            $stars = synapse()->memory->shortTerm()->get('stars');
+            $stars = synapse()->memory->shortTerm()->get('wildcards');
 
             $patterns = synapse()->memory->person()->keys()->all();
             $replacements = synapse()->memory->person()->values()->all();
