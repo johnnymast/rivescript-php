@@ -24,8 +24,6 @@
 ! person you     = I
 ! person i       = you
 
-+ abc test 1 say *
-- umm... "{person}"
 
 // Tags
 
@@ -229,3 +227,15 @@
 
 + sentence test 4
 - roger this is: <sentence>first sentence with ucfirst.this is the second sentence with ucfirst</sentence>. angled bracket
+
++ abc test 1 say *
+- umm... "{person}" curly bracket
+
++ abc test 2 say *
+- umm... "{person}" curly bracket
+
++ abc test 3 say *
+- umm... "<person>" angled bracket
+
++ abc test 4 say *
+- umm... "<person>" angled bracket

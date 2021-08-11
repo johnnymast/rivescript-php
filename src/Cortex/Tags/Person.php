@@ -28,7 +28,7 @@ class Person extends Tag
      *
      * @var string
      */
-    protected $pattern = '/\{person\}/u';
+    protected $pattern = '/({|<)person(}|>)/u';
 
     /**
      * Parse the response.
@@ -47,13 +47,27 @@ class Person extends Tag
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
             $stars = synapse()->memory->shortTerm()->get('stars');
-            $substitutions = synapse()->memory->person()->all();
-            $xx = synapse()->memory->variables();
+
+            $patterns = synapse()->memory->person()->keys()->all();
+            $replacements = synapse()->memory->person()->values()->all();
+
 
             foreach ($matches as $match) {
-                $index = (empty($match[1]) ? 0 : $match[1] - 1);
-                $substitution = synapse()->memory->person()->get($stars[$index]) ?? 'undefined';
-                $source = str_replace($match[0], $stars[$index], $source);
+                $index = 0;
+
+                $sub = preg_replace($patterns, $replacements, $stars[$index]) ?? 'undefined';
+
+                /**
+                 * If nothing is replaced it means
+                 * no person variable has been found.
+                 *
+                 * Set sub (substitute) to 'undefined'
+                 */
+                if ($sub === $stars[$index]) {
+                    $sub = 'undefined';
+                }
+
+                $source = str_replace($match[0], $sub, $source);
             }
         }
 

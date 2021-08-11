@@ -129,9 +129,7 @@ class Output
         synapse()->tags->each(
             function ($tag) use (&$response) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
-                $tagClass = new $class('response');
-
-                echo "Response: {$response}\n";
+                $tagClass = new $class();
 
                 $response = $tagClass->parse($response, $this->input);
             }

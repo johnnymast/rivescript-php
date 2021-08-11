@@ -36,7 +36,7 @@ class VariablePerson implements Command
                 list($key, $value) = explode('=', $value);
 
                 $key = trim($key);
-              //  $key = '/\b'.preg_quote($key, '/').'\b/'; // Convert the "key" to a regular expression ready format
+                $key = '/\b'.preg_quote($key, '/').'\b/'; // Convert the "key" to a regular expression ready format
                 $value = trim($value);
 
                 synapse()->memory->person()->put($key, $value);
