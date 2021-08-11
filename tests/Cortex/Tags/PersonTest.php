@@ -21,37 +21,30 @@ uses()
     ->group('tags');
 
 
-it("will translate {person} to a person variable (Single-Word)", function () {
-    $expected = 'umm... "my" curly bracket';
-    $actual = $this->rivescript->reply("abc test 1 say your");
+it("will translate {person}person var{/person} to a person variable (Single-Word)", function () {
+    $expected = 'umm... "your" curly bracket';
+    $actual = $this->rivescript->reply("person test 1");
 
     $this->assertEquals($expected, $actual);
 });
 
-it("will translate {person} to a person variable (Multi-Word)", function () {
-    $expected = 'umm... "I am awesome man" curly bracket';
-    $actual = $this->rivescript->reply("abc test 2 say you are awesome man");
+it("will translate {person}person var{/person} to a person variable (Multi-Word)", function () {
+    $expected = 'umm... "I am" curly bracket';
+    $actual = $this->rivescript->reply("person test 2");
 
     $this->assertEquals($expected, $actual);
 });
 
-it("will translate <person> to a person variable (Single-Word)", function () {
+it("will translate <person> as alias of {person}<star>{/person} (Single-Word)", function () {
     $expected = 'umm... "my" angled bracket';
-    $actual = $this->rivescript->reply("abc test 3 say your");
+    $actual = $this->rivescript->reply("person test 3 your");
 
     $this->assertEquals($expected, $actual);
 });
 
-it("will translate <person> to a person variable (Multi-Word)", function () {
-    $expected = 'umm... "I am awesome man" angled bracket';
-    $actual = $this->rivescript->reply("abc test 4 say you are awesome man");
-
-    $this->assertEquals($expected, $actual);
-});
-
-it("will translate <person> unknown person variable to undefined (Multi-Word)", function () {
-    $expected = 'umm... "undefined" angled bracket';
-    $actual = $this->rivescript->reply("abc test 4 say socks");
+it("will translate <person> as alias of {person}<star>{/person} (Multi-Word)", function () {
+    $expected = 'umm... "I am" angled bracket';
+    $actual = $this->rivescript->reply("person test 4 you are");
 
     $this->assertEquals($expected, $actual);
 });

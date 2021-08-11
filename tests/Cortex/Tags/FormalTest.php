@@ -21,16 +21,38 @@ uses()
     ->group('tags');
 
 
-it("will transform text between {formal} and {/formal}", function () {
-    $expected = "roger this is A Sentence With All First Chars Capitalized. curly bracket";
+it("will transform text between {formal}and{/formal} (Single-Word)", function () {
+    $expected = "roger this is First. curly bracket";
     $actual = $this->rivescript->reply("formal test 1");
 
     $this->assertEquals($expected, $actual);
 });
 
-it("will transform text between <formal> and </formal>", function () {
-    $expected = "roger this is A Sentence With All First Chars Capitalized. angled bracket";
+it("will transform text between {formal}and{/formal} (Multi-Word)", function () {
+    $expected = "roger this is First And Second. curly bracket";
     $actual = $this->rivescript->reply("formal test 2");
+
+    $this->assertEquals($expected, $actual);
+});
+
+
+it("will transform <formal> as alias of {formal}<star>{/formal} (Single-Word)", function () {
+    $expected = "roger this is Single. angled bracket";
+    $actual = $this->rivescript->reply("formal test 3 single");
+
+    $this->assertEquals($expected, $actual);
+});
+
+it("will transform <formal> as alias of {formal}<star>{/formal} (Multi-Word)", function () {
+    $expected = "roger this is Multi Word. angled bracket";
+    $actual = $this->rivescript->reply("formal test 4 multi word");
+
+    $this->assertEquals($expected, $actual);
+});
+
+it("will return undefined if no * is used to translate <formal>", function () {
+    $expected = "roger this is undefined. angled bracket";
+    $actual = $this->rivescript->reply("formal test 5");
 
     $this->assertEquals($expected, $actual);
 });

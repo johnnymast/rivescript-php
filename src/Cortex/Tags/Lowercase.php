@@ -28,7 +28,7 @@ class Lowercase extends Tag
      *
      * @var string
      */
-    protected $pattern = '/({|<)lowercase(}|>)(.+?)({|<)\/lowercase(}|>)/u';
+    protected $pattern = '/({)lowercase(})(.+?)({)\/lowercase(})|(<)lowercase(>)/u';
 
     /**
      * Parse the response.
@@ -46,10 +46,18 @@ class Lowercase extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source)[0];
+            $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
-            if (isset($matches[3]) == true) {
-                $found = $matches[3];
-                $source = str_replace($matches[0], strtolower($found), $source);
+            foreach ($matches as $match) {
+                if ($matches[0] == '<lowercase>' and count($wildcards) > 0) {
+                    $sub = strtolower($wildcards[0]);
+                } elseif ($matches[1] == '{' && isset($matches[3])) {
+                    $sub = strtolower($matches[3]);
+                } else {
+                    $sub = 'undefined';
+                }
+
+                $source = str_replace($matches[0], $sub, $source);
             }
         }
 

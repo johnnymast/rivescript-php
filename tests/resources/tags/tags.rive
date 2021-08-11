@@ -191,30 +191,44 @@
 + uppercase test 2
 - roger this is {uppercase}uppercase multi-word{/uppercase} with curly brackets.
 
-+ uppercase test 3
-- roger this is <uppercase>uppercase</uppercase> with single-word with angled brackets.
++ uppercase test 3 *
+- roger this is <uppercase> with single-word with angled brackets.
 
-+ uppercase test 4
-- roger this is <uppercase>uppercase multi-word</uppercase> with angled brackets.
++ uppercase test 4 *
+- roger this is <uppercase> with angled brackets.
+
++ uppercase test 5 *
+- roger this is <uppercase> with angled brackets.
 
 + lowercase test 1
 - roger this is {lowercase}LOWERCASE{/lowercase} single-word with curly brackets.
 
 + lowercase test 2
-- roger this is {lowercase}LOWERCASE multi-word{/lowercase} with curly brackets.
+- roger this is {lowercase}LOWERCASE multiword{/lowercase} with curly brackets.
 
-+ lowercase test 3
-- roger this is <lowercase>LOWERCASE</lowercase> single-word with angled brackets.
++ lowercase test 3 *
+- roger this is <lowercase> single-word with angled brackets.
 
-+ lowercase test 4
-- roger this is <lowercase>LOWERCASE multi-word</lowercase> with angled brackets.
++ lowercase test 4 *
+- roger this is <lowercase> with angled brackets.
 
++ lowercase test 5 *
+- roger this is <lowercase> with angled brackets.
 
 + formal test 1
-- roger this is {formal}a sentence with all first chars capitalized{/formal}. curly bracket
+- roger this is {formal}first{/formal}. curly bracket
 
 + formal test 2
-- roger this is <formal>a sentence with all first chars capitalized</formal>. angled bracket
+- roger this is {formal}first and second{/formal}. curly bracket
+
++ formal test 3 *
+- roger this is <formal>. angled bracket
+
++ formal test 4 *
+- roger this is <formal>. angled bracket
+
++ formal test 5 *
+- roger this is <formal>. angled bracket
 
 + sentence test 1
 - roger this is: {sentence}first sentence with ucfirst{/sentence}. curly bracket
@@ -222,20 +236,20 @@
 + sentence test 2
 - roger this is: {sentence}first sentence with ucfirst.this is the second sentence with ucfirst{/sentence}. curly bracket
 
-+ sentence test 3
-- roger this is: <sentence>first sentence with ucfirst</sentence>. angled bracket
++ sentence test 3 *
+- roger this is: <sentence>. angled bracket
 
-+ sentence test 4
-- roger this is: <sentence>first sentence with ucfirst.this is the second sentence with ucfirst</sentence>. angled bracket
++ sentence test 4 *
+- roger this is: <sentence>. angled bracket
 
-+ abc test 1 say *
-- umm... "{person}" curly bracket
++ person test 1
+- umm... "{person}my{/person}" curly bracket
 
-+ abc test 2 say *
-- umm... "{person}" curly bracket
++ person test 2
+- umm... "{person}you are{/person}" curly bracket
 
-+ abc test 3 say *
++ person test 3 *
 - umm... "<person>" angled bracket
 
-+ abc test 4 say *
++ person test 4 *
 - umm... "<person>" angled bracket

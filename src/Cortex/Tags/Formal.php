@@ -28,7 +28,7 @@ class Formal extends Tag
      *
      * @var string
      */
-    protected $pattern = '/({|<)formal(}|>)(.+?)({|<)\/formal(}|>)/u';
+    protected $pattern = '/({)formal(})(.+?)({)\/formal(})|(<)formal(>)/u';
 
     /**
      * Parse the response.
@@ -44,12 +44,21 @@ class Formal extends Tag
             return $source;
         }
 
+        //ucwords
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source)[0];
+            $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
-            if (isset($matches[3]) == true) {
-                $found = $matches[3];
-                $source = str_replace($matches[0], ucwords($found), $source);
+            foreach ($matches as $match) {
+                if ($matches[0] == '<formal>' and count($wildcards) > 0) {
+                    $sub = ucwords($wildcards[0]);
+                } elseif ($matches[1] == '{' && isset($matches[3])) {
+                    $sub = ucwords($matches[3]);
+                } else {
+                    $sub = 'undefined';
+                }
+
+                $source = str_replace($matches[0], $sub, $source);
             }
         }
 

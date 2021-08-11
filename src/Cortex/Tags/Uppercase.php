@@ -28,7 +28,7 @@ class Uppercase extends Tag
      *
      * @var string
      */
-    protected $pattern = '/({|<)uppercase(}|>)(.+?)({|<)\/uppercase(}|>)/u';
+    protected $pattern = '/({)uppercase(})(.+?)({)\/uppercase(})|(<)uppercase(>)/u';
 
     /**
      * Parse the response.
@@ -46,10 +46,18 @@ class Uppercase extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source)[0];
+            $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
-            if (isset($matches[3]) == true) {
-                $found = $matches[3];
-                $source = str_replace($matches[0], strtoupper($found), $source);
+            foreach ($matches as $match) {
+                if ($matches[0] == '<uppercase>' and count($wildcards) > 0) {
+                    $sub = strtoupper($wildcards[0]);
+                } elseif ($matches[1] == '{' && isset($matches[3])) {
+                    $sub = strtoupper($matches[3]);
+                } else {
+                    $sub = 'undefined';
+                }
+
+                $source = str_replace($matches[0], $sub, $source);
             }
         }
 

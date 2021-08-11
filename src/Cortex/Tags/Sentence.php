@@ -28,7 +28,7 @@ class Sentence extends Tag
      *
      * @var string
      */
-    protected $pattern = '/({|<)sentence(}|>)(.+?)({|<)\/sentence(}|>)/u';
+    protected $pattern = '/({)sentence(})(.+?)({)\/sentence(})|(<)sentence(>)/u';
 
     /**
      * Parse the response.
@@ -46,24 +46,32 @@ class Sentence extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source)[0];
+            $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
-            if (isset($matches[3]) == true) {
-                $found = $matches[3];
-                if (strpos($found, '.') > -1) {
-                    $parts = explode('.', $found);
+            if ($matches[0] == '<sentence>' and count($wildcards) > 0) {
+                $sub = $wildcards[0];
+            } elseif ($matches[1] == '{' && isset($matches[3])) {
+                $sub = $matches[3];
+            } else {
+                $sub = 'undefined';
+            }
+
+            if ($sub !== 'undefined') {
+                if (strpos($sub, '.') > -1) {
+                    $parts = explode('.', $sub);
                     if (count($parts) > 0) {
                         array_walk($parts, function (&$part) {
                             $part = ucfirst(trim($part));
                         });
                     }
 
-                    $found = implode('.', $parts);
+                    $sub = implode('.', $parts);
                 } else {
-                    $found = ucfirst($found);
+                    $sub = ucfirst($sub);
                 }
-
-                $source = str_replace($matches[0], $found, $source);
             }
+
+            $source = str_replace($matches[0], $sub, $source);
         }
 
         return $source;
