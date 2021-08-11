@@ -57,6 +57,7 @@ $synapse->triggers = Axiom\Collections\Collection::make(
 $synapse->tags = Axiom\Collections\Collection::make(
     [
         'Star',
+
         'Bot',
 
         'Topic',
@@ -73,6 +74,7 @@ $synapse->tags = Axiom\Collections\Collection::make(
         'Lowercase',
         'Sentence',
         'Formal',
+        'Person',
         'Set',
         'Get',
     ]

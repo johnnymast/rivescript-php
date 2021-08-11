@@ -174,8 +174,8 @@ class ResponseQueue extends Collection
     {
         $this->responses = $this->determineResponseOrder($this->responses);
 
-//        echo "REPONSES\n";
-//        print_r($this->responses);
+        echo "REPONSES\n";
+        print_r($this->responses);
 //        exit;
         $validResponses = new Collection([]);
         foreach ($this->responses as $response => $item) {

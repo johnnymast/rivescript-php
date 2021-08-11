@@ -6,6 +6,27 @@
 // Bot Variables
 ! var name     = Beta
 
+// Bot Variables
+! var name     = RiveScript Test Bot
+! var age      = 9000
+! var gender   = androgynous
+! var location = Cyberspace
+! var phone    = 555-1234
+! var email    = test@mydomain.com
+
+// Person substitutions
+! person i am    = you are
+! person you are = I am
+! person i'm     = you're
+! person you're  = I'm
+! person my      = your
+! person your    = my
+! person you     = I
+! person i       = you
+
++ abc test 1 say *
+- umm... "{person}"
+
 // Tags
 
 + set points
@@ -148,8 +169,8 @@
 + my favorite thing in the world is *
 - Why do you like <star> so much?
 
-+ *
-- I'm sorry but I don't understand.
+// + *
+// - I'm sorry but I don't understand.
 
 + * told me to say *
 - Why would <star1> have told you to say <star2>?
