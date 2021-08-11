@@ -7,7 +7,7 @@
 ! var name     = Beta
 
 // Bot Variables
-! var name     = RiveScript Test Bot
+! var name     = Beta
 ! var age      = 9000
 ! var gender   = androgynous
 ! var location = Cyberspace
@@ -167,8 +167,8 @@
 + my favorite thing in the world is *
 - Why do you like <star> so much?
 
-// + *
-// - I'm sorry but I don't understand.
++ *
+- I'm sorry but I don't understand.
 
 + * told me to say *
 - Why would <star1> have told you to say <star2>?
