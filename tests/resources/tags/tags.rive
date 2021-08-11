@@ -6,6 +6,25 @@
 // Bot Variables
 ! var name     = Beta
 
+// Bot Variables
+! var name     = Beta
+! var age      = 9000
+! var gender   = androgynous
+! var location = Cyberspace
+! var phone    = 555-1234
+! var email    = test@mydomain.com
+
+// Person substitutions
+! person i am    = you are
+! person you are = I am
+! person i'm     = you're
+! person you're  = I'm
+! person my      = your
+! person your    = my
+! person you     = I
+! person i       = you
+
+
 // Tags
 
 + set points
@@ -165,3 +184,58 @@
 
 + <bot name>
 - What can I do for you?
+
++ uppercase test 1
+- roger this is {uppercase}uppercase{/uppercase} single-word with curly brackets.
+
++ uppercase test 2
+- roger this is {uppercase}uppercase multi-word{/uppercase} with curly brackets.
+
++ uppercase test 3
+- roger this is <uppercase>uppercase</uppercase> with single-word with angled brackets.
+
++ uppercase test 4
+- roger this is <uppercase>uppercase multi-word</uppercase> with angled brackets.
+
++ lowercase test 1
+- roger this is {lowercase}LOWERCASE{/lowercase} single-word with curly brackets.
+
++ lowercase test 2
+- roger this is {lowercase}LOWERCASE multi-word{/lowercase} with curly brackets.
+
++ lowercase test 3
+- roger this is <lowercase>LOWERCASE</lowercase> single-word with angled brackets.
+
++ lowercase test 4
+- roger this is <lowercase>LOWERCASE multi-word</lowercase> with angled brackets.
+
+
++ formal test 1
+- roger this is {formal}a sentence with all first chars capitalized{/formal}. curly bracket
+
++ formal test 2
+- roger this is <formal>a sentence with all first chars capitalized</formal>. angled bracket
+
++ sentence test 1
+- roger this is: {sentence}first sentence with ucfirst{/sentence}. curly bracket
+
++ sentence test 2
+- roger this is: {sentence}first sentence with ucfirst.this is the second sentence with ucfirst{/sentence}. curly bracket
+
++ sentence test 3
+- roger this is: <sentence>first sentence with ucfirst</sentence>. angled bracket
+
++ sentence test 4
+- roger this is: <sentence>first sentence with ucfirst.this is the second sentence with ucfirst</sentence>. angled bracket
+
++ abc test 1 say *
+- umm... "{person}" curly bracket
+
++ abc test 2 say *
+- umm... "{person}" curly bracket
+
++ abc test 3 say *
+- umm... "<person>" angled bracket
+
++ abc test 4 say *
+- umm... "<person>" angled bracket
