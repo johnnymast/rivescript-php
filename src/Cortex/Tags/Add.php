@@ -31,7 +31,7 @@ class Add extends Tag
     protected $pattern = '/<add (.+?)=(.+?)>/u';
 
     /**
-     * Parse the response.
+     * Parse the source.
      *
      * @param  string  $source  The string containing the Tag.
      * @param  Input   $input   The input information.

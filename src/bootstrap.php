@@ -72,6 +72,7 @@ $synapse->tags = Axiom\Collections\Collection::make(
         'Lowercase',
         'Sentence',
         'InlineRedirect',
+        'SpecialChars',
         'Formal',
         'Person',
         'Set',
