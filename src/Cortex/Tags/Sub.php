@@ -31,7 +31,7 @@ class Sub extends Tag
     protected $pattern = '/<sub (.+?)=(.+?)>/u';
 
     /**
-     * Parse the response.
+     * Parse the source.
      *
      * @param  string  $source  The string containing the Tag.
      * @param  Input   $input   The input information.

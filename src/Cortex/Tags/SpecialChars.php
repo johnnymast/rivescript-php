@@ -1,12 +1,12 @@
 <?php
 
 /**
- * This class parses the <get> tag.
+ * This class parses the \s|\n|\/|\# tag.
  *
  * @package      Rivescript-php
  * @subpackage   Core
  * @category     Tags
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
 namespace Axiom\Rivescript\Cortex\Tags;
@@ -14,10 +14,11 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input;
 
 /**
- * Class Get
+ * SpecialChars class
  */
-class Get extends Tag
+class SpecialChars extends Tag
 {
+
     /**
      * @var array
      */
@@ -28,7 +29,7 @@ class Get extends Tag
      *
      * @var string
      */
-    protected $pattern = '/<get (.+?)>/u';
+    protected $pattern = '/(\\n|\\s|\\#|\\/)/u';
 
     /**
      * Parse the source.
@@ -45,10 +46,16 @@ class Get extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source)[0];
-            $userData = synapse()->memory->user($input->user())->get($matches[1]) ?? 'undefined';
+            $symbols = [
+                '\n' => "\n",
+                '\s' => ' ',
+                '\/' => '/',
+                '\#' => '#',
+            ];
 
-            $source = str_replace($matches[0], $userData, $source);
+            foreach ($symbols as $symbol => $replacement) {
+                $source = str_replace($symbol, $replacement, $source);
+            }
         }
 
         return $source;

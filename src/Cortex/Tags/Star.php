@@ -31,7 +31,7 @@ class Star extends Tag
     protected $pattern = '/<star(\d+)?>/i';
 
     /**
-     * Parse the response.
+     * Parse the source.
      *
      * @param  string  $source  The string containing the Tag.
      * @param  Input   $input   The input information.

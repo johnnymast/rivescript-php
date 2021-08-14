@@ -31,7 +31,7 @@ class Input extends Tag
     protected $pattern = '/<input(\d+)?>/i';
 
     /**
-     * Parse the response.
+     * Parse the source.
      *
      * @param  string     $source  The string containing the Tag.
      * @param  UserInput  $input   The input information.

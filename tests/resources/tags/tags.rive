@@ -253,3 +253,15 @@
 
 + rr
 - This is redirect 2
+
++ special char test 1
+- this has a white\sspace
+
++ special char test 2
+- this has a\nnewline
+
++ special char test 3
+- this adds a forward slash look \/
+
++ special char test 4
+- this adds a hashtag look \#

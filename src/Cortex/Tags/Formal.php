@@ -31,7 +31,7 @@ class Formal extends Tag
     protected $pattern = '/({)formal(})(.+?)({)\/formal(})|(<)formal(>)/u';
 
     /**
-     * Parse the response.
+     * Parse the source.
      *
      * @param  string  $source  The string containing the Tag.
      * @param  Input   $input   The input information.
@@ -44,7 +44,6 @@ class Formal extends Tag
             return $source;
         }
 
-        //ucwords
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source)[0];
             $wildcards = synapse()->memory->shortTerm()->get('wildcards');

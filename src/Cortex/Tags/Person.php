@@ -31,7 +31,7 @@ class Person extends Tag
     protected $pattern = '/({)person(})(.+?)({)\/person(})|(<)person(>)/u';
 
     /**
-     * Parse the response.
+     * Parse the source.
      *
      * @param  string  $source  The string containing the Tag.
      * @param  Input   $input   The input information.
@@ -50,7 +50,6 @@ class Person extends Tag
 
             $patterns = synapse()->memory->person()->keys()->all();
             $replacements = synapse()->memory->person()->values()->all();
-
 
             foreach ($matches as $match) {
                 if ($match[0] == '<person>' and count($wildcards) > 0) {
