@@ -50,7 +50,7 @@ class Arrays extends Trigger
                 if ($stars) {
                     $stars = Collection::make($stars)->flatten()->all();
 
-                    synapse()->memory->shortTerm()->put('wildcards', $stars);
+               //     synapse()->memory->shortTerm()->put('wildcards', $stars);
                 }
 
                 return true;

@@ -35,9 +35,6 @@ abstract class Trigger implements TriggerContract
             $tagClass = new $class('trigger');
 
             $trigger = $tagClass->parse($trigger, $input);
-//            if ($trigger == 'abc test 1. say *') {
-//                exit;
-//            }
         });
 
         return mb_strtolower($trigger);

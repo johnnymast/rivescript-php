@@ -21,9 +21,9 @@ uses()
     ->group('tags');
 
 it('translates <input> to the client\'s last input', function () {
-    $this->rivescript->reply("<input> test");
+    $this->rivescript->reply("Hello World");
 
-    $expected = "Your last input is: <input> test";
+    $expected = "Your last input is: Hello World";
     $actual = $this->rivescript->reply("what is my last input");
 
     $this->assertEquals($expected, $actual);

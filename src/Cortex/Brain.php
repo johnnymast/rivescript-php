@@ -12,6 +12,7 @@
 namespace Axiom\Rivescript\Cortex;
 
 use Axiom\Rivescript\Exceptions\ParseException;
+use Axiom\Rivescript\Rivescript;
 use SplFileObject;
 
 /**
@@ -25,8 +26,6 @@ class Brain
      * @var Branch
      */
     protected $topics;
-
-    // protected $strict = false;
 
     /**
      * Create a new instance of Brain.
@@ -62,16 +61,7 @@ class Brain
             $commands->each(function ($command) use ($node) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
                 $commandClass = new $class();
-
-//                $result = $commandClass->parse($node, $currentCommand);
-
                 $commandClass->parse($node);
-
-//                if (isset($result['command'])) {
-////                    $currentCommand = $result['command'];
-////
-////                    return false;
-////                }
             });
         }
     }
