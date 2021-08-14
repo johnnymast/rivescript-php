@@ -197,9 +197,6 @@
 + uppercase test 4 *
 - roger this is <uppercase> with angled brackets.
 
-+ uppercase test 5 *
-- roger this is <uppercase> with angled brackets.
-
 + lowercase test 1
 - roger this is {lowercase}LOWERCASE{/lowercase} single-word with curly brackets.
 
@@ -210,9 +207,6 @@
 - roger this is <lowercase> single-word with angled brackets.
 
 + lowercase test 4 *
-- roger this is <lowercase> with angled brackets.
-
-+ lowercase test 5 *
 - roger this is <lowercase> with angled brackets.
 
 + formal test 1
@@ -227,9 +221,6 @@
 + formal test 4 *
 - roger this is <formal>. angled bracket
 
-+ formal test 5 *
-- roger this is <formal>. angled bracket
-
 + sentence test 1
 - roger this is: {sentence}first sentence with ucfirst{/sentence}. curly bracket
 
@@ -237,9 +228,6 @@
 - roger this is: {sentence}first sentence with ucfirst.this is the second sentence with ucfirst{/sentence}. curly bracket
 
 + sentence test 3 *
-- roger this is: <sentence>. angled bracket
-
-+ sentence test 4 *
 - roger this is: <sentence>. angled bracket
 
 + person test 1
@@ -253,3 +241,15 @@
 
 + person test 4 *
 - umm... "<person>" angled bracket
+
++ redirect test 1
+- hello {@redirect result1}
+
++ redirect test 2 *
+- redirect 2 <@>
+
++ redirect result1
+- That is result 1
+
++ rr
+- This is redirect 2

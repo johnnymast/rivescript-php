@@ -48,10 +48,3 @@ it("will transform <uppercase> as alias of {uppercase}<star>{/uppercase} (Multi-
 
     $this->assertEquals($expected, $actual);
 });
-
-it("will return undefined if no * is used to translate <uppercase>", function () {
-    $expected = "roger this is undefined with angled brackets.";
-    $actual = $this->rivescript->reply("uppercase test 5");
-
-    $this->assertEquals($expected, $actual);
-});

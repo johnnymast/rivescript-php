@@ -43,6 +43,10 @@ class Wildcard extends Trigger
         foreach ($wildcards as $pattern => $replacement) {
             $parsedTrigger = preg_replace($pattern, '('.$replacement.')', $trigger);
 
+            if ($parsedTrigger == $trigger) {
+                continue;
+            }
+
             if (@preg_match_all('/'.$parsedTrigger.'$/u', $input->source(), $wildcards)) {
                 array_shift($wildcards);
 

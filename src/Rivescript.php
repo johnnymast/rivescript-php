@@ -45,14 +45,13 @@ class Rivescript
      * Make the client respond to a message.
      *
      * @param  string  $message  The message the client has to process and respond to.
-     * @param  int     $user     The user id.
+     * @param  string  $user     The user id.
      * @return string
      */
     public function reply(string $message, string $user = 'local-user'): string
     {
         $input = new Input($message, $user);
         $output = new Output($input);
-
 
         synapse()->input = $input;
 
@@ -61,7 +60,6 @@ class Rivescript
         synapse()->memory->inputs()->push($message);
         synapse()->memory->replies()->push($output);
 
-//        var_dump("ADDING {$output}\n");
         return $output;
     }
 }

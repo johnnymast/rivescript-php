@@ -21,7 +21,7 @@ class Formal extends Tag
     /**
      * @var array
      */
-    protected $allowedSources = ['response'];
+    protected $allowedSources = ['response', 'trigger'];
 
     /**
      * Regex expression pattern.

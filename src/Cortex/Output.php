@@ -63,7 +63,7 @@ class Output
                 }
             }
         );
-        
+
         return $this->output;
     }
 
@@ -84,8 +84,8 @@ class Output
                 $found = $triggerClass->parse($trigger, $this->input);
 
                 if ($found === true) {
-                    $this->getResponse($trigger);
-
+                    synapse()->memory->shortTerm()->put('trigger', $trigger);
+                    $this->output = $this->getResponse($trigger);
                     return false;
                 }
             }
@@ -101,20 +101,34 @@ class Output
      */
     protected function getResponse(string $trigger)
     {
-        $trigger = synapse()->brain->topic()->triggers()->get($trigger);
+        $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
 
-        if (isset($trigger['redirect'])) {
-            return $this->getResponse($trigger['redirect']);
+        /**
+         * Get the best suitable response from
+         * the ResponseQueue.
+         */
+        $response = $originalTrigger['responses']->process();
+        $output = $this->parseResponse($response);
+
+        /**
+         * It could be possible that tags have altered the trigger.
+         * If so evaluate possible changes.
+         */
+        $processedTrigger = synapse()->brain->topic()->triggers()->get($trigger);
+
+        if (isset($processedTrigger['redirect'])) {
+            $output .= $this->getResponse($processedTrigger['redirect']);
         }
 
-        $responses = $trigger['responses']->process();
-        $this->output = $this->parseResponse($responses);
-
-
-        //synapse()->memory->replies()->push($this->output);
-
+// TODO:
 //        $key = array_rand($trigger['responses']);
 //        $this->output = $this->parseResponse($trigger['responses'][$key]);
+        return $output;
+
+// TODO:
+//        $key = array_rand($trigger['responses']);
+//        $this->output = $this->parseResponse($trigger['responses'][$key]);
+        return $output;
     }
 
     /**
@@ -124,8 +138,9 @@ class Output
      *
      * @return string
      */
-    protected function parseResponse(string $response): string
-    {
+    protected function parseResponse(
+        string $response
+    ): string {
         synapse()->tags->each(
             function ($tag) use (&$response) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";

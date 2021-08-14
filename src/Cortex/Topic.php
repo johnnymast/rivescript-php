@@ -40,7 +40,7 @@ class Topic
     public $responses;
 
     /**
-     * Create a new Branch instance.
+     * Create a new Topic instance.
      *
      * @param  string  $name
      */

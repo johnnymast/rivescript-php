@@ -76,7 +76,7 @@ class ResponseQueue extends Collection
     private function validateResponse(string $response, ResponseQueueItem $item)
     {
         $response = $this->parseTags($response, synapse()->input);
-
+//
         foreach (synapse()->responses as $class) {
             if (ucfirst($item->type) == $class and class_exists("\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}")) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}";

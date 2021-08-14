@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The base class of Responses.
+ * Regex helper trait.
  *
  * @package      Rivescript-php
  * @subpackage   Core

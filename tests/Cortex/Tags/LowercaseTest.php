@@ -48,10 +48,3 @@ it("will transform <lowercase> as alias of {lowercase}<star>{/lowercase} (Multi-
 
     $this->assertEquals($expected, $actual);
 });
-
-it("will return undefined if no * is used to translate <lowercase>", function () {
-    $expected = "roger this is undefined with angled brackets.";
-    $actual = $this->rivescript->reply("lowercase test 5");
-
-    $this->assertEquals($expected, $actual);
-});
