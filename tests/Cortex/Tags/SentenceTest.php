@@ -40,10 +40,3 @@ it("will transform <sentence> as alias of {sentence}<star>{/sentence} (Single-Se
 
     $this->assertEquals($expected, $actual);
 });
-
-it("will return undefined if no * is used to translate <sentence>", function () {
-    $expected = "roger this is: undefined. angled bracket";
-    $actual = $this->rivescript->reply("sentence test 4");
-
-    $this->assertEquals($expected, $actual);
-});

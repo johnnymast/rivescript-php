@@ -17,6 +17,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class ChatCommand
@@ -50,6 +51,9 @@ class ChatCommand extends Command
         $this->setName('chat')
             ->setDescription('Chat with a Rivescript instance')
             ->addArgument('source', InputArgument::REQUIRED, 'Your Rivescript source file');
+
+//        $this->addOption('debug', 'd', \Symfony\Component\Console\Input\InputOption::VALUE_NONE);
+//        $this->addOption('utf8', 'u', \Symfony\Component\Console\Input\InputOption::VALUE_NONE);
     }
 
     /**

@@ -49,10 +49,3 @@ it("will transform <formal> as alias of {formal}<star>{/formal} (Multi-Word)", f
 
     $this->assertEquals($expected, $actual);
 });
-
-it("will return undefined if no * is used to translate <formal>", function () {
-    $expected = "roger this is undefined. angled bracket";
-    $actual = $this->rivescript->reply("formal test 5");
-
-    $this->assertEquals($expected, $actual);
-});
