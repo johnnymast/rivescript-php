@@ -31,7 +31,7 @@ class Lowercase extends Tag
     protected $pattern = '/({)lowercase(})(.+?)({)\/lowercase(})|(<)lowercase(>)/u';
 
     /**
-     * Parse the response.
+     * Parse the source.
      *
      * @param  string  $source  The string containing the Tag.
      * @param  Input   $input   The input information.

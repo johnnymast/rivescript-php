@@ -13,14 +13,16 @@
 namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
 use Axiom\Collections\Collection;
-use Axiom\Rivescript\Cortex\Input;
 use Axiom\Rivescript\Cortex\Node;
+use Axiom\Rivescript\Traits\Tags;
 
 /**
  * Class ResponseQueue
  */
 class ResponseQueue extends Collection
 {
+
+    use Tags;
 
     /**
      * A container with responses.
@@ -76,7 +78,7 @@ class ResponseQueue extends Collection
     private function validateResponse(string $response, ResponseQueueItem $item)
     {
         $response = $this->parseTags($response, synapse()->input);
-//
+
         foreach (synapse()->responses as $class) {
             if (ucfirst($item->type) == $class and class_exists("\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}")) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}";
@@ -91,28 +93,6 @@ class ResponseQueue extends Collection
         }
 
         return false;
-    }
-
-    /**
-     * Parse the response through the available tags.
-     *
-     * @param  string  $response  The response string to parse.
-     * @param  Input   $input     Input contains information about the user.
-     *
-     * @return string
-     */
-    protected function parseTags(string $response, Input $input): string
-    {
-        synapse()->tags->each(
-            function ($tag) use (&$response, $input) {
-                $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
-                $tagClass = new $class('trigger');
-
-                $response = $tagClass->parse($response, $input);
-            }
-        );
-
-        return $response;
     }
 
     /**
