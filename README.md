@@ -50,13 +50,14 @@ Hello Human
 The Rivescript community is thankful for those who contributed to the project. Some of the people featured below contributed code or suggested tweaks to the package. Once again thanks, we could not have done it without you.
 
 
+<p>
+    <a href="https://github.com/axiom-labs/rivescript-php/graphs/contributors">
+      <img src="https://contrib.rocks/image?repo=axiom-labs/rivescript-php" />
+    </a>
+</p>
 
-<a href="https://github.com/axiom-labs/rivescript-php/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=axiom-labs/rivescript-php" />
-</a>
-<br/>
 
-For more information checkout the [authors page](Authors.md).
+<p>For more information checkout the [authors page](Authors.md).</p>
 
 # Important: Working Draft
 
