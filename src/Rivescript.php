@@ -24,21 +24,21 @@ class Rivescript
      */
     public function __construct()
     {
-        include 'bootstrap.php';
+        include __DIR__.'/bootstrap.php';
     }
 
     /**
      * Load RiveScript documents from files.
      *
-     * @param  array<string>  $files The files to read
+     * @param  array<string>|string  $files The files to read
      *
      * @return void
      */
     public function load($files)
     {
-        $files = (!is_array($files)) ? (array)$files : $files;
+        $collection = (!is_array($files)) ? (array)$files : $files;
 
-        foreach ($files as $file) {
+        foreach ($collection as $file) {
             synapse()->brain->teach($file);
         }
     }
