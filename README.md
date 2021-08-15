@@ -54,7 +54,7 @@ The Rivescript community is thankful for those who contributed to the project. S
 <a href="https://github.com/axiom-labs/rivescript-php/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=axiom-labs/rivescript-php" />
 </a>
-
+<br/>
 For more information checkout the [authors page](Authors.md).
 
 # Important: Working Draft
