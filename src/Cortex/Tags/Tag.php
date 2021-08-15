@@ -87,6 +87,6 @@ abstract class Tag implements TagContract
      */
     protected function getMatches(string $source): array
     {
-        return $this->getMatchesFromPattern($this->pattern, $source);
+        return $this->getMatchesFromPattern($this->pattern, $source) ?? [];
     }
 }
