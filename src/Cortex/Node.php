@@ -222,7 +222,7 @@ class Node
             #   - The "begin" label must have only one argument ("begin")
             #   - "topic" labels must be lowercase but can inherit other topics ([A-Za-z0-9_\s])
             #   - "object" labels follow the same rules as "topic" labels, but don't need be lowercase
-            if ($this->matchesPattern("/^begin/", $this->value) == true
+            if ($this->matchesPattern("/^begin/", $this->value) === true
                 && $this->matchesPattern("/^begin$/", $this->value) === false) {
                 return "The 'begin' label takes no additional arguments, should be verbatim '> begin'";
             } elseif ($this->matchesPattern("/^topic/", $this->value) === true
@@ -245,10 +245,8 @@ class Node
                 if ($this->matchesPattern("/[A-Z\\.]/", $this->value) === true) {
                     return "Triggers can't contain uppercase letters, backslashes or dots in UTF-8 mode.";
                 }
-            } else {
-                if ($this->matchesPattern("/[^a-z0-9(\|)\[\]*_#\@{}<>=\s]/", $this->value) === true) {
-                    return "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =";
-                }
+            } elseif ($this->matchesPattern("/[^a-z0-9(\|)\[\]*_#\@{}<>=\s]/", $this->value) === true) {
+                return "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =";
             }
 
             $parens = 0; # Open parenthesis
@@ -306,7 +304,7 @@ class Node
             # * Condition
             #   Syntax for a conditional is as follows:
             #   * value symbol value => response
-            if ($this->matchesPattern("/.+?\s(==|eq|!=|ne|<>|<|<=|>|>=)\s.+?=>.+?$/", $this->value) == false) {
+            if ($this->matchesPattern("/.+?\s(==|eq|!=|ne|<>|<|<=|>|>=)\s.+?=>.+?$/", $this->value) === false) {
                 return "Invalid format for !Condition: should be like `* value symbol value => response`";
             }
         }
