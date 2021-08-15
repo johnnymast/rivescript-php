@@ -11,15 +11,26 @@
 
 namespace Axiom\Rivescript\Cortex;
 
+use Axiom\Collections\Collection;
+
 /**
  * The Synapse class.
+ *
+ * @property \Axiom\Collections\Collection $commands
+ * @property \Axiom\Collections\Collection $triggers
+ * @property \Axiom\Collections\Collection $tags
+ * @property \Axiom\Collections\Collection $responses
+ * @property \Axiom\Collections\Collection $conditions
+ * @property Memory                        $memory
+ * @property Brain                         $brain
+ * @property Input                         $input
  */
 class Synapse
 {
     /**
      * Object hash map.
      *
-     * @var array
+     * @var array[]
      */
     private $map = [];
 

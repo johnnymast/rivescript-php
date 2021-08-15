@@ -27,7 +27,7 @@ class ResponseQueue extends Collection
     /**
      * A container with responses.
      *
-     * @var Collection
+     * @var Collection<ResponseQueueItem>
      */
     protected $responses;
 
@@ -43,6 +43,8 @@ class ResponseQueue extends Collection
      * Attach a response to the queue.
      *
      * @param  Node  $node  The node contains information about the command.
+     *
+     * @return void
      */
     public function attach(Node $node)
     {
@@ -54,9 +56,9 @@ class ResponseQueue extends Collection
     /**
      * Sort the responses by order.
      *
-     * @param  Collection  $responses  The array containing the resources.
+     * @param  Collection<ResponseQueueItem>  $responses  The array containing the resources.
      *
-     * @return Collection
+     * @return Collection<ResponseQueueItem>
      */
     private function sortResponses(Collection $responses): Collection
     {
@@ -77,7 +79,7 @@ class ResponseQueue extends Collection
      */
     private function validateResponse(string $response, ResponseQueueItem $item)
     {
-        $response = $this->parseTags($response, synapse()->input);
+        $response = $this->parseTags($response);
 
         foreach (synapse()->responses as $class) {
             if (ucfirst($item->type) == $class and class_exists("\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}")) {
@@ -98,13 +100,14 @@ class ResponseQueue extends Collection
     /**
      * Determine the order of responses by type.
      *
-     * @param  Collection  $responses  The responses to inspect.
-     * @return Collection
+     * @param  Collection<ResponseQueueItem>  $responses  The responses to inspect.
+     *
+     * @return Collection<ResponseQueueItem>
      */
     private function determineResponseOrder(Collection $responses): Collection
     {
         return $responses->each(
-            function ($data, $response) use ($responses) {
+            function (ResponseQueueItem $data, $response) use ($responses) {
                 if (isset($data->type)) {
                     switch ($data->type) {
                         case 'condition':

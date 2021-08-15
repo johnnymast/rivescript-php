@@ -11,6 +11,7 @@
 
 namespace Axiom\Rivescript\Console;
 
+use Axiom\Rivescript\Exceptions\ParseException;
 use Axiom\Rivescript\Rivescript;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Question\Question;
@@ -62,9 +63,9 @@ class ChatCommand extends Command
      * @param  InputInterface   $input   The input interface the message came from.
      * @param  OutputInterface  $output  The output interface to output the response to.
      *
-     * @return void
+     * @return int
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $source = $this->loadFiles($input->getArgument('source'));
@@ -90,6 +91,8 @@ class ChatCommand extends Command
 
             log_warning($e->getMessage());
         }
+
+        return 0;
     }
 
     /**
@@ -119,9 +122,9 @@ class ChatCommand extends Command
      * @param  OutputInterface  $output   The output interface to output the response to.
      * @param  string           $message  The message typed in the console.
      *
-     * @return void
+     * @return int
      */
-    protected function listenForConsoleCommands(InputInterface $input, OutputInterface $output, string $message)
+    protected function listenForConsoleCommands(InputInterface $input, OutputInterface $output, string $message): int
     {
         if ($message === '/quit') {
             $output->writeln('Exiting...');
@@ -145,6 +148,8 @@ class ChatCommand extends Command
 
             $this->waitForUserInput($input, $output);
         }
+
+        return 0;
     }
 
     /**
@@ -172,7 +177,7 @@ class ChatCommand extends Command
      *
      * @param  string  $files  One file or directory of rivescript files.
      *
-     * @return array
+     * @return array<string>
      */
     private function loadFiles(string $files): array
     {

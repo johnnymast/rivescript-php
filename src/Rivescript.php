@@ -30,7 +30,9 @@ class Rivescript
     /**
      * Load RiveScript documents from files.
      *
-     * @param  array|string  $files
+     * @param  array<string>  $files The files to read
+     *
+     * @return void
      */
     public function load($files)
     {

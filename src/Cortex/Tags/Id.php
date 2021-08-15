@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Id extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 

@@ -34,7 +34,7 @@ class Input
     /**
      * The user id.
      *
-     * @var int
+     * @var string
      */
     protected $user;
 

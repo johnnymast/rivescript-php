@@ -202,7 +202,7 @@ class Node
     /**
      * Check the syntax
      *
-     * @return mixed
+     * @return string
      */
     public function checkSyntax(): string
     {
@@ -311,7 +311,7 @@ class Node
             }
         }
 
-        return false;
+        return "";
     }
 
     /**

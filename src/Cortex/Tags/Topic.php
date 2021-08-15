@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Topic extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 

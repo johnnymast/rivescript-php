@@ -73,9 +73,9 @@ class Trigger implements Command
      * Sort triggers based on type and word count from
      * largest to smallest.
      *
-     * @param  Collection  $triggers  A collection of triggers.
+     * @param  Collection<array> $triggers  A collection of triggers.
      *
-     * @return Collection
+     * @return Collection<array>
      */
     protected function sortTriggers(Collection $triggers): Collection
     {
@@ -92,9 +92,9 @@ class Trigger implements Command
     /**
      * Determine the order in the triggers.
      *
-     * @param  Collection  $triggers  A collection of triggers.
+     * @param  Collection<array>  $triggers  A collection of triggers.
      *
-     * @return Collection
+     * @return Collection<array>
      */
     protected function determineTypeCount(Collection $triggers): Collection
     {
@@ -126,9 +126,9 @@ class Trigger implements Command
      * Sort triggers based on word count from
      * largest to smallest.
      *
-     * @param  Collection  $triggers  A collection of triggers.
+     * @param  Collection<array>  $triggers  A collection of triggers.
      *
-     * @return Collection
+     * @return Collection<array>
      */
     protected function determineWordCount(Collection $triggers): Collection
     {

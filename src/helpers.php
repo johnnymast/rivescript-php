@@ -29,7 +29,7 @@ if (!function_exists('dd')) {
     /**
      * Dump the passed variable(s) and end the script.
      *
-     * @param  dynamic  mixed The information to dump.
+     * param  mixed  $args  The information to dump.
      *
      * @return void
      */
@@ -62,12 +62,12 @@ if (!function_exists('log_debug')) {
     /**
      * Log the message and contextual array as a new debug entry.
      *
-     * @param  string  $message  The message to output.
-     * @param  array   $context  The context for the message.
+     * @param  string   $message  The message to output.
+     * @param  array[]  $context  The context for the message.
      *
-     * @return Logger
+     * @return bool
      */
-    function log_debug(string $message, array $context = [])
+    function log_debug(string $message, array $context = []): bool
     {
         $logger = new Logger();
 
@@ -80,11 +80,11 @@ if (!function_exists('log_warning')) {
      * Log the message and contextual array as a new warning entry.
      *
      * @param  string  $message  The message to output.
-     * @param  array   $context  The context for the message.
+     * @param  array[]   $context  The context for the message.
      *
-     * @return Logger
+     * @return bool
      */
-    function log_warning(string $message, array $context = []): Logger
+    function log_warning(string $message, array $context = []): bool
     {
         $logger = new Logger();
 

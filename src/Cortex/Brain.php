@@ -23,7 +23,7 @@ class Brain
     /**
      * A collection of topics.
      *
-     * @var Branch
+     * @var array<Topic>
      */
     protected $topics;
 
@@ -41,7 +41,7 @@ class Brain
      *
      * @param  string  $file  The Rivescript file to read.
      *
-     * @throws ParseException
+     * @return void
      */
     public function teach(string $file)
     {

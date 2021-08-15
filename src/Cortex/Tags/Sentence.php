@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Sentence extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
@@ -59,7 +59,7 @@ class Sentence extends Tag
             if ($sub !== 'undefined') {
                 if (strpos($sub, '.') > -1) {
                     $parts = explode('.', $sub);
-                    if (count($parts) > 0) {
+                    if (count($parts) !== 0) {
                         array_walk($parts, function (&$part) {
                             $part = ucfirst(trim($part));
                         });

@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Random extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
@@ -62,7 +62,7 @@ class Random extends Tag
 
                 $words = explode($separator, $matches[1]);
 
-                if (count($words) > 0) {
+                if (count($words) !== 0) {
                     $rnd = array_rand($words);
                     $data = str_replace($found, $words[$rnd], $data);
                 }

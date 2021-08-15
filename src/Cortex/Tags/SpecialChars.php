@@ -20,7 +20,7 @@ class SpecialChars extends Tag
 {
 
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
