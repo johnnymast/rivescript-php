@@ -48,9 +48,9 @@ class Sentence extends Tag
             $matches = $this->getMatches($source)[0];
             $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
-            if ($matches[0] == '<sentence>' and count($wildcards) > 0) {
+            if ($matches[0] === '<sentence>' and is_array($wildcards) === true and count($wildcards) > 0) {
                 $sub = $wildcards[0];
-            } elseif ($matches[1] == '{' && isset($matches[3])) {
+            } elseif ($matches[1] === '{' && isset($matches[3])) {
                 $sub = $matches[3];
             } else {
                 $sub = 'undefined';

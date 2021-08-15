@@ -49,9 +49,9 @@ class Uppercase extends Tag
             $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
             foreach ($matches as $match) {
-                if ($matches[0] == '<uppercase>' and count($wildcards) > 0) {
+                if ($matches[0] === '<uppercase>' and is_array($wildcards) === true and count($wildcards) > 0) {
                     $sub = strtoupper($wildcards[0]);
-                } elseif ($matches[1] == '{' && isset($matches[3])) {
+                } elseif ($matches[1] === '{' && isset($matches[3])) {
                     $sub = strtoupper($matches[3]);
                 } else {
                     $sub = 'undefined';

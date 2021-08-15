@@ -52,12 +52,12 @@ class InlineRedirect extends Tag
             $target = null;
             $key = null;
 
-            if ($matches[0] == "<@>" and count($wildcards) > 0) {
+            if ($matches[0] === "<@>" and is_array($wildcards) === true and count($wildcards) > 0) {
                 $target = $wildcards[0];
 
                 $key = synapse()->memory->shortTerm()->get('trigger');
                 $trigger = synapse()->brain->topic()->triggers()->get($key);
-            } elseif ($matches[1] == '{') {
+            } elseif ($matches[1] === '{') {
                 $target = $matches[2];
 
                 $key = $input->source();
