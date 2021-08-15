@@ -241,7 +241,7 @@ class Node
             #   - No symbols except: ( | ) [ ] * _ # @ { } < > =
             #   - All brackets should be matched
 
-            if ($this->allowUtf8 == true) {
+            if ($this->allowUtf8 === true) {
                 if ($this->matchesPattern("/[A-Z\\.]/", $this->value) === true) {
                     return "Triggers can't contain uppercase letters, backslashes or dots in UTF-8 mode.";
                 }
