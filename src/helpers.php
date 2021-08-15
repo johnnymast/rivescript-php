@@ -79,8 +79,8 @@ if (!function_exists('log_warning')) {
     /**
      * Log the message and contextual array as a new warning entry.
      *
-     * @param  string  $message  The message to output.
-     * @param  array[]   $context  The context for the message.
+     * @param  string   $message  The message to output.
+     * @param  array[]  $context  The context for the message.
      *
      * @return bool
      */

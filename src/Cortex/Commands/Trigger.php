@@ -11,10 +11,10 @@
 
 namespace Axiom\Rivescript\Cortex\Commands;
 
-use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
-use Axiom\Rivescript\Contracts\Command;
 use Axiom\Collections\Collection;
+use Axiom\Rivescript\Contracts\Command;
 use Axiom\Rivescript\Cortex\Node;
+use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
 
 /**
  * Class Trigger
