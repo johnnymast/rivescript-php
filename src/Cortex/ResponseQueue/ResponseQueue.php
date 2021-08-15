@@ -106,6 +106,7 @@ class ResponseQueue extends Collection
      */
     private function determineResponseOrder(Collection $responses): Collection
     {
+        // @phpstan-ignore-next-line
         return $responses->each(
             function (ResponseQueueItem $data, $response) use ($responses) {
                 if (isset($data->type)) {

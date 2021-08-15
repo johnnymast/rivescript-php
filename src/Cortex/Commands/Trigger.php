@@ -16,6 +16,9 @@ use Axiom\Rivescript\Contracts\Command;
 use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\Node;
 
+/**
+ * Class Trigger
+ */
 class Trigger implements Command
 {
     /**
@@ -98,7 +101,8 @@ class Trigger implements Command
      */
     protected function determineTypeCount(Collection $triggers): Collection
     {
-        $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
+        // @phpstan-ignore-next-line
+        return $triggers->each(function ($data, $trigger) use ($triggers) {
             if (isset($data['type'])) {
                 switch ($data['type']) {
                     case 'atomic':
@@ -118,8 +122,6 @@ class Trigger implements Command
                 $triggers->put($trigger, $data);
             }
         });
-
-        return $triggers;
     }
 
     /**
@@ -132,12 +134,11 @@ class Trigger implements Command
      */
     protected function determineWordCount(Collection $triggers): Collection
     {
-        $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
+        // @phpstan-ignore-next-line
+        return $triggers->each(function ($data, $trigger) use ($triggers) {
             $data['order'] = count(explode(' ', $trigger));
 
             $triggers->put($trigger, $data);
         });
-
-        return $triggers;
     }
 }

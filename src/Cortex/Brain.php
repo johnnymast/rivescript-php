@@ -50,13 +50,13 @@ class Brain
         $lineNumber = 0;
 
         while (!$script->eof()) {
-//            $currentCommand = null;
             $line = $script->fgets();
             $node = new Node($line, $lineNumber++);
 
             if ($node->isInterrupted() or $node->isComment()) {
                 continue;
             }
+
 
             $commands->each(function ($command) use ($node) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
