@@ -25,24 +25,10 @@ The RiveScript PHP interpreter is framework agnostic. As such, the interpreter c
 - Hello Human
 
 ```
-
-```php
-
-require 'vendor/autoload.php';
-use \Axiom\Rivescript\Rivescript;
-
-$message = 'hello bot';
-$rivescript = new Rivescript();
-$rivescript->load('example.rive');
-
-echo $rivescript->reply($message);
-
-```
+![Getting started](images/example.png)
 
 <i>Output</i>
-```bash
-Hello Human
-```
+![Getting started shell output](images/shell.png)
 ---
 
 # Important: Working Draft
@@ -50,3 +36,10 @@ Hello Human
 The RiveScript Working Draft (WD) is a document that defines the standards for how RiveScript should work, from an implementation-agnostic point of view. The Working Draft should be followed when contributing to the RiveScript-PHP interpreter. If any of the current implementations don't do what the Working Draft says they should, this is considered to be a bug and you can file a bug report or send a pull request.
 
 You may find the latest version on the RiveScript website at http://www.rivescript.com/wd/RiveScript.
+
+
+# Contributors 
+
+<a href="https://github.com/axiom-labs/rivescript-php/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=axiom-labs/rivescript-php" />
+</a>
