@@ -60,7 +60,7 @@ class Sentence extends Tag
                 if (strpos($sub, '.') > -1) {
                     $parts = explode('.', $sub);
                     if (count($parts) !== 0) {
-                        array_walk($parts, function (&$part) {
+                        array_walk($parts, function(&$part) {
                             $part = ucfirst(trim($part));
                         });
                     }

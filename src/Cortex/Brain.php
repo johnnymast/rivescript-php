@@ -57,7 +57,7 @@ class Brain
                 continue;
             }
 
-            $commands->each(function ($command) use ($node) {
+            $commands->each(function($command) use ($node) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
                 $commandClass = new $class();
                 $commandClass->parse($node);
