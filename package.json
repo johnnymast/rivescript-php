@@ -15,7 +15,5 @@
   "scripts": {
     "test": "node_modules/gulp/bin/gulp.js"
   },
-  "devDependencies": {
-
-  }
+  "devDependencies": {}
 }
