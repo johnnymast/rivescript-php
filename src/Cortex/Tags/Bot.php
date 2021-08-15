@@ -11,7 +11,7 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
  * Class Bot
@@ -33,12 +33,12 @@ class Bot extends Tag
     /**
      * Parse the source.
      *
-     * @param  string  $source  The string containing the Tag.
-     * @param  Input   $input   The input information.
+     * @param  string       $source  The string containing the Tag.
+     * @param  SourceInput  $input   The input information.
      *
      * @return string
      */
-    public function parse(string $source, Input $input): string
+    public function parse(string $source, SourceInput $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;
@@ -51,7 +51,7 @@ class Bot extends Tag
             foreach ($matches as $match) {
                 $value = 'undefined';
 
-                if (isset($variables[$match[1]]) == true) {
+                if (isset($variables[$match[1]]) === true) {
                     $value = $variables[$match[1]];
                 }
                 $source = str_replace($match[0], $value, $source);
