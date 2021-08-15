@@ -64,3 +64,7 @@ For more information checkout the [authors page](Authors.md).
 The RiveScript Working Draft (WD) is a document that defines the standards for how RiveScript should work, from an implementation-agnostic point of view. The Working Draft should be followed when contributing to the RiveScript-PHP interpreter. If any of the current implementations don't do what the Working Draft says they should, this is considered to be a bug and you can file a bug report or send a pull request.
 
 You may find the latest version on the RiveScript website at http://www.rivescript.com/wd/RiveScript.
+
+
+
+
