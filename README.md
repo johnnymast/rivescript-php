@@ -57,7 +57,7 @@ The Rivescript community is thankful for those who contributed to the project. S
 </p>
 
 
-<p>For more information checkout the [authors page](Authors.md).</p>
+For more information checkout the [authors page](Authors.md).
 
 # Important: Working Draft
 
