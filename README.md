@@ -3,6 +3,7 @@
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://tldrlegal.com/license/mit-license)
 [![Build & Unit Test](https://github.com/axiom-labs/rivescript-php/actions/workflows/Phpunit.yml/badge.svg)](https://github.com/axiom-labs/rivescript-php/actions/workflows/Phpunit.yml)
 [![Phpcs](https://github.com/axiom-labs/rivescript-php/actions/workflows/Phpcs.yaml/badge.svg)](https://github.com/axiom-labs/rivescript-php/actions/workflows/Phpcs.yaml)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/johnnymast/rivescript-php/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/johnnymast/rivescript-php/?branch=develop)
 
 This is a RiveScript interpreter library for PHP. RiveScript is a simple scripting language for chatbots with a friendly, easy to learn syntax.
 
