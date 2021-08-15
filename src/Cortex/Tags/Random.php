@@ -49,7 +49,7 @@ class Random extends Tag
         while ($this->hasMatches($data)) {
             $matches = $this->getMatches($data)[0];
 
-            if (isset($matches[1]) == true) {
+            if (isset($matches[1]) === true) {
                 $found = $matches[0];
 
                 if (strpos($matches[1], '|')) {
