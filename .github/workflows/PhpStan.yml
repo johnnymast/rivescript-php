@@ -3,11 +3,15 @@ name: Phpstan
 on: [push]
 
 jobs:
-  build-test:
+  phpstan:
+    name: phpstan
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-      - uses: php-actions/composer@v5 # or alternative dependency management
-      - uses: php-actions/phpstan@v2
-    # ... then your own project steps ...
+      - name: Checkout project
+        uses: actions/checkout@v2
+      - name: Run phpstan
+        uses: actions-x/phpstan@v1
+        with:
+          directories: src tests
+          level: 3
+          phpstanVersion: ^0.12
