@@ -103,6 +103,7 @@ class ResponseQueue extends Collection
      * @param  Collection<ResponseQueueItem>  $responses  The responses to inspect.
      *
      * @return Collection<ResponseQueueItem>
+     * @noinspection PhpVoidFunctionResultUsedInspection
      */
     private function determineResponseOrder(Collection $responses): Collection
     {

@@ -84,7 +84,6 @@ class Trigger implements Command
     {
         $triggers = $this->determineWordCount($triggers);
         $triggers = $this->determineTypeCount($triggers);
-
         $triggers = $triggers->sort(function ($current, $previous) {
             return ($current['order'] < $previous['order']) ? -1 : 1;
         })->reverse();
