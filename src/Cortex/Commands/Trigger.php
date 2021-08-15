@@ -76,7 +76,7 @@ class Trigger implements Command
      * Sort triggers based on type and word count from
      * largest to smallest.
      *
-     * @param  Collection<array> $triggers  A collection of triggers.
+     * @param  Collection<array>  $triggers  A collection of triggers.
      *
      * @return Collection<array>
      */
@@ -84,11 +84,9 @@ class Trigger implements Command
     {
         $triggers = $this->determineWordCount($triggers);
         $triggers = $this->determineTypeCount($triggers);
-        $triggers = $triggers->sort(function ($current, $previous) {
+        return $triggers->sort(function ($current, $previous) {
             return ($current['order'] < $previous['order']) ? -1 : 1;
         })->reverse();
-
-        return $triggers;
     }
 
     /**
