@@ -225,11 +225,11 @@ class Node
             if ($this->matchesPattern("/^begin/", $this->value) == true
                 && $this->matchesPattern("/^begin$/", $this->value) === false) {
                 return "The 'begin' label takes no additional arguments, should be verbatim '> begin'";
-            } elseif ($this->matchesPattern("/^topic/", $this->value) == true
-                && $this->matchesPattern("/[^a-z0-9_\-\s]/", $this->value) == true) {
+            } elseif ($this->matchesPattern("/^topic/", $this->value) === true
+                && $this->matchesPattern("/[^a-z0-9_\-\s]/", $this->value) === true) {
                 return "Topics should be lowercased and contain only numbers and letters!";
-            } elseif ($this->matchesPattern("/^object/", $this->value) == true
-                && $this->matchesPattern("/[^a-z0-9_\-\s]/", $this->value) == true) {
+            } elseif ($this->matchesPattern("/^object/", $this->value) === true
+                && $this->matchesPattern("/[^a-z0-9_\-\s]/", $this->value) === true) {
                 return "Objects can only contain numbers and lowercase letters!";
             }
         } elseif (starts_with($this->source, '+') || starts_with($this->source, '%')
@@ -242,11 +242,11 @@ class Node
             #   - All brackets should be matched
 
             if ($this->allowUtf8 == true) {
-                if ($this->matchesPattern("/[A-Z\\.]/", $this->value) == true) {
+                if ($this->matchesPattern("/[A-Z\\.]/", $this->value) === true) {
                     return "Triggers can't contain uppercase letters, backslashes or dots in UTF-8 mode.";
                 }
             } else {
-                if ($this->matchesPattern("/[^a-z0-9(\|)\[\]*_#\@{}<>=\s]/", $this->value) == true) {
+                if ($this->matchesPattern("/[^a-z0-9(\|)\[\]*_#\@{}<>=\s]/", $this->value) === true) {
                     return "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =";
                 }
             }
@@ -302,7 +302,7 @@ class Node
             || starts_with($this->source, '/')) {
             # - Trigger, ^ Continue, / Comment
             # These commands take verbatim arguments, so their syntax is loose.
-        } elseif (starts_with($this->source, '*') === true && $this->isComment() == false) {
+        } elseif (starts_with($this->source, '*') === true && $this->isComment() === false) {
             # * Condition
             #   Syntax for a conditional is as follows:
             #   * value symbol value => response
