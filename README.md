@@ -45,12 +45,21 @@ Hello Human
 ```
 ---
 
+# Contributors
+
+The Rivescript community is thankful for those who contributed to the project. Some of the people featured below contributed code or suggested tweaks to the package. Once again thanks, we could not have done it without you.
+
+
+
+<a href="https://github.com/axiom-labs/rivescript-php/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=axiom-labs/rivescript-php" />
+</a>
+
+For more information checkout the [authors page](Authors.md).
+
 # Important: Working Draft
 
 The RiveScript Working Draft (WD) is a document that defines the standards for how RiveScript should work, from an implementation-agnostic point of view. The Working Draft should be followed when contributing to the RiveScript-PHP interpreter. If any of the current implementations don't do what the Working Draft says they should, this is considered to be a bug and you can file a bug report or send a pull request.
 
 You may find the latest version on the RiveScript website at http://www.rivescript.com/wd/RiveScript.
 
-<a href="https://github.com/axiom-labs/rivescript-php/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=axiom-labs/rivescript-php" />
-</a>
