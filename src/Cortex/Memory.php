@@ -181,7 +181,7 @@ class Memory
      *
      * @return Collection<string, mixed>
      */
-    public function user(string $user = '0'): Collection
+    public function user(string $user = 'local-user'): Collection
     {
         if (!$this->user->has($user)) {
             $data = new Collection([]);
