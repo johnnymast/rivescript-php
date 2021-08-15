@@ -33,8 +33,8 @@ class NotEquals extends Condition implements ConditionContract
         if ($this->matchesPattern($pattern, $source) === true) {
             $matches = $this->getMatchesFromPattern($pattern, $source);
 
-            if (isset($matches[0]) == true and count($matches[0]) >= 2) {
-                if ($matches[0][1] != $matches[0][3]) {
+            if (isset($matches[0]) === true and count($matches[0]) >= 2) {
+                if ($matches[0][1] !== $matches[0][3]) {
                     return trim($matches[0][4]);
                 }
             }
