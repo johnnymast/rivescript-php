@@ -98,7 +98,6 @@ class Trigger implements Command
      */
     protected function determineTypeCount(Collection $triggers): Collection
     {
-        // @phpstan-ignore-next-line
         return $triggers->each(function ($data, $trigger) use ($triggers) {
             if (isset($data['type'])) {
                 switch ($data['type']) {
@@ -131,7 +130,6 @@ class Trigger implements Command
      */
     protected function determineWordCount(Collection $triggers): Collection
     {
-        // @phpstan-ignore-next-line
         return $triggers->each(function ($data, $trigger) use ($triggers) {
             $data['order'] = count(explode(' ', $trigger));
 
