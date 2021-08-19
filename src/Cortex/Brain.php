@@ -36,39 +36,38 @@ class Brain
     }
 
     /**
-     * Teach the brain contents of a new file source.
+     * Teach the brain contents of a new information.
      *
-     * @param string $file The Rivescript file to read.
+     * @param resource $stream the stream to read from.
      *
      * @return void
      */
-    public function teach(string $file)
+    public function teach($stream)
     {
         $commands = synapse()->commands;
-        $script = new SplFileObject($file);
-        $lastNode = null;
-        $lineNumber = 0;
 
-        while (!$script->eof()) {
-            $line = $script->fgets();
-            $node = new Node($line, $lineNumber++);
+        if (is_resource($stream)) {
+            $lastNode = null;
+            $lineNumber = 0;
 
-            if ($node->isInterrupted() or $node->isComment()) {
-                continue;
+            rewind($stream);
+            while (!feof($stream)) {
+                $line = fgets($stream);
+                $node = new Node($line, $lineNumber++);
+
+                echo "LINE: {$line}";
+
+                if ($node->isInterrupted() or $node->isComment()) {
+                    continue;
+                }
+
+                $commands->each(function ($command) use ($node) {
+                    $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
+                    $commandClass = new $class();
+                    $commandClass->parse($node);
+                });
             }
-
-            $commands->each(function ($command) use ($node) {
-                $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
-                $commandClass = new $class();
-                $commandClass->parse($node);
-            });
         }
-    }
-
-
-    public function readFromStream($stream)
-    {
-
     }
 
     /**

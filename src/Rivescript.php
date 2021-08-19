@@ -11,43 +11,85 @@
 
 namespace Axiom\Rivescript;
 
+use Axiom\Rivescript\Cortex\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Cortex\Input;
 use Axiom\Rivescript\Cortex\Output;
 
 /**
  * The main Rivescript client.
  */
-class Rivescript
+class Rivescript extends ContentLoader
 {
     /**
      * Create a new Rivescript instance.
+     *
+     * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      */
     public function __construct()
     {
-        include __DIR__.'/bootstrap.php';
+        parent::__construct();
+
+        include __DIR__ . '/bootstrap.php';
     }
 
     /**
-     * Load RiveScript documents from files.
+     * Load Rivescript interpretable content.
+     * Into the Interpreter.
      *
-     * @param  array<string>|string  $files The files to read
+     * Please note: This supports
+     *
+     * - Directory path to Rivescript interpretable files.
+     * - Array of absolute paths to Rivescript interpretable files
+     * - Absolute string containing path to Rivescript interpretable file.
+     * - A stream of text with Rivescript interpretable script.
+     *
+     * Please note 2:
+     *
+     * If you profile a directory with rivescript documents make sure they are
+     * all interpretable rivescript will throw syntax errors while trying to
+     * parse those files.
+     *
+     * @param array<string>|string $info The files to read
      *
      * @return void
      */
-    public function load($files)
+    public function load($info)
     {
-        $collection = (!is_array($files)) ? (array)$files : $files;
+        parent::load($info);
+        $this->processInformation();
+        //synapse()->brain->teach($file);
+    }
 
-        foreach ($collection as $file) {
-            synapse()->brain->teach($file);
-        }
+    /**
+     * Stream new information into the brain.
+     *
+     * @param string $string The string of information to feed the brain.
+     *
+     * @return void
+     */
+    public function stream(string $string)
+    {
+        $this->writeToMemory($string);
+        $this->processInformation();
+    }
+
+    /**
+     * Process new information in the
+     * stream.
+     *
+     * @return void
+     */
+    private function processInformation()
+    {
+        synapse()->brain->teach($this->getStream());
     }
 
     /**
      * Make the client respond to a message.
      *
-     * @param  string  $message  The message the client has to process and respond to.
-     * @param  string  $user     The user id.
+     * @param string $message The message the client has to process and respond to.
+     * @param string $user    The user id.
+     *
      * @return string
      */
     public function reply(string $message, string $user = 'local-user'): string
