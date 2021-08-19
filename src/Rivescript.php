@@ -57,7 +57,6 @@ class Rivescript extends ContentLoader
     {
         parent::load($info);
         $this->processInformation();
-        //synapse()->brain->teach($file);
     }
 
     /**
