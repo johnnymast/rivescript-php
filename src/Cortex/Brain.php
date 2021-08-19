@@ -33,13 +33,12 @@ class Brain
     public function __construct()
     {
         $this->createTopic('random');
-//        $this->createTopic('condition');
     }
 
     /**
      * Teach the brain contents of a new file source.
      *
-     * @param  string  $file  The Rivescript file to read.
+     * @param string $file The Rivescript file to read.
      *
      * @return void
      */
@@ -47,6 +46,7 @@ class Brain
     {
         $commands = synapse()->commands;
         $script = new SplFileObject($file);
+        $lastNode = null;
         $lineNumber = 0;
 
         while (!$script->eof()) {
@@ -65,10 +65,17 @@ class Brain
         }
     }
 
+
+    public function readFromStream($stream)
+    {
+
+    }
+
     /**
      * Return a topic.
      *
-     * @param  string|null  $name  The name of the topic to return.
+     * @param string|null $name The name of the topic to return.
+     *
      * @return mixed|null
      */
     public function topic(string $name = null)
@@ -87,7 +94,8 @@ class Brain
     /**
      * Create a new Topic.
      *
-     * @param  string  $name  The name of the topic to create.
+     * @param string $name The name of the topic to create.
+     *
      * @return Topic
      */
     public function createTopic(string $name): Topic
