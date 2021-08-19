@@ -23,7 +23,7 @@ Simply install the package through Composer.
 composer require axiom/rivescript
 ```
 
-***Please Note, *** Since Rivescript-php does not (yet) have a stable version you will be installing the dev-master
+***Please Note,*** Since Rivescript-php does not (yet) have a stable version you will be installing the dev-master
 version of the project.
 
 ## Integration
