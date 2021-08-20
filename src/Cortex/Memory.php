@@ -22,56 +22,61 @@ class Memory
     /**
      * A collection of person variables.
      *
-     * @var Collection
+     * @var Collection<string, mixed>
      */
     protected $person;
 
     /**
      * A collection of short term memory items.
      *
-     * @var Collection
+     * @var Collection<string, mixed>
      */
     protected $shortTerm;
 
     /**
      * A collection of substitutes.
      *
-     * @var Collection
+     * @var Collection<string, mixed>
      */
     protected $substitute;
 
     /**
-     * A Collection of the latest Input's
-     *
-     * @var
-     */
-    protected $inputs;
-
-    /**
-     * A Collection of the latest replies.
-     *
-     * @var
-     */
-    protected $replies;
-
-    /**
      * A collection of variables.
      *
-     * @var Collection
+     * @var Collection<string, mixed>
      */
     protected $variables;
 
     /**
      * A collection of user variables.
      *
-     * @var Collection
+     * @var Collection<string, mixed>
      */
     protected $user;
 
     /**
-     * @var Collection
+     * @var Collection<string, mixed>
      */
     protected $global;
+
+    /**
+     * @var Collection<string, mixed>
+     */
+    private $arrays;
+
+    /**
+     * A Collection of the latest Input's
+     *
+     * @var MiniStack<int, string>
+     */
+    protected $inputs;
+
+    /**
+     * A Collection of the latest replies.
+     *
+     * @var MiniStack<int, string>
+     */
+    protected $replies;
 
     /**
      * Create a new Memory instance.
@@ -92,7 +97,7 @@ class Memory
     /**
      * Stored global variables.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function global(): Collection
     {
@@ -102,7 +107,7 @@ class Memory
     /**
      * Stored person variables.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function person(): Collection
     {
@@ -112,7 +117,7 @@ class Memory
     /**
      * Short-term memory cache.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function shortTerm(): Collection
     {
@@ -122,7 +127,7 @@ class Memory
     /**
      * Stored substitute variables.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function substitute(): Collection
     {
@@ -132,7 +137,7 @@ class Memory
     /**
      * Stored variables.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function variables(): Collection
     {
@@ -142,7 +147,7 @@ class Memory
     /**
      * Return the latest 9 inputs.
      *
-     * @return mixed
+     * @return MiniStack<int, string>
      */
     public function inputs(): MiniStack
     {
@@ -152,7 +157,7 @@ class Memory
     /**
      * Return the latest 9 replies.
      *
-     * @return mixed
+     * @return MiniStack<int, string>
      */
     public function replies(): MiniStack
     {
@@ -162,7 +167,7 @@ class Memory
     /**
      * Stored arrays.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function arrays(): Collection
     {
@@ -174,9 +179,9 @@ class Memory
      *
      * @param  string  $user  The user to store information for.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
-    public function user(string $user = '0'): Collection
+    public function user(string $user = 'local-user'): Collection
     {
         if (!$this->user->has($user)) {
             $data = new Collection([]);

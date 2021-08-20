@@ -20,7 +20,7 @@ use Monolog\Handler\StreamHandler;
 class Logger
 {
     /**
-     * @var Logger
+     * @var \Monolog\Logger
      */
     protected $logger;
 
@@ -37,7 +37,7 @@ class Logger
      * Adds a log record at the DEBUG level.
      *
      * @param  string  $message  The log message
-     * @param  array   $context  The log context
+     * @param  array[]   $context  The log context
      *
      * @return bool Whether the record has been processed
      */
@@ -50,7 +50,7 @@ class Logger
      * Adds a log record at the WARNING level.
      *
      * @param  string  $message  The log message
-     * @param  array   $context  The log context
+     * @param  array[]   $context  The log context
      *
      * @return bool Whether the record has been processed
      */

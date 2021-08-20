@@ -11,7 +11,7 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
  * Random class
@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Sentence extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
@@ -33,12 +33,12 @@ class Sentence extends Tag
     /**
      * Parse the source.
      *
-     * @param  string  $source  The string containing the Tag.
-     * @param  Input   $input   The input information.
+     * @param  string       $source  The string containing the Tag.
+     * @param  SourceInput  $input   The input information.
      *
      * @return string
      */
-    public function parse(string $source, Input $input): string
+    public function parse(string $source, SourceInput $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;
@@ -48,9 +48,9 @@ class Sentence extends Tag
             $matches = $this->getMatches($source)[0];
             $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
-            if ($matches[0] == '<sentence>' and count($wildcards) > 0) {
+            if ($matches[0] === '<sentence>' and is_array($wildcards) === true and count($wildcards) > 0) {
                 $sub = $wildcards[0];
-            } elseif ($matches[1] == '{' && isset($matches[3])) {
+            } elseif ($matches[1] === '{' && isset($matches[3])) {
                 $sub = $matches[3];
             } else {
                 $sub = 'undefined';
@@ -59,7 +59,7 @@ class Sentence extends Tag
             if ($sub !== 'undefined') {
                 if (strpos($sub, '.') > -1) {
                     $parts = explode('.', $sub);
-                    if (count($parts) > 0) {
+                    if (count($parts) !== 0) {
                         array_walk($parts, function (&$part) {
                             $part = ucfirst(trim($part));
                         });

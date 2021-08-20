@@ -28,6 +28,21 @@ abstract class Tag implements TagContract
     protected $sourceType;
 
     /**
+     * Store the allowed sources.
+     *
+     * @var array<string>
+     */
+    protected $allowedSources = [];
+
+    /**
+     * Defines the Regex structure
+     * for a tag.
+     *
+     * @var string
+     */
+    protected $pattern = '';
+
+    /**
      * Create a new Tag instance.
      *
      * @param  string  $sourceType
@@ -68,10 +83,10 @@ abstract class Tag implements TagContract
      *
      * @param  string  $source
      *
-     * @return array
+     * @return array[]
      */
     protected function getMatches(string $source): array
     {
-        return $this->getMatchesFromPattern($this->pattern, $source);
+        return $this->getMatchesFromPattern($this->pattern, $source) ?? [];
     }
 }

@@ -48,7 +48,8 @@
     "squizlabs/php_codesniffer": "*",
     "phpunit/phpunit": "^9.5.5",
     "monolog/monolog": "~1.0",
-    "pestphp/pest": "^1.14"
+    "pestphp/pest": "^1.14",
+    "phpstan/phpstan": "^0.12.94"
   },
   "extra": {
     "branch-alias": {

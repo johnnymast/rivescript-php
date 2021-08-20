@@ -11,7 +11,7 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
  * Class InlineRedirect
@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class InlineRedirect extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
@@ -33,12 +33,12 @@ class InlineRedirect extends Tag
     /**
      * Parse the source.
      *
-     * @param  string  $source  The string containing the Tag.
-     * @param  Input   $input   The input information.
+     * @param  string       $source  The string containing the Tag.
+     * @param  SourceInput  $input   The input information.
      *
      * @return string
      */
-    public function parse(string $source, Input $input): string
+    public function parse(string $source, SourceInput $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;
@@ -52,12 +52,12 @@ class InlineRedirect extends Tag
             $target = null;
             $key = null;
 
-            if ($matches[0] == "<@>" and count($wildcards) > 0) {
+            if ($matches[0] === "<@>" and is_array($wildcards) === true and count($wildcards) > 0) {
                 $target = $wildcards[0];
 
                 $key = synapse()->memory->shortTerm()->get('trigger');
                 $trigger = synapse()->brain->topic()->triggers()->get($key);
-            } elseif ($matches[1] == '{') {
+            } elseif ($matches[1] === '{') {
                 $target = $matches[2];
 
                 $key = $input->source();

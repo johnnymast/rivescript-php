@@ -39,7 +39,7 @@ trait Regex
      * @param  string  $pattern  The pattern to match.
      * @param  string  $source   The source to match in.
      *
-     * @return array|bool
+     * @return array[]|bool
      */
     protected function getMatchesFromPattern(string $pattern, string $source)
     {

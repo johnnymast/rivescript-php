@@ -28,14 +28,14 @@ class Topic
     /**
      * The triggers for this Topic.
      *
-     * @var array
+     * @var Collection<string, mixed>
      */
     public $triggers;
 
     /**
      * The responses for this Topic.
      *
-     * @var
+     * @var Collection<string, mixed>
      */
     public $responses;
 
@@ -54,7 +54,7 @@ class Topic
     /**
      * Return triggers associated with this branch.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function triggers(): Collection
     {
@@ -64,7 +64,7 @@ class Topic
     /**
      * Return the responses associated with this branch.
      *
-     * @return Collection
+     * @return Collection<string, mixed>
      */
     public function responses(): Collection
     {

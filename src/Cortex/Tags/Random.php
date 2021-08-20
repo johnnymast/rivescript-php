@@ -11,7 +11,7 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
  * Random class
@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Random extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
@@ -33,12 +33,12 @@ class Random extends Tag
     /**
      * Parse the source.
      *
-     * @param  string  $source  The string containing the Tag.
-     * @param  Input   $input   The input information.
+     * @param  string       $source  The string containing the Tag.
+     * @param  SourceInput  $input   The input information.
      *
      * @return string
      */
-    public function parse(string $source, Input $input): string
+    public function parse(string $source, SourceInput $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;
@@ -49,7 +49,7 @@ class Random extends Tag
         while ($this->hasMatches($data)) {
             $matches = $this->getMatches($data)[0];
 
-            if (isset($matches[1]) == true) {
+            if (isset($matches[1]) === true) {
                 $found = $matches[0];
 
                 if (strpos($matches[1], '|')) {
@@ -62,7 +62,7 @@ class Random extends Tag
 
                 $words = explode($separator, $matches[1]);
 
-                if (count($words) > 0) {
+                if (count($words) !== 0) {
                     $rnd = array_rand($words);
                     $data = str_replace($found, $words[$rnd], $data);
                 }
