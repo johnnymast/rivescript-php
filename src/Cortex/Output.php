@@ -97,6 +97,11 @@ class Output
     {
         $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
 
+
+        if (!$originalTrigger['responses']) {
+            $this->output = "Error: Response could not be determined.";
+            return $this->output;
+        }
         /**
          * Get the best suitable response from
          * the ResponseQueue.
