@@ -11,11 +11,14 @@
 
 namespace Axiom\Rivescript\Cortex\Commands;
 
-use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
-use Axiom\Rivescript\Contracts\Command;
 use Axiom\Collections\Collection;
+use Axiom\Rivescript\Contracts\Command;
 use Axiom\Rivescript\Cortex\Node;
+use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
 
+/**
+ * Class Trigger
+ */
 class Trigger implements Command
 {
     /**
@@ -73,32 +76,29 @@ class Trigger implements Command
      * Sort triggers based on type and word count from
      * largest to smallest.
      *
-     * @param  Collection  $triggers  A collection of triggers.
+     * @param  Collection<array>  $triggers  A collection of triggers.
      *
-     * @return Collection
+     * @return Collection<array>
      */
     protected function sortTriggers(Collection $triggers): Collection
     {
         $triggers = $this->determineWordCount($triggers);
         $triggers = $this->determineTypeCount($triggers);
-
-        $triggers = $triggers->sort(function ($current, $previous) {
+        return $triggers->sort(function ($current, $previous) {
             return ($current['order'] < $previous['order']) ? -1 : 1;
         })->reverse();
-
-        return $triggers;
     }
 
     /**
      * Determine the order in the triggers.
      *
-     * @param  Collection  $triggers  A collection of triggers.
+     * @param  Collection<array>  $triggers  A collection of triggers.
      *
-     * @return Collection
+     * @return Collection<array>
      */
     protected function determineTypeCount(Collection $triggers): Collection
     {
-        $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
+        return $triggers->each(function ($data, $trigger) use ($triggers) {
             if (isset($data['type'])) {
                 switch ($data['type']) {
                     case 'atomic':
@@ -118,26 +118,22 @@ class Trigger implements Command
                 $triggers->put($trigger, $data);
             }
         });
-
-        return $triggers;
     }
 
     /**
      * Sort triggers based on word count from
      * largest to smallest.
      *
-     * @param  Collection  $triggers  A collection of triggers.
+     * @param  Collection<array>  $triggers  A collection of triggers.
      *
-     * @return Collection
+     * @return Collection<array>
      */
     protected function determineWordCount(Collection $triggers): Collection
     {
-        $triggers = $triggers->each(function ($data, $trigger) use ($triggers) {
+        return $triggers->each(function ($data, $trigger) use ($triggers) {
             $data['order'] = count(explode(' ', $trigger));
 
             $triggers->put($trigger, $data);
         });
-
-        return $triggers;
     }
 }

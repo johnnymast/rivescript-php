@@ -11,7 +11,7 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
  * Random class
@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Lowercase extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
@@ -33,12 +33,12 @@ class Lowercase extends Tag
     /**
      * Parse the source.
      *
-     * @param  string  $source  The string containing the Tag.
-     * @param  Input   $input   The input information.
+     * @param  string       $source  The string containing the Tag.
+     * @param  SourceInput  $input   The input information.
      *
      * @return string
      */
-    public function parse(string $source, Input $input): string
+    public function parse(string $source, SourceInput $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;
@@ -49,9 +49,9 @@ class Lowercase extends Tag
             $wildcards = synapse()->memory->shortTerm()->get('wildcards');
 
             foreach ($matches as $match) {
-                if ($matches[0] == '<lowercase>' and count($wildcards) > 0) {
+                if ($matches[0] === '<lowercase>' and is_array($wildcards) === true and count($wildcards) > 0) {
                     $sub = strtolower($wildcards[0]);
-                } elseif ($matches[1] == '{' && isset($matches[3])) {
+                } elseif ($matches[1] === '{' && isset($matches[3])) {
                     $sub = strtolower($matches[3]);
                 } else {
                     $sub = 'undefined';

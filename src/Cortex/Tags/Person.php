@@ -11,7 +11,7 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
  * Class Get
@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\Input;
 class Person extends Tag
 {
     /**
-     * @var array
+     * @var array<string>
      */
     protected $allowedSources = ['response'];
 
@@ -33,12 +33,12 @@ class Person extends Tag
     /**
      * Parse the source.
      *
-     * @param  string  $source  The string containing the Tag.
-     * @param  Input   $input   The input information.
+     * @param  string       $source  The string containing the Tag.
+     * @param  SourceInput  $input   The input information.
      *
      * @return string
      */
-    public function parse(string $source, Input $input): string
+    public function parse(string $source, SourceInput $input): string
     {
         if (!$this->sourceAllowed()) {
             return $source;
@@ -52,7 +52,7 @@ class Person extends Tag
             $replacements = synapse()->memory->person()->values()->all();
 
             foreach ($matches as $match) {
-                if ($match[0] == '<person>' and count($wildcards) > 0) {
+                if ($match[0] == '<person>' and is_array($wildcards) === true and count($wildcards) > 0) {
                     $sub = preg_replace($patterns, $replacements, $wildcards[0]) ?? 'undefined';
 
                     /**
@@ -64,7 +64,7 @@ class Person extends Tag
                     if ($sub === $wildcards[0]) {
                         $sub = 'undefined';
                     }
-                } elseif ($match[1] == '{') {
+                } elseif ($match[1] === '{') {
                     $key = '/\b'.preg_quote($match[3], '/').'\b/';
                     $sub = synapse()->memory->person()->get($key) ?? 'undefined';
                 } else {

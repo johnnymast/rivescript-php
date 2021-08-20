@@ -50,7 +50,8 @@ class MiniStack extends Collection
             $keys = array_keys($this->all());
             $this->remove($keys[0]);
         }
-        return parent::push($value);
+
+        parent::push($value);
     }
 
     /**

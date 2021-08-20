@@ -23,7 +23,7 @@ class Brain
     /**
      * A collection of topics.
      *
-     * @var Branch
+     * @var array<Topic>
      */
     protected $topics;
 
@@ -33,43 +33,48 @@ class Brain
     public function __construct()
     {
         $this->createTopic('random');
-//        $this->createTopic('condition');
     }
 
     /**
-     * Teach the brain contents of a new file source.
+     * Teach the brain contents of a new information.
      *
-     * @param  string  $file  The Rivescript file to read.
+     * @param resource $stream the stream to read from.
      *
-     * @throws ParseException
+     * @return void
      */
-    public function teach(string $file)
+    public function teach($stream)
     {
         $commands = synapse()->commands;
-        $script = new SplFileObject($file);
-        $lineNumber = 0;
 
-        while (!$script->eof()) {
-//            $currentCommand = null;
-            $line = $script->fgets();
-            $node = new Node($line, $lineNumber++);
+        if (is_resource($stream)) {
+            $lastNode = null;
+            $lineNumber = 0;
 
-            if ($node->isInterrupted() or $node->isComment()) {
-                continue;
+            rewind($stream);
+            while (!feof($stream)) {
+                $line = fgets($stream);
+                $node = new Node($line, $lineNumber++);
+
+                echo "LINE: {$line}";
+
+                if ($node->isInterrupted() or $node->isComment()) {
+                    continue;
+                }
+
+                $commands->each(function ($command) use ($node) {
+                    $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
+                    $commandClass = new $class();
+                    $commandClass->parse($node);
+                });
             }
-
-            $commands->each(function ($command) use ($node) {
-                $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
-                $commandClass = new $class();
-                $commandClass->parse($node);
-            });
         }
     }
 
     /**
      * Return a topic.
      *
-     * @param  string|null  $name  The name of the topic to return.
+     * @param string|null $name The name of the topic to return.
+     *
      * @return mixed|null
      */
     public function topic(string $name = null)
@@ -88,7 +93,8 @@ class Brain
     /**
      * Create a new Topic.
      *
-     * @param  string  $name  The name of the topic to create.
+     * @param string $name The name of the topic to create.
+     *
      * @return Topic
      */
     public function createTopic(string $name): Topic

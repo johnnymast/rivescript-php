@@ -16,12 +16,6 @@ namespace Axiom\Rivescript\Cortex;
  */
 class Output
 {
-    /**
-     * The data to input.
-     *
-     * @var array
-     */
-    protected $data;
 
     /**
      * Information of where the information came from.
@@ -97,9 +91,9 @@ class Output
      *
      * @param  string  $trigger  The trigger to get a response for.
      *
-     * @return void
+     * @return string
      */
-    protected function getResponse(string $trigger)
+    protected function getResponse(string $trigger): string
     {
         $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
 
@@ -128,7 +122,7 @@ class Output
 // TODO:
 //        $key = array_rand($trigger['responses']);
 //        $this->output = $this->parseResponse($trigger['responses'][$key]);
-        return $output;
+//        return $output;
     }
 
     /**

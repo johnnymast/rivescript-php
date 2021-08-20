@@ -17,7 +17,7 @@ use Axiom\Rivescript\Traits\Regex;
 /**
  * Class Response
  */
-abstract class Response extends \SplObjectStorage
+abstract class Response
 {
     use Regex;
 
