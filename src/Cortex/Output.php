@@ -98,7 +98,8 @@ class Output
         $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
 
 
-        if (!$originalTrigger['responses']) {
+        // FIXME: Temp fix for rsts
+        if (isset($originalTrigger['responses']) == false) {
             $this->output = "Error: Response could not be determined.";
             return $this->output;
         }
