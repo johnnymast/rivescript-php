@@ -55,8 +55,6 @@ class Brain
                 $line = fgets($stream);
                 $node = new Node($line, $lineNumber++);
 
-                echo "LINE: {$line}";
-
                 if ($node->isInterrupted() or $node->isComment()) {
                     continue;
                 }
