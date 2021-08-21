@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the NotEquals class.
+ * Test the Weighted class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests
@@ -9,7 +9,7 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests\Cortex\Response\Weighted;
+namespace Tests\Cortex\Response;
 
 use Axiom\Rivescript\Rivescript;
 

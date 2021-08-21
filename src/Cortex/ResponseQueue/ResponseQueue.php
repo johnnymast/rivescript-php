@@ -42,7 +42,7 @@ class ResponseQueue extends Collection
     /**
      * Attach a response to the queue.
      *
-     * @param  Node  $node  The node contains information about the command.
+     * @param Node $node The node contains information about the command.
      *
      * @return void
      */
@@ -56,7 +56,7 @@ class ResponseQueue extends Collection
     /**
      * Sort the responses by order.
      *
-     * @param  Collection<ResponseQueueItem>  $responses  The array containing the resources.
+     * @param Collection<ResponseQueueItem> $responses The array containing the resources.
      *
      * @return Collection<ResponseQueueItem>
      */
@@ -72,8 +72,8 @@ class ResponseQueue extends Collection
     /**
      * Check if a response is allowed to be returned by the bot or not.
      *
-     * @param  string  $response  The response to validate.
-     * @param  ResponseQueueItem  $item  The ResponseQueueItem.
+     * @param string            $response The response to validate.
+     * @param ResponseQueueItem $item     The ResponseQueueItem.
      *
      * @return false|mixed
      */
@@ -98,12 +98,43 @@ class ResponseQueue extends Collection
     }
 
     /**
-     * Determine the order of responses by type.
+     * Merge the ^ continue responses to the last - response.
      *
-     * @param  Collection<ResponseQueueItem>  $responses  The responses to inspect.
+     * @param Collection<ResponseQueueItem> $responses The array containing the responses.
      *
      * @return Collection<ResponseQueueItem>
-     * @noinspection PhpVoidFunctionResultUsedInspection
+     */
+    protected function mergeContinues(Collection $responses): Collection
+    {
+        $lastData = $responses->first();
+        $lastResponse = "";
+        $responses->each(
+            function (ResponseQueueItem $data, $response) use (&$lastData, &$lastResponse, &$responses) {
+
+                if ($data->type == 'continue' && $lastData->command == '-') {
+                    $responses->remove($lastResponse);
+                    $responses->remove($response);
+
+                    $lastResponse .= $response;
+                    $responses->put($lastResponse, $lastData);
+                }
+
+                if ($data->command !== '^') {
+                    $lastData = $data;
+                    $lastResponse = $response;
+                }
+            }
+        );
+
+        return $responses;
+    }
+
+    /**
+     * Determine the order of responses by type.
+     *
+     * @param Collection<ResponseQueueItem> $responses The responses to inspect.
+     *
+     * @return Collection<ResponseQueueItem>
      */
     private function determineResponseOrder(Collection $responses): Collection
     {
@@ -129,7 +160,8 @@ class ResponseQueue extends Collection
     /**
      * Determine the response type.
      *
-     * @param  string  $response
+     * @param string $response
+     *
      * @return string
      */
     public function determineResponseType(string $response): string
@@ -137,7 +169,8 @@ class ResponseQueue extends Collection
         $wildcards = [
             'weighted' => '{weight=(.+?)}',
             'condition' => '/^\*/',
-            'atomic' => '/^-/',
+            'continue' => '/^\^/',
+            'atomic' => '/-/',
         ];
 
         foreach ($wildcards as $type => $pattern) {
@@ -156,11 +189,9 @@ class ResponseQueue extends Collection
      */
     public function process()
     {
+        $this->responses = $this->mergeContinues($this->responses);
         $this->responses = $this->determineResponseOrder($this->responses);
 
-//        echo "REPONSES\n";
-//        print_r($this->responses);
-//        exit;
         $validResponses = new Collection([]);
         foreach ($this->responses as $response => $item) {
             $result = $this->validateResponse($response, $item);

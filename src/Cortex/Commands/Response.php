@@ -28,7 +28,7 @@ class Response implements Command
      */
     public function parse(Node $node)
     {
-        if ($node->command() === '-' || $node->command() == '*') {
+        if ($node->command() === '-' || $node->command() == '*' || $node->command() == '^') {
             $topic = synapse()->memory->shortTerm()->get('topic') ?: 'random';
             $key = synapse()->memory->shortTerm()->get('trigger');
             $trigger = synapse()->brain->topic($topic)->triggers()->get($key);
