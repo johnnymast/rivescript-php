@@ -9,7 +9,7 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests\Cortex\Response\Weighted;
+namespace Tests\Cortex\Response;
 
 use Axiom\Rivescript\Rivescript;
 

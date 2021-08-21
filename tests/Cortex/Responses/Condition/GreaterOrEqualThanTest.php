@@ -9,7 +9,7 @@
  * @author       Johnny Mast <mastjohnny@gmail.com>
  */
 
-namespace Tests\Cortex\Responses\Condition;
+namespace Tests\Cortex\Responses;
 
 use Axiom\Rivescript\Rivescript;
 
