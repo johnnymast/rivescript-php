@@ -97,7 +97,14 @@ class ResponseQueue extends Collection
         return false;
     }
 
-    private function mergeContinues(Collection $responses): Collection
+    /**
+     * Merge the ^ continue responses to the last - response.
+     *
+     * @param Collection<ResponseQueueItem> $responses The array containing the responses.
+     *
+     * @return Collection<ResponseQueueItem>
+     */
+    protected function mergeContinues(Collection $responses): Collection
     {
         $lastData = $responses->first();
         $lastResponse = "";
@@ -128,7 +135,6 @@ class ResponseQueue extends Collection
      * @param Collection<ResponseQueueItem> $responses The responses to inspect.
      *
      * @return Collection<ResponseQueueItem>
-     * @noinspection PhpVoidFunctionResultUsedInspection
      */
     private function determineResponseOrder(Collection $responses): Collection
     {
