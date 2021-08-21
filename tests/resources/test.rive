@@ -193,3 +193,10 @@
 + weight test
 - i am 2 kilo{weight=2000}
 - i am 1 kilo{weight=1000}
+
++ tell me a poem
+- Little Miss Muffit sat on her tuffet\n
+^ in a nonchalant sort of way.\n
+^ With her forcefield around her,\n
+^ the Spider, the bounder,\n
+^ Is not in the picture today.

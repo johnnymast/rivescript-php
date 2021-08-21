@@ -84,7 +84,8 @@ $synapse->responses = Axiom\Collections\Collection::make(
     [
         'Atomic',
         'Condition',
-        'Weighted'
+        'Weighted',
+        'ContinueResponse',
     ]
 );
 
