@@ -40,11 +40,12 @@ it('translates <reply1> to <reply9> to the client\'s last 9 replies', function (
     synapse()->memory->user('local-user')->put("points", 0);
 
     // 9 Actual replies
-    for ($i = 1; $i < 10; $i++) {
+    for ($i = 0; $i < 10; $i++) {
         $this->rivescript->reply("Add point 1");
     }
 
     $actual = synapse()->memory->replies()->all();
+    $actual = array_values($actual);
     $expected = [
         "Your points are now 1",
         "Your points are now 2",
