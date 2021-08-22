@@ -57,13 +57,15 @@ $synapse->triggers = Axiom\Collections\Collection::make(
 $synapse->tags = Axiom\Collections\Collection::make(
     [
         'Star',
-        'Bot',
-        'Topic',
-        'Env',
+        'Set',
+        'Get',
         'Add',
         'Sub',
         'Mult',
         'Div',
+        'Bot',
+        'Topic',
+        'Env',
         'Random',
         "Id",
         'Input',
@@ -75,8 +77,7 @@ $synapse->tags = Axiom\Collections\Collection::make(
         'SpecialChars',
         'Formal',
         'Person',
-        'Set',
-        'Get',
+
     ]
 );
 
