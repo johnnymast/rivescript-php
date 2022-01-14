@@ -1,13 +1,13 @@
 <?php
-
-/**
- * Bootstrap the Rivescript client.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Client
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 
 /*
 |--------------------------------------------------------------------------
@@ -34,15 +34,16 @@ $synapse = new Axiom\Rivescript\Cortex\Synapse();
 
 $synapse->commands = Axiom\Collections\Collection::make(
     [
+        'VariablePerson',
+        'VariableSubstitute',
+        'VariableGlobal',
+        'VariableLocal',
+        'VariableArray',
+        'Variable',
         'Redirect',
         'Response',
         'Topic',
         'Trigger',
-        'Variable',
-        'VariablePerson',
-        'VariableSubstitute',
-        'VariableGlobal',
-        'VariableArray'
     ]
 );
 
@@ -54,39 +55,70 @@ $synapse->triggers = Axiom\Collections\Collection::make(
     ]
 );
 
+/**
+ * Within Replies
+ * The order that the tags should be processed within a response or anywhere else that a tag is allowed is as follows:
+ *
+ * <star>      # Static text macros
+ * <input>     #
+ * <reply>     #
+ * <id>        #
+ * \s          #
+ * \n          #
+ * \\          #
+ * \#          #
+ * {random}    # Random text insertion (which may contain other tags)
+ * <bot>       # Insert bot variables
+ * <env>       # Insert environment variables
+ * <person>    # String modifiers
+ * <formal>    #
+ * <sentence>  #
+ * <uppercase> #
+ * <lowercase> #
+ * <set>       # User variable modifiers
+ * <add>       #
+ * <sub>       #
+ * <mult>      #
+ * <div>       #
+ * <get>       # Get user variables
+ * {topic}     # Set user topic
+ * <@>         # Inline redirection
+ */
 $synapse->tags = Axiom\Collections\Collection::make(
     [
         'Star',
+        'Input',
+        'Reply',
+        "Id",
+        'SpecialChars',
+        'Random',
+        'Bot',
+        'Env',
+        'Person',
+        'Formal',
+        'Sentence',
+        'Uppercase',
+        'Lowercase',
         'Set',
-        'Get',
         'Add',
         'Sub',
         'Mult',
         'Div',
-        'Bot',
+        'Get',
         'Topic',
-        'Env',
-        'Random',
-        "Id",
-        'Input',
-        'Reply',
-        'Uppercase',
-        'Lowercase',
-        'Sentence',
         'InlineRedirect',
-        'SpecialChars',
-        'Formal',
-        'Person',
+        // call here
+
 
     ]
 );
 
 $synapse->responses = Axiom\Collections\Collection::make(
     [
+        'ContinueResponse',
         'Atomic',
         'Condition',
         'Weighted',
-        'ContinueResponse',
     ]
 );
 

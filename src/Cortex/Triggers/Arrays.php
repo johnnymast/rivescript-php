@@ -1,12 +1,11 @@
 <?php
-
-/**
- * This class will parse the Arrays Trigger.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Triggers
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Triggers;
@@ -16,14 +15,26 @@ use Axiom\Rivescript\Cortex\Input;
 
 /**
  * Arrays class
+ *
+ * The Atomic class determines if a provided trigger
+ * is an array.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Triggers
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class Arrays extends Trigger
 {
     /**
      * Parse the trigger.
      *
-     * @param  string  $trigger  The trigger to parse.
-     * @param  Input   $input    Input information.
+     * @param string $trigger The trigger to parse.
+     * @param Input  $input   Input information.
      *
      * @return bool
      */
@@ -44,13 +55,13 @@ class Arrays extends Trigger
                 }
             }
 
-            if (@preg_match_all('/'.$trigger.'$/ui', $input->source(), $stars)) {
-                array_shift($stars);
+            if (@preg_match_all('/' . $trigger . '$/ui', $input->source(), $wildcards)) {
+                array_shift($wildcards);
 
-                if ($stars) {
-                    $stars = Collection::make($stars)->flatten()->all();
+                if ($wildcards) {
+                    $wildcards = Collection::make($wildcards)->flatten()->all();
 
-                    synapse()->memory->shortTerm()->put('wildcards', $stars);
+                    synapse()->memory->shortTerm()->put('wildcards', $wildcards);
                 }
 
                 return true;

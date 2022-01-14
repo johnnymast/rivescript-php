@@ -1,12 +1,11 @@
 <?php
-
-/**
- * A node contains a line from rivescript files.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Cortex
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex;
@@ -15,7 +14,19 @@ use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\MiniStack\MiniStack;
 
 /**
- * The memory class.
+ * Memory class
+ *
+ * The memory class stores information about different
+ * parts of the brain (short or long term).
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class Memory
 {
@@ -24,59 +35,71 @@ class Memory
      *
      * @var Collection<string, mixed>
      */
-    protected $person;
+    protected Collection $person;
 
     /**
      * A collection of short term memory items.
      *
      * @var Collection<string, mixed>
      */
-    protected $shortTerm;
+    protected Collection $shortTerm;
 
     /**
      * A collection of substitutes.
      *
      * @var Collection<string, mixed>
      */
-    protected $substitute;
+    protected Collection $substitute;
 
     /**
      * A collection of variables.
      *
      * @var Collection<string, mixed>
      */
-    protected $variables;
+    protected Collection $variables;
 
     /**
      * A collection of user variables.
      *
      * @var Collection<string, mixed>
      */
-    protected $user;
+    protected Collection $user;
 
     /**
      * @var Collection<string, mixed>
      */
-    protected $global;
+    protected Collection $global;
 
     /**
      * @var Collection<string, mixed>
      */
-    private $arrays;
+    protected Collection $local;
+
+    /**
+     * @var Collection<string, mixed>
+     */
+    private Collection $arrays;
 
     /**
      * A Collection of the latest Input's
      *
      * @var MiniStack<int, string>
      */
-    protected $inputs;
+    protected Collection $inputs;
 
     /**
      * A Collection of the latest replies.
      *
      * @var MiniStack<int, string>
      */
-    protected $replies;
+    protected Collection $replies;
+
+    /**
+     * A Collection of the tags.
+     *
+     * @var Collection<string, \Axiom\Rivescript\Cortex\Tags\Tag>
+     */
+    protected $tags;
 
     /**
      * Create a new Memory instance.
@@ -87,6 +110,17 @@ class Memory
         $this->substitute = Collection::make([]);
         $this->variables = Collection::make([]);
         $this->global = Collection::make([]);
+        $this->tags = Collection::make([]);
+
+        /**
+         * none -- the default, nothing is added when continuation lines are joined together.
+         * space -- continuation lines are joined by a space character (\s)
+         * newline -- continuation lines are joined by a line break character (\n)
+         */
+        $this->local = Collection::make([
+            'concat' => 'none'
+        ]);
+
         $this->arrays = Collection::make([]);
         $this->person = Collection::make([]);
         $this->user = Collection::make([]);
@@ -102,6 +136,16 @@ class Memory
     public function global(): Collection
     {
         return $this->global;
+    }
+
+    /**
+     * Stored parser variables.
+     *
+     * @return Collection<string, mixed>
+     */
+    public function local(): Collection
+    {
+        return $this->local;
     }
 
     /**
@@ -145,6 +189,16 @@ class Memory
     }
 
     /**
+     * Stored variables.
+     *
+     * @return Collection<string, mixed>
+     */
+    public function tags(): Collection
+    {
+        return $this->tags;
+    }
+
+    /**
      * Return the latest 9 inputs.
      *
      * @return MiniStack<int, string>
@@ -177,7 +231,7 @@ class Memory
     /**
      * Stored user data.
      *
-     * @param  string  $user  The user to store information for.
+     * @param string $user The user to store information for.
      *
      * @return Collection<string, mixed>
      */

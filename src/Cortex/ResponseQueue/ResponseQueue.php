@@ -1,13 +1,11 @@
 <?php
-
-/**
- * The ResponseQueue sorts responses order and
- * determines what responses are valid or not.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     ResponseQueue
- * @author       Johnny Mast <mastjohnny@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\ResponseQueue;
@@ -17,7 +15,19 @@ use Axiom\Rivescript\Cortex\Node;
 use Axiom\Rivescript\Traits\Tags;
 
 /**
- * Class ResponseQueue
+ * ResponseQueue class
+ *
+ * The ResponseQueue releases the responses in order of sending them
+ * back to the user.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\ResponseQueue
+ * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.4.0
  */
 class ResponseQueue extends Collection
 {
@@ -29,14 +39,36 @@ class ResponseQueue extends Collection
      *
      * @var Collection<ResponseQueueItem>
      */
-    protected $responses;
+    protected Collection $responses;
+
+    /**
+     * Store the local interpreter options
+     * for this instance in time (since they can change).
+     *
+     * @var array<string, string>
+     */
+    protected array $options = [];
+
+    /**
+     * The trigger string this ResponseQueue belongs to.
+     *
+     * @var string
+     */
+    protected string $trigger;
 
     /**
      * ResponseQueue constructor.
+     *
+     * @param string $trigger the trigger this queue belongs to.
      */
-    public function __construct()
+    public function __construct(string $trigger)
     {
+        parent::__construct();
+
         $this->responses = new Collection([]);
+        $this->trigger = $trigger;
+
+        $this->options = synapse()->memory->local()->all();
     }
 
     /**
@@ -46,11 +78,10 @@ class ResponseQueue extends Collection
      *
      * @return void
      */
-    public function attach(Node $node)
+    public function attach(Node $node): void
     {
         $type = $this->determineResponseType($node->source());
-
-        $this->responses->put($node->value(), new ResponseQueueItem($node->command(), $type, 0));
+        $this->responses->put($node->value(), new ResponseQueueItem($node->command(), $type, 0, $this->options));
     }
 
     /**
@@ -82,7 +113,7 @@ class ResponseQueue extends Collection
         $response = $this->parseTags($response);
 
         foreach (synapse()->responses as $class) {
-            if (ucfirst($item->type) == $class and class_exists("\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}")) {
+            if (class_exists("\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}")) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}";
                 $class = new $class($response, $item);
 
@@ -104,19 +135,44 @@ class ResponseQueue extends Collection
      *
      * @return Collection<ResponseQueueItem>
      */
-    protected function mergeContinues(Collection $responses): Collection
+    protected function concatContinues(Collection $responses): Collection
     {
         $lastData = $responses->first();
         $lastResponse = "";
-        $responses->each(
-            function (ResponseQueueItem $data, $response) use (&$lastData, &$lastResponse, &$responses) {
 
-                if ($data->type == 'continue' && $lastData->command == '-') {
-                    $responses->remove($lastResponse);
-                    $responses->remove($response);
+        $continues = Collection::make($responses->all());
+        $continues->each(
+            function (ResponseQueueItem $data, $response) use (&$lastData, &$lastResponse, &$continues) {
 
-                    $lastResponse .= $response;
-                    $responses->put($lastResponse, $lastData);
+                if ($data->type === 'continue') {
+                    $continues->remove($lastResponse);
+                    $continues->remove($response);
+
+                    /**
+                     * none -- the default, nothing is added when continuation lines are joined together.
+                     * space -- continuation lines are joined by a space character (\s)
+                     * newline -- continuation lines are joined by a line break character (\n)
+                     */
+
+                    $options = $lastData->options;
+                    $method = $options['concat'];
+
+                    switch ($method) {
+                        case 'space':
+                            $lastResponse .= " {$response}";
+                            break;
+
+                        case 'newline':
+                            $lastResponse .= "\n{$response}";
+                            break;
+
+                        case 'none':
+                        default:
+                            $lastResponse .= $response;
+                            break;
+                    }
+
+                    $continues->put($lastResponse, $lastData);
                 }
 
                 if ($data->command !== '^') {
@@ -126,7 +182,8 @@ class ResponseQueue extends Collection
             }
         );
 
-        return $responses;
+
+        return $continues;
     }
 
     /**
@@ -182,6 +239,7 @@ class ResponseQueue extends Collection
         return 'atomic';
     }
 
+
     /**
      * Process the Response Queue.
      *
@@ -189,11 +247,10 @@ class ResponseQueue extends Collection
      */
     public function process()
     {
-        $this->responses = $this->mergeContinues($this->responses);
-        $this->responses = $this->determineResponseOrder($this->responses);
+        $sortedResponses = $this->determineResponseOrder($this->responses);
 
         $validResponses = new Collection([]);
-        foreach ($this->responses as $response => $item) {
+        foreach ($sortedResponses as $response => $item) {
             $result = $this->validateResponse($response, $item);
 
             if ($result !== false) {
@@ -201,6 +258,7 @@ class ResponseQueue extends Collection
             }
         }
 
+        $validResponses = $this->concatContinues($validResponses);
         $validResponses = $this->sortResponses($validResponses);
 
         if ($validResponses->count() > 0) {

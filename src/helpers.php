@@ -1,12 +1,11 @@
 <?php
-
-/**
- * A set of global functions used in the project.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Legacy
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 use Axiom\Rivescript\Support\Str;
@@ -32,6 +31,7 @@ if (!function_exists('dd')) {
      * param  mixed  $args  The information to dump.
      *
      * @return void
+     * @noinspection ForgottenDebugOutputInspection
      */
     function dd()
     {
@@ -47,8 +47,8 @@ if (!function_exists('ends_with')) {
     /**
      * Determine if a given string ends with a given substring.
      *
-     * @param  string  $haystack  The containing string.
-     * @param  string  $needle    The needle to look for.
+     * @param string $haystack The containing string.
+     * @param string $needle   The needle to look for.
      *
      * @return bool
      */
@@ -62,16 +62,14 @@ if (!function_exists('log_debug')) {
     /**
      * Log the message and contextual array as a new debug entry.
      *
-     * @param  string   $message  The message to output.
-     * @param  array[]  $context  The context for the message.
+     * @param string  $message The message to output.
+     * @param array[] $context The context for the message.
      *
      * @return bool
      */
     function log_debug(string $message, array $context = []): bool
     {
-        $logger = new Logger();
-
-        return $logger->debug($message, $context);
+        return (new Logger())->debug($message, $context);
     }
 }
 
@@ -79,16 +77,14 @@ if (!function_exists('log_warning')) {
     /**
      * Log the message and contextual array as a new warning entry.
      *
-     * @param  string   $message  The message to output.
-     * @param  array[]  $context  The context for the message.
+     * @param string  $message The message to output.
+     * @param array[] $context The context for the message.
      *
      * @return bool
      */
     function log_warning(string $message, array $context = []): bool
     {
-        $logger = new Logger();
-
-        return $logger->warning($message, $context);
+        return (new Logger())->warning($message, $context);
     }
 }
 
@@ -97,7 +93,7 @@ if (!function_exists('remove_whitespace')) {
      * Trim leading and trailing whitespace as well as
      * whitespace surrounding individual arguments.
      *
-     * @param  string  $line  The line to remove whitespace from.
+     * @param string $line The line to remove whitespace from.
      *
      * @return string
      */
@@ -111,8 +107,8 @@ if (!function_exists('starts_with')) {
     /**
      * Determine if a given string starts with a given substring.
      *
-     * @param  string  $haystack  The containing string.
-     * @param  string  $needle    The needle to look for.
+     * @param string $haystack The containing string.
+     * @param string $needle   The needle to look for.
      *
      * @return bool
      */
