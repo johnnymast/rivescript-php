@@ -87,8 +87,8 @@ class Person extends Tag
                         $source = str_replace($match[0], $sub, $source);
                     }
                 } elseif ($match[1] === '{') {
-                    $key = "/\b" . preg_quote($match[3], '/') . "\b/";
-                    $sub = synapse()->memory->person()->get($key) ?? "undefined";
+                    $replacement = synapse()->memory->person()->get($match[3]) ?? "undefined";
+                    $source = str_replace($match[0], $replacement, $source);
                 }
             }
         }

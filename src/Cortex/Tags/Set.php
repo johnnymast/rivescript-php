@@ -41,7 +41,7 @@ class Set extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/<set (.+?)=(.+?)>/U";
+    protected string $pattern = '/<set (.+?)=(.+?)>/u';
 
     /**
      * Parse the source.
@@ -65,6 +65,7 @@ class Set extends Tag
                 $source = str_replace($match[0], '', $source);
             }
         }
+
 
         return $source;
     }

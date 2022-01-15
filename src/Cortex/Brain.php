@@ -106,7 +106,7 @@ class Brain
                 $node = new Node($line, $lineNumber++);
                 //    echo "LINE: {$line}";
 
-                if ($node->isInterrupted() === true || $node->isComment() === true) {
+                if ($node->isInterrupted() === true || $node->isComment() === true || $node->isEmpty()) {
                     continue;
                 }
 

@@ -40,8 +40,12 @@ class LessThan extends Condition implements ConditionContract
     {
         $pattern = "/^([\S]+) (<) ([\S]+) =>\s(.*)$/";
 
+        synapse()->brain->say("LESS THAN TRIGGERED");
+
         if ($this->matchesPattern($pattern, $source) === true) {
             $matches = $this->getMatchesFromPattern($pattern, $source);
+
+            synapse()->brain->say("{$matches[0][1] } less then {$matches[0][3]}?");
 
             if ((isset($matches[0]) === true && count($matches[0]) >= 2) && $matches[0][1] < $matches[0][3]) {
                 return $matches[0][4];

@@ -212,12 +212,11 @@ class Rivescript extends ContentLoader
 
 
         $input = new Input($msg, $user);
-        $output = new Output($input);
+        $output = new Output();
 
         synapse()->input = $input;
 
         $output = $output->process();
-//        $output = synapse()->brain->getReplies($user, $message, "normal", 0, $scope);
 
         synapse()->memory->inputs()->push($msg);
         synapse()->memory->replies()->push($output);

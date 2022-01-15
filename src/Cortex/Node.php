@@ -69,6 +69,14 @@ class Node
      */
     protected bool $isComment = false;
 
+
+    /**
+     * Is this an empty line.
+     *
+     * @var bool
+     */
+    public bool $isEmpty = false;
+
     /**
      * Is UTF8 modes enabled.
      *
@@ -87,6 +95,7 @@ class Node
         $this->source = remove_whitespace($source);
         $this->number = $number;
 
+        $this->determineEmpty();
         $this->determineComment();
         $this->determineCommand();
         $this->determineValue();
@@ -132,6 +141,11 @@ class Node
         return $this->number;
     }
 
+    public function isEmpty(): bool
+    {
+        return $this->isEmpty;
+    }
+
     /**
      * Returns true if node is a comment.
      *
@@ -166,6 +180,11 @@ class Node
         }
 
         $this->command = mb_substr($this->source, 0, 1);
+    }
+
+    protected function determineEmpty(): void
+    {
+        $this->isEmpty = empty(trim($this->source()));
     }
 
     /**

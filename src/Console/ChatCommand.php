@@ -63,7 +63,6 @@ class ChatCommand extends Command
             ->setDescription('Chat with a Rivescript instance')
             ->addArgument('source', InputArgument::REQUIRED, 'Your Rivescript source file');
 
-        dd('test');
     }
 
     /**

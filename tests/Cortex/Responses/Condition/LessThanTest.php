@@ -28,6 +28,7 @@ it('passes valid < condition', function () {
 });
 
 it('passes valid < condition using *', function () {
+
     $expected = "Yes that is correct. 31 is less than 33.";
     $actual = $this->rivescript->reply('Would you think 31 is less then 33');
 

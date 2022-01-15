@@ -63,7 +63,7 @@ class Wildcard extends Trigger
 
                 $wildcards = Collection::make($wildcards)->flatten()->all();
 
-                synapse()->memory->shortTerm()->put('wildcards', $wildcards);
+                synapse()->memory->shortTerm()->put("wildcards", $wildcards);
 
                 return true;
             }
