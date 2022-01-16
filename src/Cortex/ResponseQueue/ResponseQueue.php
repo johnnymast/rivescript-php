@@ -54,14 +54,14 @@ class ResponseQueue extends Collection
      *
      * @var string
      */
-    protected string $trigger;
+    protected string $trigger = "";
 
     /**
      * ResponseQueue constructor.
      *
      * @param string $trigger the trigger this queue belongs to.
      */
-    public function __construct(string $trigger)
+    public function __construct(string $trigger = "")
     {
         parent::__construct();
 
@@ -81,7 +81,8 @@ class ResponseQueue extends Collection
     public function attach(Node $node): void
     {
         $type = $this->determineResponseType($node->source());
-        $this->responses->put($node->value(), new ResponseQueueItem($node->command(), $type, 0, $this->options));
+        $queueItem =  new ResponseQueueItem($node->command(), $type, 0, $this->options);
+        $this->responses->put($node->value(), $queueItem);
     }
 
     /**
@@ -154,7 +155,6 @@ class ResponseQueue extends Collection
                      * space -- continuation lines are joined by a space character (\s)
                      * newline -- continuation lines are joined by a line break character (\n)
                      */
-
                     $options = $lastData->options;
                     $method = $options['concat'];
 
@@ -239,7 +239,6 @@ class ResponseQueue extends Collection
 
         return 'atomic';
     }
-
 
     /**
      * Process the Response Queue.

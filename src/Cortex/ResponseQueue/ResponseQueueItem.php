@@ -32,7 +32,7 @@ class ResponseQueueItem
      *
      * @var string
      */
-    public string $command = '';
+    public string $command = "";
 
     /**
      * The response type.
@@ -72,6 +72,8 @@ class ResponseQueueItem
     }
 
     /**
+     * Return the command string.
+     *
      * @return string
      */
     public function getCommand(): string

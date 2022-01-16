@@ -115,10 +115,10 @@ $synapse->tags = Axiom\Collections\Collection::make(
 
 $synapse->responses = Axiom\Collections\Collection::make(
     [
+        'Weighted',
         'ContinueResponse',
         'Atomic',
         'Condition',
-        'Weighted',
     ]
 );
 
