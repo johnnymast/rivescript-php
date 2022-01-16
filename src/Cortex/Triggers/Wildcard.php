@@ -58,7 +58,7 @@ class Wildcard extends Trigger
                 continue;
             }
 
-            if (@preg_match_all('/' . $parsedTrigger . '$/u', $input->source(), $wildcards)) {
+            if (@preg_match_all('/' . $parsedTrigger . '$/iu', $input->source(), $wildcards)) {
                 array_shift($wildcards);
 
                 $wildcards = Collection::make($wildcards)->flatten()->all();

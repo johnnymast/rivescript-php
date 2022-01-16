@@ -23,6 +23,7 @@ namespace Axiom\Rivescript\Cortex;
  * @property \Axiom\Collections\Collection $tags
  * @property \Axiom\Collections\Collection $responses
  * @property \Axiom\Collections\Collection $conditions
+ * @property \Axiom\Rivescript\Rivescript  $rivescript
  * @property Memory                        $memory
  * @property Brain                         $brain
  * @property Input                         $input

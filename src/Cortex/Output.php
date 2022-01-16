@@ -85,7 +85,7 @@ class Output
                 $found = $triggerClass->parse($trigger, synapse()->input);
 
                 if ($found === true) {
-                    synapse()->brain->say("Found trigger {$trigger}...");
+                    synapse()->rivescript->say("Found trigger {$trigger}...");
                     synapse()->memory->shortTerm()->put('trigger', $trigger);
                     $this->output = $this->getResponse($trigger);
                     return false;
@@ -104,10 +104,7 @@ class Output
     protected function getResponse(string $trigger): string
     {
 
-
-        $org = $trigger;
         $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
-        $all = synapse()->brain->topic($topic)->triggers();
         $originalTrigger = synapse()->brain->topic($topic)->triggers()->get($trigger);
 
         // FIXME: Temp fix for rsts
@@ -135,12 +132,13 @@ class Output
              * user input changes from the line that triggered "Trigger A" to
              * be "Trigger A" as the user input.
              */
-            synapse()->brain->say("{trigger} triggered a redirect to {$processedTrigger['redirect']}");
+            synapse()->rivescript->say("{trigger} triggered a redirect to {$processedTrigger['redirect']}");
 
             $input = new Input($processedTrigger['redirect'], 0);
             $this->input = $input;
             synapse()->input = new Input($processedTrigger['redirect'], 0);
-            $this->process();
+
+            $output .= $this->getResponse($processedTrigger['redirect']);
         }
 
         return $output;
@@ -155,14 +153,12 @@ class Output
      */
     protected function parseResponse(string $response): string
     {
-        synapse()->brain->say("Start response is {$response}");
         synapse()->tags->each(
             function ($tag) use (&$response) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
                 $tagClass = new $class();
 
                 $response = $tagClass->parse($response, synapse()->input);
-                synapse()->brain->say("Response is {$response} used tag {$tag}");
             }
         );
 

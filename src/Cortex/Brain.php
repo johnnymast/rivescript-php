@@ -50,30 +50,6 @@ class Brain
     }
 
     /**
-     * Log a message to say.
-     *
-     * @param string $message
-     *
-     * @return void
-     */
-    public function say(string $message): void
-    {
-        echo "SAY: {$message}\n";
-    }
-
-    /**
-     * Log a warning message.
-     *
-     * @param string $message
-     *
-     * @return void
-     */
-    public function warn(string $message): void
-    {
-        echo "WARNING: {$message}\n";
-    }
-
-    /**
      * Set the interpreter for future reference.
      *
      * @param \Axiom\Rivescript\Rivescript $master
@@ -104,12 +80,10 @@ class Brain
             while (!feof($stream)) {
                 $line = fgets($stream);
                 $node = new Node($line, $lineNumber++);
-                //    echo "LINE: {$line}";
 
                 if ($node->isInterrupted() === true || $node->isComment() === true || $node->isEmpty()) {
                     continue;
                 }
-
 
                 $commands->each(function ($command) use ($node) {
                     $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
@@ -121,71 +95,6 @@ class Brain
             echo "CANNOT TEACH INVALID RESOURCE STREAM\n";
         }
     }
-
-
-//    public function getReply($user, $msg, $context, $step, $scope)
-//    {
-//
-//        // Check if topics are sorted or not
-//        $depth = 25;
-//
-//        $topic = synapse()->memory->shortTerm()->get('topic');
-//
-//        if (is_null($topic) === true || $topic == "undefined") {
-//            $topic = "random";
-//        }
-//
-//        if (!synapse()->brain->topic($topic)) {
-//            $this->warn("User ${user} was in an empty topic named '${topic}");
-//            $topic = "random";
-//            synapse()->memory->shortTerm()->put('topic', $topic);
-//        }
-//
-//
-//        if ($step > $this->master->depth) {
-//            return $this->master->errors["deepRecursion"];
-//        }
-//
-//        // Are we in the BEGIN block?
-////        if (context === "begin") {
-////            topic = "__begin__";
-////        }
-//
-//        // TODO: Initialize history here if it does exist.
-//
-//        // More topic sanity checking.
-//        if (!synapse()->brain->topic($topic)) {
-//            return "ERR: No default topic 'random' was found!";
-//        }
-//
-//
-//        $foundMatch = false;
-//
-//        /**
-//         * Logitc for previous wich we didnt code yet.
-//         */
-//        if ($step == 0) {
-//            $allTopics = [$topic];
-//
-////            if (self.master._topics[topic].includes || self.master._topics[topic].inherits) {
-////                // Get ALL the topics!
-////                allTopics = inherit_utils.getTopicTree(self.master, topic);
-////            }
-//
-//            // Scan them all.
-////            for ($j = 0; $j < count($allTopics); $j++) {
-////                $top = $allTopics[$j];
-////                $this->say("Checking topic ${top} for any %Previous's");
-////
-////
-////            }
-//        }
-//
-//        if ($foundMatch == false) {
-//            $this->say("Searching their topic for a match...");
-//        }
-//    }
-
 
     /**
      * Return a topic.

@@ -62,7 +62,6 @@ class ChatCommand extends Command
         $this->setName('chat')
             ->setDescription('Chat with a Rivescript instance')
             ->addArgument('source', InputArgument::REQUIRED, 'Your Rivescript source file');
-
     }
 
     /**
@@ -76,6 +75,12 @@ class ChatCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
+
+            $this->rivescript->onSay = function(string $msg, int $verbosity) use ($output) {
+                $output->writeln("Say: {$msg}", $verbosity);
+            };
+
+
             $source = $this->loadFiles($input->getArgument('source'));
 
             $this->rivescript->load($source);
@@ -93,6 +98,8 @@ class ChatCommand extends Command
             $output->writeln('');
 
             $this->waitForUserInput($input, $output);
+
+
         } catch (ParseException $e) {
             $error = "<error>{$e->getMessage()}</error>";
             $output->writeln($error);
