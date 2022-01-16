@@ -35,17 +35,11 @@ trait Tags
      */
     protected function parseTags(string $source): string
     {
-        $source = $this->escapeUnknownTags($source);
-        $bk = $source;
+       // $source = $this->escapeUnknownTags($source);
 
         $tags = synapse()->memory->tags();
         foreach ($tags as $tag) {
             $source = $tag->parse($source, synapse()->input);
-
-            if (empty($source)) {
-                $c = get_class($tag);
-                synapse()->brain->say("{$c} maakt response leeg get was {$bk}");
-            }
         }
 
         $source = str_replace("\x00", "<", $source);
@@ -70,7 +64,7 @@ trait Tags
         preg_match_all('/<(.+?[^<])>/', $source, $matches);
 
         $index = 0;
-        if (is_array($matches[$index]) and isset($matches[$index][0]) and is_null($knownTags) === false) {
+        if (is_array($matches[$index]) && isset($matches[$index][0]) && is_null($knownTags) === false) {
             $matches = $matches[$index];
 
             foreach ($matches as $match) {

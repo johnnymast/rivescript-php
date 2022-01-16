@@ -16,11 +16,11 @@ use Axiom\Rivescript\Rivescript;
 uses()
     ->beforeEach(function () {
         $this->rivescript = new Rivescript();
-        $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
+        $this->rivescript->load(__DIR__ . '/../../resources/tags/tags.rive');
     })
     ->group('tags');
 
-it('can subtract a value.', function() {
+it('can subtract a value.', function () {
     $response = $this->rivescript->reply('remove 5 points');
     $this->assertEquals('I\'ve removed 5 points to your account.', $response);
 
@@ -28,7 +28,7 @@ it('can subtract a value.', function() {
     $this->assertEquals('You have -5 points.', $response);
 });
 
-it('can subtract a value from an existing value.', function() {
+it('can subtract a value from an existing value.', function () {
     $response = $this->rivescript->reply('set points');
     $this->assertEquals('Done!', $response);
 
@@ -42,7 +42,7 @@ it('can subtract a value from an existing value.', function() {
     $this->assertEquals('You have -1 points.', $response);
 });
 
-it('can subtract a value given by a *.', function() {
+it('can subtract a value given by a *.', function () {
     $response = $this->rivescript->reply('set points');
     $this->assertEquals('Done!', $response);
 

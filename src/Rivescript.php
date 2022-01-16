@@ -33,6 +33,13 @@ class Rivescript extends ContentLoader
 {
     use Tags;
 
+    public const VERBOSITY_NORMAL = 0;
+    public const VERBOSITY_VERBOSE = 1;
+    public const VERBOSITY_VERY_VERBOSE = 2;
+    public const VERBOSITY_DEBUG = 3;
+
+    public $onSay = null;
+
     /**
      * A recursion limit before an attempt to
      * fetch a reply will be abandoned.
@@ -73,6 +80,7 @@ class Rivescript extends ContentLoader
         include __DIR__ . '/bootstrap.php';
 
         synapse()->brain->setMaster($this);
+        synapse()->rivescript = $this;
 
         $this->registerTags();
     }
@@ -195,6 +203,21 @@ class Rivescript extends ContentLoader
     }
 
     /**
+     * Log a message to say.
+     *
+     * @param string $message   The message to print out
+     * @param int    $verbosity The verbosity level of the message
+     *
+     * @return void
+     */
+    public function say(string $message, int $verbosity = Rivescript::VERBOSITY_NORMAL): void
+    {
+        if ($this->onSay) {
+            call_user_func($this->onSay, $message, $verbosity);
+        }
+    }
+
+    /**
      * Make the client respond to a message.
      *
      * @param string      $msg   The message the client has to process and respond to.
@@ -208,7 +231,7 @@ class Rivescript extends ContentLoader
 
         // FIXME: Must be $user, $message, Sscope
         $msg = $this->stripNasties($msg, "");
-        synapse()->brain->say("Asked to reply to [{$user}] {$msg}");
+        synapse()->rivescript->say("Asked to reply to [{$user}] {$msg}");
 
 
         $input = new Input($msg, $user);

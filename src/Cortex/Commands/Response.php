@@ -44,7 +44,6 @@ class Response implements Command
             $key = synapse()->memory->shortTerm()->get('trigger');
             $trigger = synapse()->brain->topic($topic)->triggers()->get($key);
 
-            echo "Attach {$node->value()} to {$key} for topic {$topic}\n";
             $trigger['responses']->attach($node);
 
             synapse()->brain->topic($topic)->triggers()->put($key, $trigger);

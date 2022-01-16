@@ -44,7 +44,7 @@ abstract class Trigger implements TriggerContract
     {
         synapse()->tags->each(function ($tag) use (&$trigger, $input) {
             $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
-            $tagClass = new $class('trigger');
+            $tagClass = new $class("trigger");
 
             $trigger = $tagClass->parse($trigger, $input);
         });

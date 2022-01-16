@@ -42,6 +42,9 @@ class Atomic extends Trigger
     {
         $trigger = $this->parseTags($trigger, $input);
 
+        $x = strtolower($trigger);
+        $y = $input->source();
+        $matches = $x == $y;
         return strtolower($trigger) === $input->source();
     }
 }
