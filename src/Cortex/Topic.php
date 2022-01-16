@@ -1,12 +1,11 @@
 <?php
-
-/**
- * The logic for handling Topics.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Cortex
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex;
@@ -14,7 +13,18 @@ namespace Axiom\Rivescript\Cortex;
 use Axiom\Collections\Collection;
 
 /**
- * The Topic class.
+ * Topic class
+ *
+ * Stores information about a topic.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class Topic
 {
@@ -23,26 +33,26 @@ class Topic
      *
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The triggers for this Topic.
      *
      * @var Collection<string, mixed>
      */
-    public $triggers;
+    public Collection $triggers;
 
     /**
      * The responses for this Topic.
      *
      * @var Collection<string, mixed>
      */
-    public $responses;
+    public Collection $responses;
 
     /**
      * Create a new Topic instance.
      *
-     * @param  string  $name
+     * @param string $name
      */
     public function __construct(string $name)
     {
@@ -69,5 +79,71 @@ class Topic
     public function responses(): Collection
     {
         return $this->responses;
+    }
+
+    /**
+     * Sort triggers based on type and word count from
+     * largest to smallest.
+     *
+     * @param \Axiom\Collections\Collection $triggers
+     *
+     * @return \Axiom\Collections\Collection
+     */
+    public function sortTriggers(Collection $triggers): Collection
+    {
+        $triggers = $this->determineWordCount($triggers);
+        $triggers = $this->determineTypeCount($triggers);
+
+        return $triggers->sort(function ($current, $previous) {
+            return ($current['order'] < $previous['order']) ? -1 : 1;
+        })->reverse();
+    }
+
+    /**
+     * Determine the order in the triggers.
+     *
+     * @param Collection<array> $triggers A collection of triggers.
+     *
+     * @return Collection<array>
+     */
+    protected function determineTypeCount(Collection $triggers): Collection
+    {
+        return $triggers->each(function ($data, $trigger) use ($triggers) {
+            if (isset($data['type'])) {
+                switch ($data['type']) {
+                    case 'atomic':
+                        $data['order'] += 4000000;
+                        break;
+                    case 'alphabetic':
+                        $data['order'] += 3000000;
+                        break;
+                    case 'numeric':
+                        $data['order'] += 2000000;
+                        break;
+                    case 'global':
+                        $data['order'] += 1000000;
+                        break;
+                }
+
+                $triggers->put($trigger, $data);
+            }
+        });
+    }
+
+    /**
+     * Sort triggers based on word count from
+     * largest to smallest.
+     *
+     * @param Collection<array> $triggers A collection of triggers.
+     *
+     * @return Collection<array>
+     */
+    protected function determineWordCount(Collection $triggers): Collection
+    {
+        return $triggers->each(function ($data, $trigger) use ($triggers) {
+            $data['order'] = count(explode(' ', $trigger));
+
+            $triggers->put($trigger, $data);
+        });
     }
 }

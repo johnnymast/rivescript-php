@@ -24,8 +24,9 @@ uses()
     ->group('responsequeue');
 
 it('should favor responses with higher weight.', function () {
-    $response1 = new Node("- my weight is{weight=40} 40 kilo's", 0);
-    $response2 = new Node("- my weight is{weight=200} 200 kilo's", 0);
+
+    $response1 = new Node("- my weight is{weight=200} 200 kilo's", 0);
+    $response2 = new Node("- my weight is{weight=40} 40 kilo's", 0);
 
     $queue = new ResponseQueue();
     $queue->attach($response1);

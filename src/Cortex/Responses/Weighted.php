@@ -1,13 +1,11 @@
 <?php
-
-/**
- * This file parses the weighted responses and updates the
- * order of this response in the response queue.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Responses
- * @author       Johnny Mast <mastjohnny@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Responses;
@@ -15,7 +13,18 @@ namespace Axiom\Rivescript\Cortex\Responses;
 use Axiom\Rivescript\Contracts\Response as ResponseContract;
 
 /**
- * Class Weighted
+ * Weighted class
+ *
+ * The Weighted class adds a weight to a weighted response.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Responses
+ * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.4.0
  */
 class Weighted extends Response implements ResponseContract
 {
@@ -27,7 +36,7 @@ class Weighted extends Response implements ResponseContract
      */
     public function parse()
     {
-        if ($this->responseQueueItem()->getCommand() == '-') {
+        if ($this->responseQueueItem()->getCommand() === '-') {
             $source = $this->source();
             $pattern = '/{weight=([0-9]+)}/';
 

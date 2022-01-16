@@ -39,7 +39,7 @@
     }
   },
   "require": {
-    "php": ">=7.3",
+    "php": ">=7.4",
     "symfony/console": "^5.0",
     "symfony/finder": "^3.2",
     "axiom/collections": "~2.0"

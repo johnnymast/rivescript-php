@@ -1,45 +1,53 @@
 <?php
-
-/**
- * Output is responsible for outputting a reply.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Cortex
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex;
 
+use Axiom\Rivescript\Traits\Regex;
+use Axiom\Rivescript\Traits\Tags;
+
 /**
- * The Output class.
+ * Output class
+ *
+ * This class is responsible for generating the
+ * bot response.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class Output
 {
 
-    /**
-     * Information of where the information came from.
-     *
-     * @var Input
-     */
-    protected $input;
+    use Regex;
+    use Tags;
 
     /**
      * The output string
      *
      * @var string
      */
-    protected $output = 'Error: Response could not be determined.';
+    protected string $output = 'Error: Response could not be determined.';
 
     /**
-     * Create a new Output instance.
+     * Keep track of the recursion
+     * in the output.
      *
-     * @param  Input  $input
+     * @var int
      */
-    public function __construct(Input $input)
-    {
-        $this->input = $input;
-    }
+    protected int $recursion = 0;
 
     /**
      * Process the correct output response by the interpreter.
@@ -48,15 +56,14 @@ class Output
      */
     public function process(): string
     {
-        synapse()->brain->topic()->triggers()->each(
-            function ($data, $trigger) {
-                $this->searchTriggers($trigger);
+        $triggers = synapse()->brain->topic()->triggers();
 
-                if ($this->output !== 'Error: Response could not be determined.') {
-                    return false;
-                }
+        foreach ($triggers as $trigger => $data) {
+            $this->searchTriggers($trigger);
+            if ($this->output !== 'Error: Response could not be determined.' && $this->output !== '') {
+                break;
             }
-        );
+        }
 
         return $this->output;
     }
@@ -64,20 +71,21 @@ class Output
     /**
      * Search through available triggers to find a possible match.
      *
-     * @param  string  $trigger  The trigger to find responses for.
+     * @param string $trigger The trigger to find responses for.
      *
      * @return void
      */
-    protected function searchTriggers(string $trigger)
+    protected function searchTriggers(string $trigger): void
     {
         synapse()->triggers->each(
             function ($class) use ($trigger) {
                 $triggerClass = "\\Axiom\\Rivescript\\Cortex\\Triggers\\$class";
-                $triggerClass = new $triggerClass($this->input);
+                $triggerClass = new $triggerClass(synapse()->input);
 
-                $found = $triggerClass->parse($trigger, $this->input);
+                $found = $triggerClass->parse($trigger, synapse()->input);
 
                 if ($found === true) {
+                    synapse()->brain->say("Found trigger {$trigger}...");
                     synapse()->memory->shortTerm()->put('trigger', $trigger);
                     $this->output = $this->getResponse($trigger);
                     return false;
@@ -89,18 +97,22 @@ class Output
     /**
      * Fetch a response from the found trigger.
      *
-     * @param  string  $trigger  The trigger to get a response for.
+     * @param string $trigger The trigger to get a response for.
      *
      * @return string
      */
     protected function getResponse(string $trigger): string
     {
-        $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
 
+
+        $org = $trigger;
+        $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
+        $all = synapse()->brain->topic($topic)->triggers();
+        $originalTrigger = synapse()->brain->topic($topic)->triggers()->get($trigger);
 
         // FIXME: Temp fix for rsts
-        if (isset($originalTrigger['responses']) == false) {
-            $this->output = "Error: Response could not be determined.";
+        if (isset($originalTrigger['responses']) === false) {
+            $this->output = false;
             return $this->output;
         }
         /**
@@ -117,36 +129,40 @@ class Output
         $processedTrigger = synapse()->brain->topic()->triggers()->get($trigger);
 
         if (isset($processedTrigger['redirect'])) {
-            $output .= $this->getResponse($processedTrigger['redirect']);
+            //$output .= $this->getResponse($processedTrigger['redirect']);
+            /**
+             * If we redirect from Trigger A to Trigger B the context of the
+             * user input changes from the line that triggered "Trigger A" to
+             * be "Trigger A" as the user input.
+             */
+            synapse()->brain->say("{trigger} triggered a redirect to {$processedTrigger['redirect']}");
+
+            $input = new Input($processedTrigger['redirect'], 0);
+            $this->input = $input;
+            synapse()->input = new Input($processedTrigger['redirect'], 0);
+            $this->process();
         }
 
-// TODO:
-//        $key = array_rand($trigger['responses']);
-//        $this->output = $this->parseResponse($trigger['responses'][$key]);
         return $output;
-
-// TODO:
-//        $key = array_rand($trigger['responses']);
-//        $this->output = $this->parseResponse($trigger['responses'][$key]);
-//        return $output;
     }
 
     /**
      * Parse the response through the available tags.
      *
-     * @param  string  $response
+     * @param string $response
      *
      * @return string
      */
-    protected function parseResponse(
-        string $response
-    ): string {
+    protected function parseResponse(string $response): string
+    {
+        synapse()->brain->say("Start response is {$response}");
         synapse()->tags->each(
             function ($tag) use (&$response) {
                 $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
                 $tagClass = new $class();
 
-                $response = $tagClass->parse($response, $this->input);
+                $response = $tagClass->parse($response, synapse()->input);
+                synapse()->brain->say("Response is {$response} used tag {$tag}");
             }
         );
 

@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of Rivescript-php
+ *
+ * (c) Johnny Mast <mastjohnny@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Axiom\Rivescript\Cortex\ContentLoader;
 
@@ -7,26 +15,31 @@ use DirectoryIterator;
 use SplFileObject;
 
 /**
+ * ContentLoader class
+ *
  * The ContentLoader assists in loading information
  * into the Rivescript interpreter. The data will be
  * store in a stream for the brain to learn
  * from.
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     ContentLoader
- * @author       Johnny Mast <mastjohnny@gmail.com>
- */
-
-/**
- * ContentLoader class.
+ * PHP version 7.4 and higher.
+ *
+ * @see      https://www.php.net/manual/en/stream.streamwrapper.example-1.php
+ * @see      https://www.php.net/manual/en/class.streamwrapper
+ *
+ * @category Core
+ * @package  Cortext\ContentLoader
+ * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.4.0
  */
 class ContentLoader
 {
     /**
      * The stream resource.
      *
-     * @var false|resource
+     * @var mixed
      */
     private $stream;
 
@@ -35,7 +48,15 @@ class ContentLoader
      *
      * @var string
      */
-    protected $name = 'rivescript';
+    protected string $name = 'rivescript';
+
+    /**
+     * Flag indicating if the stream-wrapper
+     * was successfully registered.
+     *
+     * @var bool
+     */
+    protected bool $isRegistered = false;
 
     /**
      * ContentLoader constructor.
@@ -44,13 +65,12 @@ class ContentLoader
      */
     public function __construct()
     {
-        $existed = in_array($this->name, stream_get_wrappers());
+        $existed = in_array($this->name, stream_get_wrappers(), true);
         if ($existed) {
             stream_wrapper_unregister($this->name);
         }
-
-        if (stream_wrapper_register($this->name, ContentStream::class)) {
-            $this->stream = fopen($this->name . "://input", "r+");
+        if (stream_wrapper_register($this->name, ContentStream::class) === true) {
+            $this->stream = fopen($this->name . "://input", 'wb+');
         }
 
         if (is_resource($this->stream) === false) {
@@ -63,13 +83,15 @@ class ContentLoader
      */
     public function __destruct()
     {
-        fclose($this->getStream());
+        if (is_resource($this->getStream())) {
+            fclose($this->getStream());
+        }
     }
 
     /**
      * Return the stream.
      *
-     * @return false|resource
+     * @return mixed
      */
     public function getStream()
     {
@@ -80,11 +102,11 @@ class ContentLoader
      * Load strings / files or whole directories
      * into the brain.
      *
-     * @param mixed $info
+     * @param mixed $info Information about what to load.
      *
      * @return void
      */
-    public function load($info)
+    public function load($info): void
     {
         if (is_string($info) === true && file_exists($info) === false) {
             $this->writeToMemory($info);
@@ -92,7 +114,7 @@ class ContentLoader
             $this->loadDirectory($info);
         } elseif (is_string($info) === true && file_exists($info) === true) {
             $this->loadFile($info);
-        } elseif (is_array($info) === true and count($info) > 0) {
+        } elseif (is_array($info) === true && count($info) > 0) {
             foreach ($info as $file) {
                 if (file_exists($file)) {
                     $this->loadFile($file);
@@ -108,11 +130,12 @@ class ContentLoader
      *
      * @return void
      */
-    public function loadDirectory(string $path)
+    public function loadDirectory(string $path): void
     {
         foreach (new DirectoryIterator($path) as $file) {
-            if ($file->isDot())
+            if ($file->isDot()) {
                 continue;
+            }
 
             $this->loadFile($file->getPathname());
         }
@@ -121,13 +144,13 @@ class ContentLoader
     /**
      * Load a single file into memory.
      *
-     * @param string $file The Rivescript file to load.
+     * @param string $filename The Rivescript file to load.
      *
      * @return void
      */
-    public function loadFile(string $file)
+    public function loadFile(string $filename): void
     {
-        $file = new SplFileObject($file);
+        $file = new SplFileObject($filename, "rb");
 
         while (!$file->eof()) {
             $line = $file->fgets();
@@ -143,7 +166,7 @@ class ContentLoader
      *
      * @return void
      */
-    public function writeToMemory(string $text)
+    public function writeToMemory(string $text): void
     {
         if ($this->stream) {
             fwrite($this->stream, $text);
