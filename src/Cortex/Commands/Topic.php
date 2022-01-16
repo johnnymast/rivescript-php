@@ -1,12 +1,11 @@
 <?php
-
-/**
- * This class parses the Topic command type.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Commands
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Commands;
@@ -15,21 +14,33 @@ use Axiom\Rivescript\Contracts\Command;
 use Axiom\Rivescript\Cortex\Node;
 
 /**
- * Class Topic
+ * Topic class
+ *
+ * This class handles the Topic command (> ...)
+ * and stores the definition in memory.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Commands
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class Topic implements Command
 {
     /**
      * Parse the command.
      *
-     * @param  Node  $node  The node is a line from the Rivescript file.
+     * @param Node $node The node is a line from the Rivescript file.
      *
      * @return void
      */
-    public function parse(Node $node)
+    public function parse(Node $node): void
     {
         if ($node->command() === '>') {
-            list($type, $topic) = explode(' ', $node->value());
+            [$type, $topic] = explode(' ', $node->value());
 
             if ($type === 'topic') {
                 if (!synapse()->brain->topic($topic)) {
@@ -40,7 +51,7 @@ class Topic implements Command
             }
         }
 
-        if ($node->command() === '<' and $node->value() === 'topic') {
+        if ($node->command() === '<' && $node->value() === 'topic') {
             synapse()->memory->shortTerm()->remove('topic');
         }
     }

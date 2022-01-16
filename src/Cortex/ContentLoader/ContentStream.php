@@ -1,23 +1,35 @@
 <?php
-
-/**
- * ContentStream handles all the information being loaded
- * into the Rivescript interpreter.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     ContentLoader
- * @author       Johnny Mast <mastjohnny@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\ContentLoader;
 
 /**
- * This class taken from php.net and changed
- * to be workable for this project.
+ * ContentStream class
  *
- * @see https://www.php.net/manual/en/stream.streamwrapper.example-1.php
- * @see https://www.php.net/manual/en/class.streamwrapper
+ * This class is a helper class for reading from and writing to
+ * io streams.
+ *
+ * Note: This class taken from php.net and changed to
+ *       be workable for this project.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @see      https://www.php.net/manual/en/stream.streamwrapper.example-1.php
+ * @see      https://www.php.net/manual/en/class.streamwrapper
+ *
+ * @category Core
+ * @package  Cortext\ContentLoader
+ * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.4.0
  */
 class ContentStream
 {
@@ -26,7 +38,7 @@ class ContentStream
      *
      * @var int
      */
-    private $position;
+    private int $position = 0;
 
     /**
      * The variable that holds
@@ -34,7 +46,7 @@ class ContentStream
      *
      * @var string
      */
-    protected $content;
+    protected string $content = '';
 
     /**
      * Specifies the URL that was passed to the original function.
@@ -42,7 +54,7 @@ class ContentStream
      *
      * @var string
      */
-    protected $path;
+    protected string $path = '';
 
     /**
      * The mode to operate in.
@@ -50,13 +62,15 @@ class ContentStream
      *
      * @var string
      */
-    protected $mode;
+    protected string $mode = '';
 
     /**
-     * @param string $path Specifies the URL that was passed to the original function.
-     * @param string $mode The mode used to open the file, as detailed for fopen().
+     * (Re)set default values when opening a stream.
      *
      * @see https://www.php.net/manual/en/function.fopen.php
+     *
+     * @param string $mode The mode used to open the file, as detailed for fopen().
+     * @param string $path Specifies the URL that was passed to the original function.
      *
      * @return bool
      */
@@ -120,12 +134,27 @@ class ContentStream
     }
 
     /**
+     * Support for fstat().
+     *
+     *   An array with file status, or FALSE in case of an error - see fstat()
+     *   for a description of this array.
+     *
+     * @see http://php.net/manual/streamwrapper.stream-stat.php
+     *
+     * @return array
+     */
+    public function stream_stat(): array
+    {
+        return (array)$this->content;
+    }
+
+    /**
      * Move the cursor inside the stream to this position.
      *
-     * @param int $offset Seek this position in the stream.
-     * @param int $whence The seek type.
-     *
      * @see https://www.php.net/fseek for more information.
+     *
+     * @param int $whence The seek type.
+     * @param int $offset Seek this position in the stream.
      *
      * @return bool
      */
@@ -147,7 +176,9 @@ class ContentStream
                 return false;
         }
         $ret = ($newPos >= 0 && $newPos <= $l);
-        if ($ret) $p = $newPos;
+        if ($ret) {
+            $p = $newPos;
+        }
         return $ret;
     }
 }

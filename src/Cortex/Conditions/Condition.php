@@ -1,12 +1,11 @@
 <?php
-
-/**
- * The Condition base class.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Conditions
- * @author       Johnny Mast <mastjohnny@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Conditions;
@@ -14,7 +13,19 @@ namespace Axiom\Rivescript\Cortex\Conditions;
 use Axiom\Rivescript\Traits\Regex;
 
 /**
- * Class Condition
+ * Condition class
+ *
+ * The Condition class is the base class for all
+ * conditions in this directory.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Conditions
+ * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.4.0
  */
 class Condition
 {

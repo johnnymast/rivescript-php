@@ -1,0 +1,2 @@
+- Interactive Console: Verbosity levels are now honoured.
+- 

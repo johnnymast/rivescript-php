@@ -1,12 +1,11 @@
 <?php
-
-/**
- * The abstract class for all the Tags.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Tags
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Tags;
@@ -16,7 +15,18 @@ use Axiom\Rivescript\Contracts\Tag as TagContract;
 use LogicException;
 
 /**
- * Class Tag
+ * Tag class
+ *
+ * The tag base class.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Tags
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 abstract class Tag implements TagContract
 {
@@ -25,14 +35,14 @@ abstract class Tag implements TagContract
     /**
      * @var string
      */
-    protected $sourceType;
+    protected string $sourceType = "response";
 
     /**
      * Store the allowed sources.
      *
      * @var array<string>
      */
-    protected $allowedSources = [];
+    protected array $allowedSources = [];
 
     /**
      * Defines the Regex structure
@@ -40,19 +50,19 @@ abstract class Tag implements TagContract
      *
      * @var string
      */
-    protected $pattern = '';
+    protected string $pattern = "";
 
     /**
      * Create a new Tag instance.
      *
-     * @param  string  $sourceType
+     * @param string $sourceType
      */
-    final public function __construct(string $sourceType = 'response')
+    final public function __construct(string $sourceType = "response")
     {
         $this->sourceType = $sourceType;
 
         if (!isset($this->allowedSources)) {
-            throw new LogicException(get_class($this).' must have an "allowedSources" property declared.');
+            throw new LogicException(get_class($this) . " must have an \"allowedSources\" property declared.");
         }
     }
 
@@ -63,13 +73,13 @@ abstract class Tag implements TagContract
      */
     public function sourceAllowed(): bool
     {
-        return in_array($this->sourceType, $this->allowedSources);
+        return in_array($this->sourceType, $this->allowedSources, true);
     }
 
     /**
      * Does the source have any matches?
      *
-     * @param  string  $source
+     * @param string $source
      *
      * @return bool
      */
@@ -81,7 +91,7 @@ abstract class Tag implements TagContract
     /**
      * Get the regular expression matches from the source.
      *
-     * @param  string  $source
+     * @param string $source
      *
      * @return array[]
      */
@@ -89,4 +99,6 @@ abstract class Tag implements TagContract
     {
         return $this->getMatchesFromPattern($this->pattern, $source) ?? [];
     }
+
+    abstract public function getTagName();
 }

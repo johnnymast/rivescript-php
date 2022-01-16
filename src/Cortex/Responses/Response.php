@@ -1,12 +1,11 @@
 <?php
-
-/**
- * The base class of Responses.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Responses
- * @author       Johnny Mast <mastjohnny@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Responses;
@@ -15,7 +14,19 @@ use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem;
 use Axiom\Rivescript\Traits\Regex;
 
 /**
- * Class Response
+ * Response class
+ *
+ * The Response class is a base class for all response types in this
+ * directory, it contains some helpful functions.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Responses
+ * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.4.0
  */
 abstract class Response
 {
@@ -24,12 +35,12 @@ abstract class Response
     /**
      * @var ResponseQueueItem
      */
-    protected $responseQueueItem;
+    protected ResponseQueueItem $responseQueueItem;
 
     /**
      * @var string
      */
-    protected $source = '';
+    protected string $source = '';
 
     /**
      * Responses must implement this method to
@@ -42,10 +53,10 @@ abstract class Response
     /**
      * Response constructor.
      *
-     * @param  string             $source             The response line.
-     * @param  ResponseQueueItem  $responseQueueItem  Queue information about the response line.
+     * @param string            $source            The response line.
+     * @param ResponseQueueItem $responseQueueItem Queue information about the response line.
      */
-    public function __construct(string $source, ResponseQueueItem &$responseQueueItem)
+    public function __construct(string $source, ResponseQueueItem $responseQueueItem)
     {
         $this->source = $source;
         $this->responseQueueItem = $responseQueueItem;
