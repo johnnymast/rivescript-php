@@ -14,9 +14,9 @@ use Axiom\Rivescript\Contracts\Command;
 use Axiom\Rivescript\Cortex\Node;
 
 /**
- * VariablePerson class
+ * VariableLocal class
  *
- * This class handles the person variable command (! person)
+ * This class handles the global variable command (! local)
  * and stores the definition in memory.
  *
  * PHP version 7.4 and higher.
@@ -28,7 +28,7 @@ use Axiom\Rivescript\Cortex\Node;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.3.0
  */
-class VariablePerson implements Command
+class VariableLocal implements Command
 {
     /**
      * Parse the command.
@@ -42,14 +42,30 @@ class VariablePerson implements Command
         if ($node->command() === '!') {
             $type = strtok($node->value(), ' ');
 
-            if ($type === 'person') {
-                $value = str_replace('person', '', $node->value());
+            if ($type === 'local') {
+                $value = str_replace('local', '', $node->value());
                 [$key, $value] = explode('=', $value);
+
+                $valid = [
+                    'concat' => [
+                        'none',
+                        'space',
+                        'newline'
+                    ]
+                ];
 
                 $key = trim($key);
                 $value = trim($value);
 
-                synapse()->memory->person()->put($key, $value);
+                if (isset($valid[$key]) === true) {
+                    $default = current($valid[$key]);
+
+                    if (in_array($value, $valid[$key]) === false) {
+                        $value = $default;
+                    }
+
+                    synapse()->memory->local()->put($key, $value);
+                }
             }
         }
     }

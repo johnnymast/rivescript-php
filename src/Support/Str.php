@@ -1,18 +1,28 @@
 <?php
-
-/**
- * A collection of string helpers.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Support
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Support;
 
 /**
- * Class Str
+ * Str class
+ *
+ * A collection of string helpers.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Support
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class Str
 {

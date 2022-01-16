@@ -1,22 +1,31 @@
 <?php
-
-/**
- * The brain teaches itself about rive script files.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Cortex
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex;
 
-use Axiom\Rivescript\Exceptions\ParseException;
 use Axiom\Rivescript\Rivescript;
-use SplFileObject;
 
 /**
- * The Brain class.
+ * Brain class
+ *
+ * The Brain teaches the interpreter how to respond from
+ * the user's input.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class Brain
 {
@@ -25,7 +34,12 @@ class Brain
      *
      * @var array<Topic>
      */
-    protected $topics;
+    protected array $topics;
+
+    /**
+     * @var \Axiom\Rivescript\Rivescript
+     */
+    protected Rivescript $master;
 
     /**
      * Create a new instance of Brain.
@@ -36,26 +50,38 @@ class Brain
     }
 
     /**
-     * Teach the brain contents of a new information.
+     * Set the interpreter for future reference.
+     *
+     * @param \Axiom\Rivescript\Rivescript $master
+     *
+     * @return void
+     */
+    public function setMaster(Rivescript $master): void
+    {
+        $this->master = $master;
+    }
+
+    /**
+     * Teach the Brain with new information.
      *
      * @param resource $stream the stream to read from.
      *
      * @return void
      */
-    public function teach($stream)
+    public function teach($stream): void
     {
         $commands = synapse()->commands;
 
         if (is_resource($stream)) {
-            $lastNode = null;
             $lineNumber = 0;
 
             rewind($stream);
+
             while (!feof($stream)) {
                 $line = fgets($stream);
                 $node = new Node($line, $lineNumber++);
 
-                if ($node->isInterrupted() or $node->isComment()) {
+                if ($node->isInterrupted() === true || $node->isComment() === true || $node->isEmpty()) {
                     continue;
                 }
 
@@ -65,6 +91,8 @@ class Brain
                     $commandClass->parse($node);
                 });
             }
+        } else {
+            echo "CANNOT TEACH INVALID RESOURCE STREAM\n";
         }
     }
 

@@ -47,7 +47,6 @@ it('translates <reply1> to <reply9> to the client\'s last 9 replies', function (
     $actual = synapse()->memory->replies()->all();
     $actual = array_values($actual);
     $expected = [
-        "Your points are now 1",
         "Your points are now 2",
         "Your points are now 3",
         "Your points are now 4",
@@ -56,10 +55,11 @@ it('translates <reply1> to <reply9> to the client\'s last 9 replies', function (
         "Your points are now 7",
         "Your points are now 8",
         "Your points are now 9",
+        "Your points are now 10",
     ];
     $this->assertEquals($expected, $actual);
 
-    $expected = "Your points are now 2";
+    $expected = "Your points are now 3";
     $actual = $this->rivescript->reply("what is reply2");
 
     $this->assertEquals($expected, $actual);

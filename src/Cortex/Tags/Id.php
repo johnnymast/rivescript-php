@@ -1,12 +1,11 @@
 <?php
-
-/**
- * Class Id handling the <id> tag.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Tags
- * @author       Johnny Mast <mastjohnny@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Tags;
@@ -14,21 +13,35 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
- * Class Id
+ * Id class
+ *
+ * This class is responsible parsing the <id> tag.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Tags
+ * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.4.0
  */
 class Id extends Tag
 {
     /**
+     * Determines where this tag is allowed to
+     * be used.
+     *
      * @var array<string>
      */
-    protected $allowedSources = ['response'];
+    protected array $allowedSources = ["response"];
 
     /**
      * Regex expression pattern.
      *
      * @var string
      */
-    protected $pattern = '/<id>/u';
+    protected string $pattern = "/<id>/u";
 
     /**
      * Parse the source.
@@ -53,5 +66,15 @@ class Id extends Tag
         }
 
         return $source;
+    }
+
+    /**
+     * Return the tag that the class represents.
+     *
+     * @return string
+     */
+    public function getTagName(): string
+    {
+        return "id";
     }
 }

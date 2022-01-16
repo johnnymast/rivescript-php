@@ -1,12 +1,11 @@
 <?php
-
-/**
- * This class parses the array variable command type.
+/*
+ * This file is part of Rivescript-php
  *
- * @package      Rivescript-php
- * @subpackage   Core
- * @category     Commands
- * @author       Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Axiom\Rivescript\Cortex\Commands;
@@ -15,7 +14,19 @@ use Axiom\Rivescript\Contracts\Command;
 use Axiom\Rivescript\Cortex\Node;
 
 /**
- * Class VariableArray
+ * VariableArray class
+ *
+ * This class handles array variable types and stores
+ * the definition in memory.
+ *
+ * PHP version 7.4 and higher.
+ *
+ * @category Core
+ * @package  Cortext\Commands
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @license  https://opensource.org/licenses/MIT MIT
+ * @link     https://github.com/axiom-labs/rivescript-php
+ * @since    0.3.0
  */
 class VariableArray implements Command
 {
@@ -26,14 +37,14 @@ class VariableArray implements Command
      *
      * @return void
      */
-    public function parse(Node $node)
+    public function parse(Node $node): void
     {
         if ($node->command() === '!') {
             $type = strtok($node->value(), ' ');
 
             if ($type === 'array') {
                 $value = str_replace('array', '', $node->value());
-                list($key, $value) = explode('=', $value);
+                [$key, $value] = explode('=', $value);
 
                 $key = trim($key);
                 $value = trim($value);
