@@ -81,7 +81,7 @@ class ResponseQueue extends Collection
     public function attach(Node $node): void
     {
         $type = $this->determineResponseType($node->source());
-        $queueItem =  new ResponseQueueItem($node->command(), $type, 0, $this->options);
+        $queueItem =  new ResponseQueueItem($node->command(), $node->value(),   $type, 0, $this->options);
         $this->responses->put($node->value(), $queueItem);
     }
 
@@ -122,6 +122,7 @@ class ResponseQueue extends Collection
                 $result = $instance->parse();
 
                 if ($result !== false) {
+                    $item->setValue($result);
                     return $result;
                 }
             }
@@ -244,9 +245,9 @@ class ResponseQueue extends Collection
     /**
      * Process the Response Queue.
      *
-     * @return false|int|string|null
+     * @return ResponseQueueItem
      */
-    public function process()
+    public function process(): ResponseQueueItem
     {
         $sortedResponses = $this->determineResponseOrder($this->responses);
 
@@ -263,7 +264,7 @@ class ResponseQueue extends Collection
         $validResponses = $this->sortResponses($validResponses);
 
         if ($validResponses->count() > 0) {
-            return $validResponses->keys()->first();
+            return $validResponses->values()->first();
         }
 
         return false;

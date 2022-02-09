@@ -10,6 +10,7 @@
 
 namespace Axiom\Rivescript\Cortex;
 
+use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem;
 use Axiom\Rivescript\Traits\Regex;
 use Axiom\Rivescript\Traits\Tags;
 
@@ -56,12 +57,19 @@ class Output
      */
     public function process(): string
     {
-        $triggers = $x = synapse()->brain->topic()->triggers();
+        $triggers = synapse()->brain->topic()->triggers();
         $begin = synapse()->brain->topic("__begin__");
 
         $this->output = "";
 
 
+        /**
+         * 1. Check if topic is valid
+         * 2. Process the triggers
+         * 3. if valid trigger
+         *   - Check if response is redirect
+         *   -
+         */
         if ($begin) {
             synapse()->rivescript->say("Begin label found. Starting processing.");
 
@@ -73,22 +81,80 @@ class Output
                 if ($begin->isOk() === false) {
                     return $this->output;
                 }
-
-                /**
-                 * Update the triggers after running the begin request.
-                 */
-                $triggers = synapse()->brain->topic()->triggers();
             }
         }
 
+
+        return $this->processTopic();
+
+        return trim($this->output);
+    }
+
+    protected function processTopic(): string
+    {
+        $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
+        $triggers = synapse()->brain->topic($topic)->triggers();
+
         foreach ($triggers as $trigger => $data) {
-            $this->searchTriggers($trigger);
-            if ($this->output !== '') {
-                break;
+            $valid = $this->isValidTrigger($trigger);
+
+            if ($valid === true) {
+                synapse()->rivescript->say("Found trigger {$trigger}...");
+                synapse()->memory->shortTerm()->put('trigger', $trigger);
+
+                $response = $this->getValidResponse($trigger);
+
+                if ($response) {
+                    if ($response->isChangingTopic() === true) {
+                        // validate target or continue
+                        synapse()->rivescript->warn("Topic change detected.");
+                        break;
+                    } else {
+                        $output = $response->getValue();
+
+                        if ($output) {
+                            $this->output .= $output;
+                        }
+                    }
+                } else {
+                    synapse()->rivescript->warn("Could not find a valid response for trigger \":trigger\"", [
+                        "trigger" => $trigger
+                    ]);
+                }
+            } else {
+                synapse()->rivescript->warn("Could not find a valid trigger \":trigger\"", [
+                    "trigger" => $trigger
+                ]);
+
             }
         }
 
         return trim($this->output);
+    }
+
+
+    /**
+     * Search through available triggers to find a possible match.
+     *
+     * @param string $trigger The trigger to find responses for.
+     *
+     * @return bool
+     */
+    protected function isValidTrigger(string $trigger): bool
+    {
+        $triggers = synapse()->triggers;
+        foreach ($triggers as $class) {
+            $triggerClass = "\\Axiom\\Rivescript\\Cortex\\Triggers\\{$class}";
+            $triggerInstance = new $triggerClass(synapse()->input);
+
+            $found = $triggerInstance->parse($trigger, synapse()->input);
+
+            if ($found) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -98,7 +164,7 @@ class Output
      *
      * @return void
      */
-    protected function searchTriggers(string $trigger): void
+    protected function searchTriggers2(string $trigger): void
     {
         synapse()->triggers->each(
             function ($class) use ($trigger) {
@@ -117,6 +183,23 @@ class Output
         );
     }
 
+
+    protected function getValidResponse(string $trigger)
+    {
+        $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
+        $queueItem = null;
+
+        if ($originalTrigger['responses']) {
+            $queueItem = $originalTrigger['responses']->process();
+
+            if ($queueItem) {
+                $queueItem->parse();
+            }
+        }
+
+        return $queueItem;
+    }
+
     /**
      * Fetch a response from the found trigger.
      *
@@ -124,17 +207,17 @@ class Output
      *
      * @return string
      */
-    protected function getResponse(string $trigger): string
+    protected function getResponse(string $trigger)
     {
 
         $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
         $originalTrigger = synapse()->brain->topic($topic)->triggers()->get($trigger);
 
 
-        // FIXME: Temp fix for rsts
+//        // FIXME: Temp fix for rsts
 //        if (isset($originalTrigger['responses']) === false) {
 //            synapse()->rivescript->say("No response found.");
-//            $this->output = false;
+//            $this->output = "";
 //            return $this->output;
 //        }
 
@@ -142,84 +225,62 @@ class Output
          * Get the best suitable response from
          * the ResponseQueue.
          */
-        $response = $originalTrigger['responses']->process();
-        $output = $this->parseResponse($response);
+        $queueItem = $originalTrigger['responses']->process();
+        // $queueItem = $this->parseResponse($response);
 
         /**
          * It could be possible that tags have altered the trigger.
          * If so evaluate possible changes.
          */
+//
         $processedTrigger = synapse()->brain->topic()->triggers()->get($trigger, null);
-        $processedTopic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
+//        $processedTopic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
 
-        synapse()->rivescript->say("Topic {$topic} vs {$processedTopic}");
-        if ($topic !== $processedTopic) {
-            synapse()->rivescript->say("topic changed from :old to :new.", [
-                "old" => $topic,
-                "new" => synapse()->memory->shortTerm()->get('topic'),
-
-            ]);
-            //    $this->output = false;
-//               return $this->getResponse( synapse()->input->source());
-        }
-
-        if (isset($processedTrigger['redirect'])) {
-            $target = synapse()->brain->topic()->triggers()->get($processedTrigger['redirect']);
-
-
-            if ($target === null) {
-                synapse()->rivescript->warn("topic :new was not found. Restoring topic :old", [
-                    "new" => $processedTrigger['redirect'],
-                    "old" => synapse()->memory->shortTerm()->get('topic'),
-                ]);
-
-                $input = new Input($processedTrigger["redirect"], "local-user");
-                synapse()->input = $input;
-                synapse()->memory->shortTerm()->put("topic", $topic);
-
-                return $this->getResponse("*");
-                return $this->output;
-                return $this->getResponse("*");
-            }
-
-            /**
-             * If we redirect from Trigger A to Trigger B the context of the
-             * user input changes from the line that triggered "Trigger A" to
-             * be "Trigger A" as the user input.
-             */
-            synapse()->rivescript->say("Trigger :trigger caused a redirect to :redirect.", [
-                'trigger' => $trigger,
-                'redirect' => $processedTrigger['redirect'],
-            ]);
-
-            $input = new Input($processedTrigger['redirect'], 0);
-            $this->input = $input;
-            synapse()->input = new Input($processedTrigger['redirect'], 0);
-
-            $output .= $this->getResponse($processedTrigger['redirect']);
-        }
-
-        return $output;
-    }
-
-    /**
-     * Parse the response through the available tags.
-     *
-     * @param string $response
-     *
-     * @return string
-     */
-    protected function parseResponse(string $response): string
-    {
-        synapse()->tags->each(
-            function ($tag) use (&$response) {
-                $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
-                $tagClass = new $class();
-
-                $response = $tagClass->parse($response, synapse()->input);
-            }
-        );
-
-        return $response;
+//        if ($topic !== $processedTopic) {
+//            synapse()->rivescript->warn("topic changed from :old to :new.", [
+//                "old" => $topic,
+//                "new" => synapse()->memory->shortTerm()->get('topic'),
+//            ]);
+//        }
+//
+//        if (isset($processedTrigger['redirect'])) {
+//            $valid = $this->isValidTrigger($processedTrigger['redirect']);
+//
+//
+//            if ($valid === true) {
+//                synapse()->rivescript->warn("Searching for trigger :trigger in topic :topic", ['trigger' => $processedTrigger["redirect"], 'topic' => $topic]);
+//
+//                $input = new Input($processedTrigger["redirect"], "local-user");
+//                synapse()->input = $input;
+//
+//                return $this->searchTriggers2($processedTrigger['redirect']);
+//            } else {
+//                // FIXME: Tiggers wild wildcards end up in here. We need to fix this.
+//
+//                $trigger = $processedTrigger['redirect'];
+//
+////                if ($trigger == 'set test name test' || $trigger == 'test x') {
+////                    return $output;
+////                }
+//                synapse()->rivescript->warn("Topic :new was not found. Restoring topic :old", [
+//                    "new" => $processedTrigger['redirect'],
+//                    "old" => synapse()->memory->shortTerm()->get('topic'),
+//                ]);
+//
+//                synapse()->input = new Input($trigger, "local-user");
+//
+////                $newTrigger = synapse()->memory->shortTerm()->get('trigger');
+//
+//
+//                print_r('Trigger -->' . $trigger . "<\n");
+////                print_r('newTrigger -->' . $newTrigger . "<\n");
+//                synapse()->memory->shortTerm()->put("topic", null);
+//
+//                return '@'.$this->processTopic( null );
+//           //     return $this->getResponse($trigger);
+//            }
+//        }
+//
+//        return $output;
     }
 }

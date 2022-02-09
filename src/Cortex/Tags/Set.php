@@ -59,19 +59,21 @@ class Set extends Tag
 
         if ($this->hasMatches($source)) {
             $parsed = $this->secureSource($source, "set");
-            $parsed = explode('=', $parsed['response']);
+          //  $parsed = explode('=', $parsed['response']);
 
             $matches = $this->getMatches($source);
 
-            foreach($matches as $match) {
+            foreach ($matches as $match) {
                 $key = $match[1];
                 $value = $match[2];
 
+                synapse()->rivescript->say("Setting variable :key with value :val", [
+                    'key' => $key,
+                    'val' => $value,
+                ]);
                 synapse()->memory->user($input->user())->put($key, $value);
-                $source = str_replace("<set {$key}={$value}>", '', $source);
+                $source = str_replace($match[0], '', $source);
             }
-
-
         }
 
 

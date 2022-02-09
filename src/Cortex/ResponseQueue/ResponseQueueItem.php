@@ -35,6 +35,20 @@ class ResponseQueueItem
     public string $command = "";
 
     /**
+     * The response string
+     *
+     * @var string
+     */
+    public string $value = "";
+
+    /**
+     * The original response string
+     *
+     * @var string
+     */
+    public string $original = "";
+
+    /**
      * The response type.
      *
      * @var string
@@ -56,16 +70,26 @@ class ResponseQueueItem
     public array $options = [];
 
     /**
+     * Indicate the response changes topic.
+     *
+     * @var bool
+     */
+    private bool $changesTopic = false;
+
+
+    /**
      * ResponseQueueItem constructor.
      *
      * @param string               $command The command prefix.
+     * @param string               $value   The command value.
      * @param string               $type    The type of response.
      * @param int                  $order   The order of the response.
      * @param array<string,string> $options The local interpreter options.
      */
-    public function __construct(string $command, string $type, int $order = 0, array $options = [])
+    public function __construct(string $command, string $value, string $type, int $order = 0, array $options = [])
     {
         $this->command = $command;
+        $this->value = $this->original = $value;
         $this->type = $type;
         $this->order = $order;
         $this->options = $options;
@@ -76,8 +100,73 @@ class ResponseQueueItem
      *
      * @return string
      */
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    public function setValue(string $value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Return the command string.
+     *
+     * @return string
+     */
     public function getCommand(): string
     {
         return $this->command;
+    }
+
+
+    public function isChangingTopic(): bool
+    {
+        return $this->changesTopic;
+    }
+
+    private function reset(): void
+    {
+        $this->source = $this->original;
+        $this->changesTopic = false;
+    }
+
+
+    /**
+     * Parse the response through the available tags.
+     *
+     * @param ResponseQueueItem $response
+     *
+     * @return string
+     */
+    public function parse(): string
+    {
+       // $this->reset();
+
+        $this->changesTopic = false;
+
+        $topic = $this->getTopic();
+
+        foreach (synapse()->tags as $tag) {
+            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\{$tag}";
+            $instance = new $class();
+
+            $this->value = $instance->parse($this->value, synapse()->input);
+        }
+
+        $topicAfter = $this->getTopic();
+
+        if ($topicAfter !== $topic) {
+            $this->changesTopic = true;
+        }
+
+
+        return $this->value;
+    }
+
+    private function getTopic(): string
+    {
+        return synapse()->memory->shortTerm()->get('topic') ?? "random";
     }
 }

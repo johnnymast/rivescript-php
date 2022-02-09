@@ -1,13 +1,10 @@
-! var globaltest = set test name test
+    ! var globaltest = set test name test
 
         + test
         - {topic=test}{@<get test_name>}
 
         + test without redirect
         - {topic=test}<get test_name>
-
-        + x
-        - {topic=test}test
 
         + set test name *
         - <set test_name=<star>>{@test}
@@ -23,7 +20,7 @@
           - hello <get test_name>!{topic=random}
 
           + *
-          - {topic=random}:) <@>
+          - {topic=random}<@>
         < topic
 
         + *

@@ -39,6 +39,7 @@ class Rivescript extends ContentLoader
     public const VERBOSITY_DEBUG = 3;
 
     public $onSay = null;
+    public $onWarn = null;
 
     /**
      * A recursion limit before an attempt to
@@ -243,8 +244,8 @@ class Rivescript extends ContentLoader
     {
         $message = "[WARNING]: " . $this->formatString($message, $args);
 
-        if ($this->onSay) {
-            call_user_func($this->onSay, $message, $verbosity);
+        if ($this->onWarn) {
+            call_user_func($this->onWarn, $message, $verbosity);
         }
     }
 
