@@ -1,0 +1,132 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the <div name=value> tag.                        #
+################################################################################
+
+basic_division:
+  tests:
+    - source: |
+        + how many points do i have
+        - you have <get points> points.
+
+        + divide by 5 points
+        - <div points=5>the points have been divided.
+
+    - set:
+        points:  10
+
+    - input: "how many points do i have"
+      reply: "you have 10 points."
+
+    - input: "divide by 5 points"
+      reply: "the points have been divided."
+
+    - input: "how many points do i have"
+      reply: "you have 2 points."
+
+    - assert:
+        points: 2
+
+
+undefined_variable_should_return_an_error:
+  tests:
+    - source: |
+        + divide 5 points
+        - <div points=5>the points have been divided.
+
+    - assert:
+       points: "undefined"
+
+    - input: "divide 5 points"
+      reply: "[ERR: Math can't 'div' non-numeric user variable 'points']the points have been divided."
+
+
+div_by_zero_should_return_an_error:
+  tests:
+    - source: |
+        + init
+        - <set mypoints=0>points zet to zero.
+        
+        + divide by zero
+        - <div mypoints=0>done.
+
+    - input: "init"
+      reply: "points zet to zero."
+
+    - assert:
+        mypoints: 0
+
+    - input: "divide by zero"
+      reply: "[ERR: Can't Divide By Zero]done."
+
+    - assert:
+        mypoints: 0
+
+
+div_int_value_to_non_int_user_variable:
+  tests:
+    - source: |
+        + set points to non int value
+        - <set mypoints=divtest>oke done.
+
+        + divide by 5 points
+        - <div mypoints=5>the points have been divided.
+
+    - input: "set points to non int value"
+      reply: "oke done."
+
+    - assert:
+        mypoints: divtest
+
+    - input: "divide by 5 points"
+      reply: "[ERR: Math can't 'div' non-numeric user variable 'mypoints']the points have been divided."
+
+    - assert:
+        mypoints: divtest
+
+
+div_non_int_value_to_int_user_variable:
+  tests:
+    - source: |
+        + set points to int value
+        - <set mypoints=4>yes done.
+
+        + do the divide thing
+        - <div mypoints=@@>the points have been divided.
+
+    - input: "set points to int value"
+      reply: "yes done."
+
+    - assert:
+        mypoints: "4"
+
+    - input: "do the divide thing"
+      reply: "[ERR: Math can't 'div' non-numeric value '@@']the points have been divided."
+
+    - assert:
+        mypoints: "4"
+
+
+embedded_tags_work_correctly:
+  tests:
+    - source: |
+        + init
+        - <set points=10><set bonuspoints=5>init done
+
+        + divide bonus points
+        - <div points=<get bonuspoints>>bonus points have been divided.
+
+    - input: "init"
+      reply: "init done"
+
+    - assert:
+        points:  10
+        bonuspoints: 5
+
+    - input: "divide bonus points"
+      reply: "bonus points have been divided."
+
+    - assert:
+        points: 2
+        bonuspoints: 5

@@ -58,13 +58,29 @@ class Sub extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source)[0];
-            $userData = synapse()->memory->user($input->user())->get($matches[1]) ?? '0';
+            $matches = $this->getMatches($source);
+            foreach ($matches as $match) {
+                $name  = $match[1];
+                $value = $match[2];
 
-            $userData -= $matches[2];
+                if (empty($match[3]) === false && empty($match[4]) === false) {
+                    $name = $match[3];
+                    $value = $match[4];
+                }
 
-            synapse()->memory->user($input->user())->put($matches[1], $userData);
-            $source = str_replace($matches[0], '', $source);
+
+                $variable = synapse()->memory->user($input->user())->get($name) ?? "undefined";
+                $source = str_replace($match[0], '', $source);
+
+                if (is_numeric($value) === false) {
+                    return "[ERR: Math can't 'sub' non-numeric value '{$value}']{$source}";
+                } elseif ($variable === "undefined" || is_numeric($variable) === false) {
+                    return "[ERR: Math can't 'sub' non-numeric user variable '{$name}']{$source}";
+                }
+
+                $variable -= $value;
+                synapse()->memory->user($input->user())->put($name, $variable);
+            }
         }
 
         return $source;

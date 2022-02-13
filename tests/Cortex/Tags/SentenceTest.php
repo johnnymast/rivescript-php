@@ -18,7 +18,7 @@ uses()
         $this->rivescript = new Rivescript();
         $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
     })
-    ->group('tags');
+    ->group('Tags');
 
 it("will transform sentences between {sentence} and {/sentence} to uppercase first char (Single-Sentence)", function () {
     $expected = "roger this is: First sentence with ucfirst. curly bracket";

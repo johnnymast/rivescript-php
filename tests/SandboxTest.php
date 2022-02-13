@@ -7,7 +7,7 @@ use Axiom\Rivescript\Rivescript;
 uses()
     ->beforeEach(function () {
         $this->rivescript = new Rivescript();
-        $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
+        $this->rivescript->load(__DIR__.'/../../resources/Tags/Tags.rive');
 
 //        $this->rivescript->onSay = function($msg) {
 //            echo "{$msg}\n";
@@ -44,7 +44,7 @@ it("Should work", function() {
         < topic
 
         + html test
-        - <set name=<b>Name</b>>This has some non-RS <em>tags</em> in it.
+        - <set name=<b>Name</b>>This has some non-RS <em>Tags</em> in it.
         
         + html result
         - <get name>

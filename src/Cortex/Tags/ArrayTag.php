@@ -16,7 +16,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
 /**
  * Add class
  *
- * This class is responsible parsing the <add> tag.
+ * This class is responsible parsing the (@array) or @array tag.
  *
  * PHP version 7.4 and higher.
  *
@@ -35,14 +35,14 @@ class ArrayTag extends Tag
      *
      * @var array<string>
      */
-    protected array $allowedSources = ["response"];
+    protected array $allowedSources = ["trigger", "response"];
 
     /**
      * Regex expression pattern.
      *
      * @var string
      */
-    protected string $pattern = "/\(@(.+?)\)/ui";
+    protected string $pattern = "/\@(.+?)\b/ui";
 
     /**
      * Parse the source.
@@ -63,11 +63,44 @@ class ArrayTag extends Tag
 
             foreach ($matches as $match) {
                 $name = $match[1];
-                if (($array = synapse()->memory->arrays()->get($name))) {
-                    $rnd = array_rand($array, 1);
-                    $replacement = $array[$rnd];
 
-                    $source = str_replace("(@$name)", $replacement, $source);
+                $char = $match[0][0];
+                if (($array = synapse()->memory->arrays()->get($name))) {
+                    $wildcard = (strpos($source, "(@{$name})") > -1);
+
+                    if ($wildcard === true) {
+                        array_walk($array, 'preg_quote');
+
+                        /**
+                         * Find the match
+                         */
+
+                        $regex = "(" . implode('|', $array) . ")";
+                        if (@preg_match_all('/' . $regex . '/ui', $input->source(), $wildcards)) {
+                            array_shift($wildcards);
+
+                            if ($wildcards) {
+                                $wildcards = Collection::make($wildcards)->flatten()->all();
+                                synapse()->memory->shortTerm()->put('wildcards', $wildcards);
+
+                                foreach ($wildcards as $wildcard) {
+                                    $source = str_replace("(@{$name})", $wildcard, $source);
+                                }
+                            }
+                        }
+                    } else {
+                        /**
+                         * Find the match
+                         */
+                        $regex = "(?:" . implode('|', $array) . ")";
+
+                        if (@preg_match_all('/' . $regex . '/ui', $source, $results)) {
+                            foreach ($results as $result) {
+                                $source = str_replace("@{$name}", $result[0], $source);
+                            }
+                            return $source;
+                        }
+                    }
                 }
             }
         }

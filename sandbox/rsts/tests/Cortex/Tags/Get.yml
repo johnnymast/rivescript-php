@@ -1,0 +1,47 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the <get name> tag.                              #
+################################################################################
+
+basic:
+  tests:
+    - source: |
+        + what is the day
+        - Today is <get day>
+
+    - set:
+        day: "Monday"
+
+    - assert:
+        day: "Monday"
+
+    - input: "what is the day"
+      reply: "Today is Monday"
+
+get_undefined_user_varaible:
+  tests:
+    - source: |
+        + get value
+        - <get somevariable>
+
+    - assert:
+        somevariable: "undefined"
+
+    - input: "get value"
+      reply: "undefined"
+
+get_embeded_html:
+  tests:
+    - source: |
+        + return html
+        - <get html>
+
+    - set:
+        html: "<b>name</b>"
+
+    - assert:
+        html: "<b>name</b>"
+
+    - input: "return html"
+      reply: "<b>name</b>"

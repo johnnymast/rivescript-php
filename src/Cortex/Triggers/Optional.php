@@ -20,7 +20,7 @@ use Axiom\Rivescript\Traits\Regex;
  * keywords. The optional trigger will be valid when ever the
  * optional keyword is used or not.
  *
- * Note: Optionals do NOT match like wildcards do. They do NOT go into the <star> tags. The reason for this is that
+ * Note: Optionals do NOT match like wildcards do. They do NOT go into the <star> Tags. The reason for this is that
  * optionals are optional, and won't always match anything if the client didn't actually say the optional word(s).
  *
  * PHP version 7.4 and higher.

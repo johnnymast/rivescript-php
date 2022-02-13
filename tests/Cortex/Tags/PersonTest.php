@@ -18,7 +18,7 @@ uses()
         $this->rivescript = new Rivescript();
         $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
     })
-    ->group('tags');
+    ->group('Tags');
 
 
 it("will translate {person}person var{/person} to a person variable (Single-Word)", function () {

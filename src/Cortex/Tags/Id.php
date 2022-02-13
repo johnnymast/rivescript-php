@@ -58,11 +58,10 @@ class Id extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source)[0];
-            $userId = $input->user();
-
-
-            $source = str_replace($matches[0], $userId, $source);
+            $matches = $this->getMatches($source);
+            foreach ($matches as $match) {
+                $source = str_replace($match[0], $input->user(), $source);
+            }
         }
 
         return $source;

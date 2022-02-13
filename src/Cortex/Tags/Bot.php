@@ -41,7 +41,7 @@ class Bot extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/<bot (.*[a-zA-Z0-9])=(.*[a-zA-Z0-9])>|<bot (.*[a-zA-Z0-9])>/u";
+    protected string $pattern = "/<bot (.*[a-zA-Z0-9])=(.*[a-zA-Z0-9])\B>|<bot (.*[a-zA-Z0-9])>/u";
 
     /**
      * Parse the source.
@@ -62,8 +62,10 @@ class Bot extends Tag
             $variables = synapse()->memory->variables();
 
             foreach ($matches as $match) {
+                $name = $match[3];
+
                 if (count($match) === 4) {
-                    $source = str_replace($match[0], $variables[$match[3]] ?? "undefined", $source);
+                    $source = str_replace($match[0], $variables[$name] ?? "undefined", $source);
                 } elseif (count($match) === 3) {
                     synapse()->memory->variables()->put($match[1], $match[2]);
                     $source = str_replace($match[0], '', $source);

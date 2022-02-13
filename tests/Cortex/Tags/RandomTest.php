@@ -18,7 +18,7 @@ uses()
         $this->rivescript = new Rivescript();
         $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
     })
-    ->group('tags');
+    ->group('Tags');
 
 it("can pick a single random word at random", function () {
     $expected = ['word1', 'word2', 'word3'];

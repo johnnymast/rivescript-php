@@ -18,7 +18,7 @@ uses()
         $this->rivescript = new Rivescript();
         $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
     })
-    ->group('tags');
+    ->group('Tags');
 
 it("replaces the \\s tag with a whitespace", function () {
     $expected = "this has a white space";

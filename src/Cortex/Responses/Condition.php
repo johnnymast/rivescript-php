@@ -31,7 +31,7 @@ class Condition extends Response implements ResponseContract
 {
 
     /**
-     * Handle Conditions, if the source is a Condition
+     * Handle Condition, if the source is a Condition
      * then we need to handle the conditions.
      *
      * @return false|mixed
@@ -40,7 +40,7 @@ class Condition extends Response implements ResponseContract
     {
         if ($this->responseQueueItem()->getCommand() === '*') {
             foreach (synapse()->conditions as $class) {
-                $class = "\\Axiom\\Rivescript\\Cortex\\Conditions\\{$class}";
+                $class = "\\Axiom\\Rivescript\\Cortex\\Condition\\{$class}";
                 $instance = new $class();
 
                 $match = $instance->matches($this->source());

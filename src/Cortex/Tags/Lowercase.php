@@ -41,7 +41,7 @@ class Lowercase extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/({)lowercase(})(.+?)({)\/lowercase(})|(<)lowercase(>)/u";
+    protected string $pattern = "/{lowercase}(.+?){\/lowercase}|<lowercase>/u";
 
     /**
      * Parse the source.
@@ -58,19 +58,28 @@ class Lowercase extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source)[0];
+            $matches = $this->getMatches($source);
             $wildcards = synapse()->memory->shortTerm()->get("wildcards");
+            $wildcard = 0;
 
             foreach ($matches as $match) {
-                if ($matches[0] === '<lowercase>' && is_array($wildcards) === true && count($wildcards) > 0) {
-                    $sub = strtolower($wildcards[0]);
-                } elseif ($matches[1] === '{' && isset($matches[3])) {
-                    $sub = strtolower($matches[3]);
+                if ($match[0] === '<lowercase>' && is_array($wildcards) === true && count($wildcards) > 0) {
+                    if (isset($wildcards[$wildcard])) {
+                        $sub = strtolower($wildcards[$wildcard]);
+                        $pos = strpos($source, $match[0]);
+                        if ($pos !== false) {
+                            $source = substr_replace($source, $sub, $pos, strlen($match[0]));
+                        }
+
+                        $wildcards = array_shift($wildcards);
+                    }
+                } elseif ($match[0][0] == '{' && isset($match[1])) {
+                    $sub = strtolower($match[1]);
                 } else {
                     $sub = "undefined";
                 }
 
-                $source = str_replace($matches[0], $sub, $source);
+                $source = str_replace($match[0], $sub, $source);
             }
         }
 

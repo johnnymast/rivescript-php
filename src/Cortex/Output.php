@@ -113,7 +113,8 @@ class Output
                         $output = $response->getValue();
 
                         if ($output) {
-                            $this->output .= $output;
+                            $this->output = $output;
+                            break;
                         }
                     }
                 } else {
@@ -229,7 +230,7 @@ class Output
         // $queueItem = $this->parseResponse($response);
 
         /**
-         * It could be possible that tags have altered the trigger.
+         * It could be possible that Tags have altered the trigger.
          * If so evaluate possible changes.
          */
 //

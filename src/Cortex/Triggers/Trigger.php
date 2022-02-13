@@ -33,9 +33,9 @@ abstract class Trigger implements TriggerContract
 {
 
     /**
-     * Parse the response through the available tags.
+     * Parse the response through the available Tags.
      *
-     * @param string $trigger The trigger to parse tags on.
+     * @param string $trigger The trigger to parse Tags on.
      * @param Input  $input   Input information.
      *
      * @return string

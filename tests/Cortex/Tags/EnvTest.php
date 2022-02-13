@@ -18,7 +18,7 @@ uses()
         $this->rivescript = new Rivescript();
         $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
     })
-    ->group('tags');
+    ->group('Tags');
 
 it('can read global variables.', function () {
     $expected = "The topic is sensation.";

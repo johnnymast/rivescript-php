@@ -55,7 +55,7 @@ class Arrays extends Trigger
                 }
             }
 
-            if (@preg_match_all('/' . $trigger . '$/ui', $input->source(), $wildcards)) {
+            if (@preg_match_all('/' . $trigger . '/ui', $input->source(), $wildcards)) {
                 array_shift($wildcards);
 
                 if ($wildcards) {

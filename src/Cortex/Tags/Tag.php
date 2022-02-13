@@ -124,7 +124,7 @@ abstract class Tag implements TagContract
     }
 
     /**
-     * Parse tags if html is used.
+     * Parse Tags if html is used.
      *
      * @param string $content The content string.
      * @param string $tagName The tag to parse.

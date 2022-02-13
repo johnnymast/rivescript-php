@@ -18,7 +18,7 @@ uses()
         $this->rivescript = new Rivescript();
         $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
     })
-    ->group('tags');
+    ->group('Tags');
 
 it('answers with the tag removed', function () {
     $expected = "Well that's mean. I'm not talking again until you say you're sorry.";

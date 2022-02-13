@@ -1,0 +1,28 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the <id> tag.                                    #
+################################################################################
+
+
+basic_usage:
+  tests:
+    - source: |
+        + what is my client id
+        - your id is <id>.
+
+    - input: "what is my client id"
+      reply: "your id is test-user."
+
+
+can_not_be_used_as_trigger:
+  tests:
+    - source: |
+        + what is my <id>
+        - it is <id>.
+        
+        + *
+        - no trigger detected.
+
+    - input: "what is my <id>"
+      reply: "no trigger detected."

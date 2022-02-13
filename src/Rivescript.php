@@ -78,6 +78,13 @@ class Rivescript extends ContentLoader
     public bool $debug = false;
 
     /**
+     * This is the user identification.
+     *
+     * @var string
+     */
+    private string $client_id = 'local-user';
+
+    /**
      * Create a new Rivescript instance.
      *
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
@@ -91,11 +98,12 @@ class Rivescript extends ContentLoader
         synapse()->brain->setMaster($this);
         synapse()->rivescript = $this;
 
+        $this->setClientId($this->client_id);
         $this->registerTags();
     }
 
     /**
-     * Initialize the tags
+     * Initialize the Tags
      *
      * @return void
      */
@@ -132,7 +140,7 @@ class Rivescript extends ContentLoader
      * Please note 2:
      *
      * If you profile a directory with rivescript documents make sure they are
-     * all interpretable rivescript will throw syntax errors while trying to
+     * all interpretable Rivescript will throw syntax errors while trying to
      * parse those files.
      *
      * @param array<string>|string $info The files to read
@@ -174,42 +182,50 @@ class Rivescript extends ContentLoader
     }
 
     /**
+     * Set the client id.
+     *
+     * @param string $client_id The client id for this user.
+     *
+     * @return void
+     */
+    public function setClientId(string $client_id = 'local-user'): void
+    {
+        $this->client_id = $client_id;
+    }
+
+    /**
+     * Return the client id.
+     *
+     * @return string
+     */
+    public function getClientId(): string
+    {
+        return $this->client_id;
+    }
+
+    /**
      * Set user variables.
      *
-     * @param string $user  The user for this variable.
      * @param string $name  The name of the variable.
      * @param string $value The value of the variable.
      *
      * @return void
      */
-    public function setUservar(string $user, string $name, string $value): void
+    public function set_uservar(string $name, string $value): void
     {
-        synapse()->memory->user($user)->put($name, $value);
+        synapse()->memory->user($this->client_id)->put($name, $value);
     }
 
     /**
      * Get user variable.
      *
-     * @param string $user The user for this variable.
      * @param string $name The name of the variable.
      *
      * @return mixed
      */
-    public function getUservar(string $user, string $name)
+    public function get_uservar(string $name)
     {
-        return synapse()->memory->user($user)->get($name);
-    }
-
-    /**
-     * @param string $string
-     * @param bool   $utf8
-     *
-     * @return string
-     * @deprecated
-     */
-    private function stripNasties(string $string, bool $utf8): string
-    {
-        return preg_replace("/[^A-Za-z0-9 ]/m", "", $string);
+        return synapse()->memory->user($this->client_id)->get($name) ?? "undefined";
     }
 
     /**

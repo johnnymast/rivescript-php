@@ -41,7 +41,7 @@ class Set extends Tag
      *
      * @var string
      */
-    protected string $pattern = '/<set (.+?)=(.+?)>/U';
+    protected string $pattern = '/<set (.+?)=(.+?)\B>|<set (.+?)=(.+?)>/u';
 
     /**
      * Parse the source.
@@ -58,20 +58,25 @@ class Set extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $parsed = $this->secureSource($source, "set");
-          //  $parsed = explode('=', $parsed['response']);
-
             $matches = $this->getMatches($source);
 
             foreach ($matches as $match) {
-                $key = $match[1];
+                $name = $match[1];
                 $value = $match[2];
 
+                if (empty($match[3]) === false && empty($match[4]) === false) {
+                    $name = $match[3];
+                    $value = $match[4];
+                }
+
                 synapse()->rivescript->say("Setting variable :key with value :val", [
-                    'key' => $key,
+                    'key' => $name,
                     'val' => $value,
                 ]);
-                synapse()->memory->user($input->user())->put($key, $value);
+
+                $value = str_replace(["&#60;", "&#62;"], ["<", ">"], $value);
+
+                synapse()->memory->user($input->user())->put($name, $value);
                 $source = str_replace($match[0], '', $source);
             }
         }

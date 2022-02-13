@@ -27,7 +27,7 @@ namespace Axiom\Rivescript\Traits;
 trait Tags
 {
     /**
-     * Parse the response through the available tags.
+     * Parse the response through the available Tags.
      *
      * @param string $source The response string to parse.
      *
@@ -50,7 +50,7 @@ trait Tags
     }
 
     /**
-     * Escape unknown tags, so they don't get picked up by the parser
+     * Escape unknown Tags, so they don't get picked up by the parser
      * later on in the process.
      *
      * @param string $source The source to escape.

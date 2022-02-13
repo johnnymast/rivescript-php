@@ -16,9 +16,9 @@ uses()
         $this->rivescript = new Rivescript();
         $this->rivescript->load(__DIR__.'/../../resources/tags/tags.rive');
     })
-    ->group('tags');
+    ->group('Tags');
 
-it("will perform an inline redirection for tags starting with {@..}. ", function () {
+it("will perform an inline redirection for Tags starting with {@..}. ", function () {
     $expected = "hello That is result 1";
     $actual = $this->rivescript->reply("redirect test 1");
 

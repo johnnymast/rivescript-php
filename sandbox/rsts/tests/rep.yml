@@ -1,0 +1,23 @@
+################################################################################
+# RiveScript Test Suite (RSTS)                                                 #
+# -----------------------------------------------------------------------------#
+# For information on the format of this file, see the README.md at the         #
+# root of the `rsts` repo.                                                     #
+################################################################################
+
+# Reply Tests
+
+basic:
+  tests:
+    - source: |
+        + set name
+        - <set name=Johnny>Oke done
+        
+        + get name
+        - The value is <get name>
+
+    - input: "set name"
+      reply: "Oke done"
+
+    - input: "get name"
+      reply: "The value is Johnny"

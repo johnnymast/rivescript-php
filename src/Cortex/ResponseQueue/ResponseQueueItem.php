@@ -134,9 +134,7 @@ class ResponseQueueItem
 
 
     /**
-     * Parse the response through the available tags.
-     *
-     * @param ResponseQueueItem $response
+     * Parse the response through the available Tags.
      *
      * @return string
      */

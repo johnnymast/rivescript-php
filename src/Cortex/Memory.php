@@ -95,7 +95,7 @@ class Memory
     protected Collection $replies;
 
     /**
-     * A Collection of the tags.
+     * A Collection of the Tags.
      *
      * @var Collection<string, \Axiom\Rivescript\Cortex\Tags\Tag>
      */

@@ -175,6 +175,7 @@ class ResponseQueue extends Collection
                             break;
                     }
 
+                    $lastData->setValue($lastResponse);
                     $continues->put($lastResponse, $lastData);
                 }
 

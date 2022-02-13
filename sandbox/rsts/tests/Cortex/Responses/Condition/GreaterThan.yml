@@ -1,0 +1,51 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the greater than condition.                      #
+################################################################################
+
+basic_check_for_greater_than:
+  tests:
+    - source: |
+        + do you think 2 is greater 2
+        * 2 > 2 => yes that is correct, 2 greater than 2
+        - No this is not correct
+
+        + do you think 5 is greater 1
+        * 5 > 1 => yes that is correct, 5 is greater than 1
+        - No this is not correct
+
+    - input: "do you think 2 is greater 2"
+      reply: "No this is not correct"
+
+    - input: "do you think 5 is greater 1"
+      reply: "yes that is correct, 5 is greater than 1"
+
+comparison_should_work_with_a_wildcard:
+  tests:
+    - source: |
+        + do you think 8 is greater than *
+        * 8 > <star> =>yes i do 8 is greater than <star>
+        - no that i dont
+
+        + do you think 5 is greater than *
+        * 5 > <star> =>yes i do 5 is greater than <star>
+        - no that i dont
+
+    - input: "do you think 8 is greater than 7"
+      reply: "yes i do 8 is greater than 7"
+
+    - input: "do you think 5 is greater than 6"
+      reply: "no that i dont"
+
+comparison_only_works_in_response:
+  tests:
+    - source: |
+        + do you think 7 > 7 => hmm
+        - no that i dont
+        
+        + *
+        - no result
+
+    - input: "do you think 7 > 7 => hmm"
+      reply: "no result"

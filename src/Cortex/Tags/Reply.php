@@ -15,7 +15,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
 /**
  * Reply class
  *
- * This class parses the <Reply>...<Reply9> tag.
+ * This class parses the <Reply>...<Reply9> tag(s).
  *
  * PHP version 7.4 and higher.
  *

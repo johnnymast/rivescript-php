@@ -1,16 +1,4 @@
-        + test
-        - {topic=test}{@hi}
+! array colors = red green blue cyan magenta yellow black white orange brown
 
-        + test *
-        - {topic=test}<@>
-
-        > topic test
-          + hi
-          - hello
-
-          + *
-          - {topic=random}<@>
-        < topic
-
-        + *
-        - Wildcard "<star>"!
++ i have a @colors colored *
+- you where talking about a <star>.

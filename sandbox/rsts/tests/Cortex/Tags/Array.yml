@@ -1,0 +1,44 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the (@array)or @array tag.                       #
+################################################################################
+
+
+with_parenthesis_should_match_into_star:
+  tests:
+    - source: |
+        ! array colors = red green blue cyan magenta yellow black white orange brown
+
+        + i am wearing a (@colors) shirt
+        - <star> shirts are my favorite.
+
+
+    - input: "i am wearing a green shirt"
+      reply: "green shirts are my favorite."
+
+without_parenthesis_should_not_match_into_star:
+  tests:
+    - source: |
+        ! array colors = red green blue cyan magenta yellow black white orange brown
+
+        + i have a @colors colored *
+        - you where talking about a <star>.
+
+    - input: "i have a red colored jacket"
+      reply: "you where talking about a jacket."
+
+
+non_arrays_should_not_trigger_the_tag:
+  tests:
+    - source: |
+        ! sub colors = red green blue cyan magenta yellow black white orange brown
+
+        + i have a @colors colored *
+        - you where talking about a <star>.
+
+        + *
+        - I am so sorry
+
+    - input: "i have a red colored jacket"
+      reply: "I am so sorry"

@@ -50,16 +50,16 @@ $synapse->commands = Axiom\Collections\Collection::make(
 $synapse->triggers = Axiom\Collections\Collection::make(
     [
         "Atomic",
-        "Wildcard",
         "Arrays",
         "Alternation",
-//        "Optional",
+        "Wildcard",
+        //        "Optional",
     ]
 );
 
 /**
  * Within Replies
- * The order that the tags should be processed within a response or anywhere else that a tag is allowed is as follows:
+ * The order that the Tags should be processed within a response or anywhere else that a tag is allowed is as follows:
  *
  * <star>      # Static text macros
  * <botstar>/<botstarN> # will match any wildcards that matched the bot's previous response.
@@ -70,7 +70,7 @@ $synapse->triggers = Axiom\Collections\Collection::make(
  * \n          #
  * \\          #
  * \#          #
- * {random}    # Random text insertion (which may contain other tags)
+ * {random}    # Random text insertion (which may contain other Tags)
  * <bot>       # Insert bot variables
  * <env>       # Insert environment variables
  * <person>    # String modifiers
@@ -96,19 +96,20 @@ $synapse->tags = Axiom\Collections\Collection::make([
     "Id",
     "SpecialChars",
     "Random",
-    "Bot",
-    "Env",
-    "Person",
-    "Formal",
+    "Set",
+    "Get",
     "Sentence",
     "Uppercase",
     "Lowercase",
-    "Set",
+
     "Add",
     "Sub",
     "Mult",
     "Div",
-    "Get",
+    "Bot",
+    "Env",
+    "Person",
+    "Formal",
     "Topic",
     "InlineRedirect",
     "ArrayTag",

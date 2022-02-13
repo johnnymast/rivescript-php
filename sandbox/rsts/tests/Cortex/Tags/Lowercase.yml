@@ -1,0 +1,82 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the {lowercase}...{/lowercase}/<lowercase> tag.  #
+################################################################################
+
+
+using_{lowercase}text{/lowercase}_should_work:
+  tests:
+    - source: |
+        + do it
+        - my name is {lowercase}JOHNNY{/lowercase}.
+
+    - input: "do it"
+      reply: "my name is johnny."
+
+using_{lowercase}text{/lowercase}_should_work_multiple_times:
+  tests:
+    - source: |
+        + do it
+        - my name is {lowercase}JOHNNY{/lowercase} and lastname {lowercase}BEEN{/lowercase}.
+
+    - input: "do it"
+      reply: "my name is johnny and lastname been."
+
+using_{lowercase}{/lowercase}_should_work_with_embedded_tags:
+  tests:
+    - source: |
+        + go
+        - your name is {lowercase}<get name>{/lowercase}.
+
+    - set:
+       name: BRAM
+
+    - input: "go"
+      reply: "your name is bram."
+
+    - assert:
+        name: BRAM
+
+tag_<lowercase>_is_an_alias_for_{lowercase}<star>{/lowercase}:
+  tests:
+    - source: |
+        + hi my name is *
+        - Hello <lowercase> how are you doing.
+
+    - input: "hi my name is ALEX"
+      reply: "Hello alex how are you doing."
+
+#tag_<lowercase>_can_be_used_multiple_times_for_different_stars:
+#  tests:
+#    - source: |
+#        + hi my name is * and my last name is *
+#        - Hello <lowercase> how are you doing. Btw i like <lowercase> as lastname.
+#
+#    - input: "hi my name is JOHNNY and my last name is DOODLE"
+#      reply: "Hello johnny how are you doing. Btw i like doodle as lastname."
+
+
+tag_{lowercase}{/lowercase}_can_not_be_used_as_trigger:
+  tests:
+    - source: |
+        + hello {lowercase}bleep{/lowercase}
+        - hi.
+        
+        + *
+        - no trigger detected.
+
+    - input: "hello {lowercase}bleep{/lowercase}"
+      reply: "no trigger detected."
+
+tag_<lowercase>_can_not_be_used_as_trigger:
+  tests:
+    - source: |
+        + hello <lowercase>
+        - hi.
+        
+        + *
+        - no trigger detected.
+
+    - input: "hello <lowercase>"
+      reply: "no trigger detected."

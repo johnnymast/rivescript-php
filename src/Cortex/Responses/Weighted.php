@@ -41,11 +41,11 @@ class Weighted extends Response implements ResponseContract
             $pattern = '/{weight=([0-9]+)}/';
 
             if ($this->matchesPattern($pattern, $source)) {
-                $matches = $this->getMatchesFromPattern($pattern, $source)[0];
+                $matches = $this->getMatchesFromPattern($pattern, $source);
 
-                if (isset($matches[0])) {
-                    $this->responseQueueItem->order += (int)$matches[1];
-                    $source = str_replace($matches[0], '', $source);
+                foreach ($matches as $match) {
+                    $this->responseQueueItem->order += (int)$match[1];
+                    $source = str_replace($match[0], '', $source);
                 }
 
                 return $source;
