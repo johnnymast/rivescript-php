@@ -1,0 +1,105 @@
+###################################################################################
+# RiveScript-PHP TAG Test Suite                                                   #
+# --------------------------------------------------------------------------------#
+# This file has testcases for testing the {person}/{/person}, <person> tag        #
+###################################################################################
+
+tag_will translate_{person}person var{/person}_to_a_person_variable_(Single-Word):
+  tests:
+    - source: |
+        ! person you are = I am
+        
+        + curly bracket test
+        - umm... "{person}you are{/person}" curly bracket
+
+    - input: "curly bracket test"
+      reply: "umm... \"I am\" curly bracket"
+
+
+tag_will_translate_{person}person var{/person}_to_a_person_variable_(Multi-Word):
+  tests:
+    - source: |
+        ! person my      = your man
+        
+        + curly bracket test multi
+        - umm... "{person}my{/person}" curly bracket
+
+    - input: "curly bracket test multi"
+      reply: "umm... \"your man\" curly bracket"
+
+tags_{person}...{/person}_can_contain_html:
+  tests:
+    - source: |
+        ! person my      = <b>bleep</b>
+        
+        + person html test
+        - you starred {person}my{/person}
+
+    - input: "person html test"
+      reply: "you starred <b>bleep</b>"
+
+
+tag_<person>_wil_work_as_{person}<star>{/star>{/person}:
+  tests:
+    - source: |
+        ! person my      = your
+        
+        + person star test *
+        - you starred <person>
+
+    - input: "person star test my"
+      reply: "you starred your"
+
+
+tag_<person>_can_contain_html:
+  tests:
+    - source: |
+        ! person my      = <b>your</b>
+        
+        + person star test *
+        - you starred <person>
+
+    - input: "person star test my"
+      reply: "you starred <b>your</b>"
+
+
+tag_{person}...{/person}_cannot_be_used_as_trigger:
+  tests:
+    - source: |
+        ! person my      = <b>your</b>
+        
+        + person star test {person}my{/person}
+        - response triggered
+        
+        + *
+        - no luck
+
+    - input: "person star test my"
+      reply: "no luck"
+
+
+tag_<person>_cannot_be_used_as_trigger:
+  tests:
+    - source: |
+        ! person my      = <b>your</b>
+        
+        + person html star test <person>
+        - response triggered
+        
+        + *
+        - no luck such html luck
+
+    - input: "person html star test <person>"
+      reply: "no luck such html luck"
+
+tag_{person}...{/person}_can_be_user_multiple_times:
+  tests:
+    - source: |
+        ! person my      = your
+        ! person she     = her
+        
+        + trigger
+        - {person}my{/person} pronounce is {person}she{/person}
+        
+    - input: "trigger"
+      reply: "your pronounce is her"

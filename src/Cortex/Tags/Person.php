@@ -15,7 +15,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
 /**
  * Person class
  *
- * This class parses the {person}/{/person} tag.
+ * This class parses the {person}/{/person}, <person> tag.
  *
  * PHP version 7.4 and higher.
  *
@@ -59,20 +59,20 @@ class Person extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
-            $wildcards = synapse()->memory->shortTerm()->get("wildcards");
-
-            $patterns = synapse()->memory->person()->keys()->all();
-            $replacements = synapse()->memory->person()->values()->all();
-
-            $sub = "";
-
-            foreach ($patterns as $index => $pattern) {
-                $patterns[$index] = "/\b" . $pattern . "\b/i";
-            }
-
-            // TODO: Test multiple person wildcards
 
             foreach ($matches as $match) {
+                $wildcards = synapse()->memory->shortTerm()->get("wildcards");
+
+                $patterns = synapse()->memory->person()->keys()->all();
+                $replacements = synapse()->memory->person()->values()->all();
+
+                $sub = "";
+
+                foreach ($patterns as $index => $pattern) {
+                    $patterns[$index] = "/\b" . $pattern . "\b/i";
+                }
+
+                // TODO: Test multiple person wildcards
                 if ($match[0] === '<person>' && is_array($wildcards) === true && count($wildcards) > 0) {
                     if (count($patterns) > 0) {
                         foreach ($patterns as $index => $pattern) {
@@ -90,6 +90,7 @@ class Person extends Tag
                     $replacement = synapse()->memory->person()->get($match[3]) ?? "undefined";
                     $source = str_replace($match[0], $replacement, $source);
                 }
+
             }
         }
 
