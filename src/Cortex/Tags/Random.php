@@ -15,7 +15,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
 /**
  * Random class
  *
- * This class parses the {random}/{random} tag.
+ * This class parses the {random}..{/random} tag.
  *
  * PHP version 7.4 and higher.
  *
@@ -57,32 +57,31 @@ class Random extends Tag
             return $source;
         }
 
-        $data = $source;
+        if ($this->hasMatches($source)) {
+            $matches = $this->getMatches($source);
+            foreach ($matches as $match) {
+                if (isset($match[1]) === true) {
+                    $found = $match[0];
 
-        while ($this->hasMatches($data)) {
-            $matches = $this->getMatches($data)[0];
+                    if (strpos($match[1], '|')) {
+                        $separator = '|';
+                    } elseif (strpos($match[1], ' ')) {
+                        $separator = ' ';
+                    } else {
+                        return $source;
+                    }
 
-            if (isset($matches[1]) === true) {
-                $found = $matches[0];
+                    $words = explode($separator, $match[1]);
 
-                if (strpos($matches[1], '|')) {
-                    $separator = '|';
-                } elseif (strpos($matches[1], ' ')) {
-                    $separator = ' ';
-                } else {
-                    return $source;
-                }
-
-                $words = explode($separator, $matches[1]);
-
-                if (count($words) !== 0) {
-                    $rnd = array_rand($words);
-                    $data = str_replace($found, $words[$rnd], $data);
+                    if (count($words) !== 0) {
+                        $rnd = array_rand($words);
+                        $source = str_replace($found, $words[$rnd], $source);
+                    }
                 }
             }
         }
 
-        return $data;
+        return $source;
     }
 
     /**

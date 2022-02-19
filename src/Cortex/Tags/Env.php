@@ -41,7 +41,7 @@ class Env extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/<env (.*[a-zA-Z0-9])=(.*[a-zA-Z0-9])>|<env (.*[a-zA-Z0-9])>/i";
+    protected string $pattern = "/<env (.+?)=(.+?)>\b|<env (.+?)>/u";
 
     /**
      * Parse the source.
@@ -62,11 +62,19 @@ class Env extends Tag
             $variables = synapse()->memory->global();
 
             foreach ($matches as $match) {
-                if (count($match) === 4) {
-                    $source = str_replace($match[0], $variables[$match[3]] ?? "undefined", $source);
-                } elseif (count($match) === 3) {
-                    synapse()->memory->global()->put($match[1], $match[2]);
-                    $source = str_replace($match[0], '', $source);
+                [$string, $key, $value] = $match;
+
+                if (isset($match[3])) {
+                    $key = $match[3];
+                }
+
+                if (empty($value) === false) {
+                    $value = str_replace(["&#60;", "&#62;"], ["<", ">"], $value);
+                    synapse()->memory->global()->put($key, $value);
+
+                    $source = str_replace($string, '', $source);
+                } else {
+                    $source = str_replace($string, $variables[$key] ?? "undefined", $source);
                 }
             }
         }

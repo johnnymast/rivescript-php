@@ -89,3 +89,16 @@ works_with_nine_exacting_stars_to_type:
 
     - input: "hi i am johnny mast i make this test alright good"
       reply: "response: i am johnny mast i make this test alright good"
+
+
+works_as_catch-all_for_unknown_triggers:
+  tests:
+    - source: |
+        + hello bot
+        - hello human
+        
+        + *
+        - unknown trigger
+
+    - input: "hi"
+      reply: "unknown trigger"

@@ -6,8 +6,4 @@ composer.lock
 /error.rive
 /testsuite.rive
 /changes.txt
-/sandbox/php
-/sandbox/*.php
-/sandbox/sample
-/sandbox/sample2
 /.phpunit.result.cache

@@ -47,8 +47,6 @@ class Variable implements Command
             if ($type === 'var') {
                 $value = str_replace('var', '', $node->value());
 
-
-
                 [$key, $value] = explode('=', $value);
 
                 $key = trim($key);

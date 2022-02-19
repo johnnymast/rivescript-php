@@ -1,0 +1,90 @@
+###################################################################################
+# RiveScript-PHP TAG Test Suite                                                   #
+# --------------------------------------------------------------------------------#
+# This file has testcases for testing the {formal}...{/formal} and <formal> tag   #
+###################################################################################
+
+tag_{formal}..{/formal}_curly_brackets_will_work_correctly:
+  tests:
+    - source: |
+        + Curly bracket test
+        - roger this is {formal}first{/formal}. curly bracket
+
+    - input: "Curly bracket test"
+      reply: "roger this is First. curly bracket"
+
+
+Will_transform_text_between_{formal}and{/formal}_(Multi-Word):
+  tests:
+    - source: |
+        + multi word formal test
+        - roger this is {formal}first and second{/formal}. curly bracket
+
+    - input: "multi word formal test"
+      reply: "roger this is First And Second. curly bracket"
+
+
+will_be_able_to_use_<formal>_as_an_alias_for_{format}<star>{/formal}:
+  tests:
+    - source: |
+        + formal test 3 *
+        - roger this is <formal>. angled bracket
+
+    - input: "formal test 3 single"
+      reply: "roger this is Single. angled bracket"
+
+
+tag_{formal}...{/formal}_will_be_able_to_contain_html:
+  tests:
+    - source: |
+        + html test
+        - roger {formal}<b>formal</b>{/formal}
+
+    - input: "html test"
+      reply: "roger <b>formal</b>"
+
+
+
+tag_<formal>_will_be_able_to_contain_html:
+  tests:
+    - source: |
+        + i love *
+        - roger {formal}<i>italic</i>{/formal}
+
+    - input: "i love <i>italic</i>"
+      reply: "roger <i>italic</i>"
+
+
+will_transform_<formal>_as_alias_of_{formal}<star>{/formal}_(Multi-Word):
+  tests:
+    - source: |
+        + multi word formal test *
+        - roger <formal>
+
+    - input: "multi word formal test yes sir"
+      reply: "roger Yes Sir"
+
+tag_<formal>_cannot_be_used_as_trigger_test1:
+  tests:
+    - source: |
+        + hi {formal}there{/formal}
+        - doing good
+        
+        + *
+        - No match
+
+    - input: "hi {formal}there{/formal}"
+      reply: "No match"
+
+
+tag_{formal}...{/formal}_cannot_be_used_as_trigger_test2:
+  tests:
+    - source: |
+        + How are you doing in a <formal> sense
+        - doing good
+        
+        + *
+        - No luck
+
+    - input: "How are you doing in a <formal> sense"
+      reply: "No luck"

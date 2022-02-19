@@ -101,12 +101,11 @@ $synapse->tags = Axiom\Collections\Collection::make([
     "Sentence",
     "Uppercase",
     "Lowercase",
-
+    "Bot",
     "Add",
     "Sub",
     "Mult",
     "Div",
-    "Bot",
     "Env",
     "Person",
     "Formal",

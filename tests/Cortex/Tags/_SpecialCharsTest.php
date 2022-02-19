@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test the \s|\n|\/|\# tag from the SpecialChars class.
+ * Test the \s|\n|\/|\# tag from the SpecialChars.yml class.
  *
  * @package      Rivescript-php
  * @subpackage   Tests

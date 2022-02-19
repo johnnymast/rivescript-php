@@ -1,7 +1,7 @@
 ################################################################################
 # RiveScript-PHP TAG Test Suite                                                #
 # -----------------------------------------------------------------------------#
-# This file has testcases for testing the <bot name> tag.                      #
+# This file has testcases for testing the <bot name> and <bot name=value> tag. #
 ################################################################################
 
 
@@ -44,20 +44,17 @@ bot_variables_can_be_set_only_in_response:
 bot_variables_can_take_sub_tags:
   tests:
     - source: |
-        ! var name      = RiveScript Bot
+         + init
+         - <bot name=<get botname>>variable set
         
-        + init
-        - <set botvarname=name>variable set
-        
-        + what is your name
-        - my name is <bot <get botvarname>>
+         + what is your name
+         - my name is <bot name>
 
+    - set:
+        botname: "RiveScript Bot"
 
     - input: "init"
       reply: "variable set"
-
-    - assert:
-       botvarname: "name"
 
     - input: "what is your name"
       reply: "my name is RiveScript Bot"
@@ -66,19 +63,29 @@ bot_variables_can_take_sub_tags:
 bot_variables_can_be_set_by_response:
   tests:
     - source: |
-        + set bot varibale
-        - <bot somevariable>
+        + set bot variable
+        - <bot xxx=yyy>Done
+        
+        + what is bot variable xxx
+        - <bot xxx>
 
+    - input: "set bot variable"
+      reply: "Done"
 
-    - input: "xx"
-      reply: "yy"
+    - input: "what is bot variable xxx"
+      reply: "yyy"
 
 bot_variables_who_are_set_can_take_contain_html:
   tests:
     - source: |
-        + set bot varibale
-        - <bot somevariable>
+        + set bot variable
+        - <bot key=<b>Hi there!</b>>html set
+        
+        + what did you just set
+        - <bot key>
 
+    - input: "set bot variable"
+      reply: "html set"
 
-    - input: "xx"
-      reply: "yy"
+    - input: "what did you just set"
+      reply: "<b>Hi there!</b>"
