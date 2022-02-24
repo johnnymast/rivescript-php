@@ -1,0 +1,47 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the less than condition.                         #
+################################################################################
+
+basic_check_for_less_than:
+  tests:
+    - source: |
+        + do you think 5 is less 9
+        * 5 < 9 => yes that is correct, 5 is less than 9
+        - No this is not correct
+
+    - input: "do you think 5 is less 9"
+      reply: "yes that is correct, 5 is less than 9"
+
+
+comparison_should_work_with_a_wildcard:
+  tests:
+    - source: |
+        + do you think 8 is less than *
+        * 8 < <star> =>yes i do, 8 is less than <star>
+        - no that i dont
+
+        + do you think 17 is less than *
+        * 17 < <star> =>yes i do, 7 is less than <star>
+        - no that i dont
+
+    - input: "do you think 8 is less than 12"
+      reply: "yes i do, 8 is less than 12"
+
+    - input: "do you think 17 is less than 10"
+      reply: "no that i dont"
+
+
+
+check_only_works_in_response:
+  tests:
+    - source: |
+        + do you think 17 <= 17 => hmm
+        - no that i dont
+        
+        + *
+        - i have no result for that
+
+    - input: "do you think 17 < 17 => hmm"
+      reply: "i have no result for that"

@@ -74,14 +74,15 @@ class ResponseQueue extends Collection
     /**
      * Attach a response to the queue.
      *
-     * @param Node $node The node contains information about the command.
+     * @param Node  $node    The node contains information about the command.
+     * @param array $trigger Contextual information about the trigger.
      *
      * @return void
      */
-    public function attach(Node $node): void
+    public function attach(Node $node, array $trigger = []): void
     {
         $type = $this->determineResponseType($node->source());
-        $queueItem =  new ResponseQueueItem($node->command(), $node->value(),   $type, 0, $this->options);
+        $queueItem = new ResponseQueueItem($node->command(), $node->value(), $type, $trigger, $this->options);
         $this->responses->put($node->value(), $queueItem);
     }
 
@@ -246,14 +247,16 @@ class ResponseQueue extends Collection
     /**
      * Process the Response Queue.
      *
-     * @return ResponseQueueItem
+     * @return mixed
      */
-    public function process(): ResponseQueueItem
+    public function process(): ?ResponseQueueItem
     {
         $sortedResponses = $this->determineResponseOrder($this->responses);
 
         $validResponses = new Collection([]);
         foreach ($sortedResponses as $response => $item) {
+            synapse()->memory->shortTerm()->put('response', $item);
+
             $result = $this->validateResponse($response, $item);
 
             if ($result !== false) {
@@ -268,6 +271,6 @@ class ResponseQueue extends Collection
             return $validResponses->values()->first();
         }
 
-        return false;
+        return null;
     }
 }

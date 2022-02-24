@@ -1,0 +1,104 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the <star>/<star1>..</star9> tag.                #
+################################################################################
+
+
+translate_wildcard_into_Star:
+  tests:
+    - source: |
+        + my favorite thing in the world is *
+        - Why do you like <star> so much?
+
+    - input: "my favorite thing in the world is programming"
+      reply: "Why do you like programming so much?"
+
+translates_two_stars:
+  tests:
+    - source: |
+        + * told me to say *
+        - Why would <star1> have told you to say <star2>?
+
+    - input: "John told me to say hello"
+      reply: "Why would john have told you to say hello?"
+
+
+translates_stars_with_multiple_words:
+  tests:
+    - source: |
+        + i think *
+        - Do you think <star> a lot?
+
+    - input: "I think the sky is orange."
+      reply: "Do you think the sky is orange a lot?"
+
+translates_stars_with_wildcard:
+  tests:
+    - source: |
+        + i am * years old
+        - Tell me that as a number instead of spelled out like "<star>"
+
+    - input: "I am twenty years old"
+      reply: "Tell me that as a number instead of spelled out like \"twenty\""
+
+
+translates_stars_with_number:
+  tests:
+    - source: |
+        + i am # years old
+        - I will remember that you are <star> years old.
+
+    - input: "I am 20 years old"
+      reply: "I will remember that you are 20 years old."
+
+works_as_catch_all_from_replies:
+  tests:
+    - source: |
+        + *
+        - I'm sorry but I don't understand.
+
+    - input: "foobarbaz123"
+      reply: "I'm sorry but I don't understand."
+
+
+tag_<star1>_is_the_same_as_<star>:
+  tests:
+    - source: |
+        + my favorite thing in the world is *
+        - Why do you like <star>/<star1> so much?
+
+    - input: "my favorite thing in the world is programming"
+      reply: "Why do you like programming/programming so much?"
+
+
+works_as_catch-all_for_unknown_replies_(multi-word):
+  tests:
+    - source: |
+        + *
+        - I'm sorry but I don't understand.
+
+    - input: "lorem ipsum dolar amit"
+      reply: "I'm sorry but I don't understand."
+
+works_with_nine_exacting_stars_to_type:
+  tests:
+    - source: |
+        + hi * * * * * * * * *
+        - response: <star1> <star2> <star3> <star4> <star5> <star6> <star7> <star8> <star9>
+
+    - input: "hi i am johnny mast i make this test alright good"
+      reply: "response: i am johnny mast i make this test alright good"
+
+
+works_as_catch-all_for_unknown_triggers:
+  tests:
+    - source: |
+        + hello bot
+        - hello human
+        
+        + *
+        - unknown trigger
+
+    - input: "hi"
+      reply: "unknown trigger"

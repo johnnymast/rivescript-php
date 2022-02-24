@@ -40,6 +40,7 @@ class Rivescript extends ContentLoader
 
     public $onSay = null;
     public $onWarn = null;
+    public $onDebug = null;
 
     /**
      * A recursion limit before an attempt to
@@ -248,6 +249,24 @@ class Rivescript extends ContentLoader
     }
 
     /**
+     * Write a debug message.
+     *
+     * @param string $message   The message to print out.
+     * @param array  $args      (format) arguments for the message.
+     * @param int    $verbosity The verbosity level of the message.
+     *
+     * @return void
+     */
+    public function warn(string $message, array $args = [], int $verbosity = Rivescript::VERBOSITY_DEBUG): void
+    {
+        $message = "[WARNING]: " . $this->formatString($message, $args);
+
+        if ($this->onWarn) {
+            call_user_func($this->onWarn, $message, $verbosity);
+        }
+    }
+
+    /**
      * Write a warning.
      *
      * @param string $message   The message to print out.
@@ -256,12 +275,12 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function warn(string $message, array $args = [], int $verbosity = Rivescript::VERBOSITY_NORMAL): void
+    public function debug(string $message, array $args = [], int $verbosity = Rivescript::VERBOSITY_NORMAL): void
     {
-        $message = "[WARNING]: " . $this->formatString($message, $args);
+        $message = "[DEBUG]: " . $this->formatString($message, $args);
 
-        if ($this->onWarn) {
-            call_user_func($this->onWarn, $message, $verbosity);
+        if ($this->onDebug) {
+            call_user_func($this->onDebug, $message, $verbosity);
         }
     }
 

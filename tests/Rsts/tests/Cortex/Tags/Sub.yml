@@ -1,0 +1,111 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the <sub name=value> tag.                        #
+################################################################################
+
+basic_subtraction:
+  tests:
+    - source: |
+        + how many points do i have
+        - you have <get points> points.
+
+        + subtract 15 points
+        - <sub points=15>the points have been subtracted.
+
+    - set:
+        points:  35
+
+    - input: "how many points do i have"
+      reply: "you have 35 points."
+
+    - input: "subtract 15 points"
+      reply: "the points have been subtracted."
+
+    - input: "how many points do i have"
+      reply: "you have 20 points."
+
+    - assert:
+        points: 20
+
+
+undefined_variable:
+  tests:
+    - source: |
+        + subtract 5 points
+        - <sub points=5>the points have been subtracted.
+
+    - assert:
+       points: "undefined"
+
+    - input: "subtract 5 points"
+      reply: "[ERR: Math can't 'sub' non-numeric user variable 'points']the points have been subtracted."
+
+
+
+subtract_int_value_to_non_int_user_variable:
+  tests:
+    - source: |
+        + set points to non int value
+        - <set subpoints=test>oke done.
+
+        + subtract 25 points
+        - <sub subpoints=25>the points have been subtracted.
+
+    - input: "set points to non int value"
+      reply: "oke done."
+
+    - assert:
+        subpoints: test
+
+    - input: "subtract 25 points"
+      reply: "[ERR: Math can't 'sub' non-numeric user variable 'subpoints']the points have been subtracted."
+
+    - assert:
+        subpoints: test
+
+
+subtract_non_int_value_to_int_user_variable:
+  tests:
+    - source: |
+        + set points to int value
+        - <set mysubpoints=14>yes done.
+
+        + subtract some points
+        - <sub mysubpoints=XX>the points have been subtracted.
+
+    - input: "set points to int value"
+      reply: "yes done."
+
+    - assert:
+        mysubpoints: "14"
+
+    - input: "subtract some points"
+      reply: "[ERR: Math can't 'sub' non-numeric value 'XX']the points have been subtracted."
+
+    - assert:
+        mysubpoints: "14"
+
+
+embedded_tags_should_work_fine:
+  tests:
+    - source: |
+        + init
+        - <set points=10><set bonus=5>init done
+
+        + subtract bonus points
+        - <sub points=<get bonus>>bonus points have been subtracted.
+
+    - input: "init"
+      reply: "init done"
+
+    - assert:
+        points:  10
+        bonus: 5
+
+    - input: "subtract bonus points"
+      reply: "bonus points have been subtracted."
+
+    - assert:
+        points: 5
+        bonus: 5

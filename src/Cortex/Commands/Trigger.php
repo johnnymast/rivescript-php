@@ -42,14 +42,17 @@ class Trigger implements Command
     {
         if ($node->command() === '+') {
             $topic = synapse()->memory->shortTerm()->get('topic') ?: 'random';
-            $topic = synapse()->brain->topic($topic);
+
             $type = $this->determineTriggerType($node->value());
 
             $data = [
+                'topic' => $topic,
                 'type' => $type,
                 'responses' => new ResponseQueue($node->value()),
+                'value' => $node->value()
             ];
 
+            $topic = synapse()->brain->topic($topic);
             $topic->triggers->put($node->value(), $data);
             $topic->triggers = $topic->sortTriggers($topic->triggers());
 

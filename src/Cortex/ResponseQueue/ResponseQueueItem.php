@@ -74,8 +74,28 @@ class ResponseQueueItem
      *
      * @var bool
      */
-    private bool $changesTopic = false;
+    private bool $topicIsChanged = false;
 
+    /**
+     * This is the trigger for this response.
+     *
+     * @var string
+     */
+    public string $triggerString = '';
+
+    /**
+     * This is the topic for this response.
+     *
+     * @var string
+     */
+    public string $triggerTopic = '';
+
+    /**
+     * Set a redirect target.
+     *
+     * @var string
+     */
+    protected string $redirect = '';
 
     /**
      * ResponseQueueItem constructor.
@@ -83,16 +103,16 @@ class ResponseQueueItem
      * @param string               $command The command prefix.
      * @param string               $value   The command value.
      * @param string               $type    The type of response.
-     * @param int                  $order   The order of the response.
      * @param array<string,string> $options The local interpreter options.
      */
-    public function __construct(string $command, string $value, string $type, int $order = 0, array $options = [])
+    public function __construct(string $command, string $value, string $type, array $trigger = [], array $options = [])
     {
         $this->command = $command;
         $this->value = $this->original = $value;
         $this->type = $type;
-        $this->order = $order;
         $this->options = $options;
+        $this->triggerString = $trigger['value'];
+        $this->triggerTopic = $trigger['topic'];
     }
 
     /**
@@ -120,16 +140,40 @@ class ResponseQueueItem
         return $this->command;
     }
 
-
-    public function isChangingTopic(): bool
+    /**
+     * Return the trigger.
+     *
+     * @return array
+     */
+    public function getTrigger(): ?array
     {
-        return $this->changesTopic;
+        return synapse()->brain->topic($this->triggerTopic)->triggers()->get($this->triggerString);
+    }
+
+    /**
+     * Return the order of this queue item.
+     *
+     * @return int
+     */
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    public function isRedirect(): bool
+    {
+        return ($this->getRedirect() !== '');
+    }
+
+    public function isTopicChanged(): bool
+    {
+        return $this->topicIsChanged;
     }
 
     private function reset(): void
     {
         $this->source = $this->original;
-        $this->changesTopic = false;
+        $this->topicIsChanged = false;
     }
 
 
@@ -140,11 +184,9 @@ class ResponseQueueItem
      */
     public function parse(): string
     {
-       // $this->reset();
+        // $this->reset();
 
-        $this->changesTopic = false;
-
-        $topic = $this->getTopic();
+        $this->topicIsChanged = false;
 
         foreach (synapse()->tags as $tag) {
             $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\{$tag}";
@@ -153,17 +195,28 @@ class ResponseQueueItem
             $this->value = $instance->parse($this->value, synapse()->input);
         }
 
-        $topicAfter = $this->getTopic();
-
-        if ($topicAfter !== $topic) {
-            $this->changesTopic = true;
+        if ($this->triggerTopic !== $this->getTopic()) {
+            $this->topicIsChanged = true;
         }
 
+        if ($this->command === '@') {
+            $this->setRedirect($this->value);
+        }
 
         return $this->value;
     }
 
-    private function getTopic(): string
+    public function setRedirect(string $redirect): void
+    {
+        $this->redirect = $redirect;
+    }
+
+    public function getRedirect(): string
+    {
+        return $this->redirect;
+    }
+
+    public function getTopic(): string
     {
         return synapse()->memory->shortTerm()->get('topic') ?? "random";
     }

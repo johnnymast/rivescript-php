@@ -63,7 +63,9 @@ class Star extends Tag
 
             foreach ($matches as $match) {
                 $index = (empty($match[1]) ? 0 : $match[1] - 1);
-                $source = str_replace($match[0], $wildcards[$index], $source);
+                //if (isset($wildcards[$index]) === true) {
+                    $source = str_replace($match[0], $wildcards[$index], $source);
+                //}
             }
         }
 

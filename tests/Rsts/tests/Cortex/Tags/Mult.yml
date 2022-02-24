@@ -1,0 +1,126 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the <mult name=value> tag.                        #
+################################################################################
+
+basic_multiplication :
+  tests:
+    - source: |
+        + how many points do i have
+        - you have <get points> points.
+
+        + multiply by 2 points
+        - <mult points=2>the points have been multiplied.
+
+    - set:
+        points:  15
+
+    - input: "how many points do i have"
+      reply: "you have 15 points."
+
+    - input: "multiply by 2 points"
+      reply: "the points have been multiplied."
+
+    - input: "how many points do i have"
+      reply: "you have 30 points."
+
+    - assert:
+        points: 30
+
+
+undefined_variable_should_return_an_error:
+  tests:
+    - source: |
+        + multiply by 5 points
+        - <mult multpoints=5>the points have been multiplied.
+
+    - assert:
+       multpoints: "undefined"
+
+    - input: "multiply by 5 points"
+      reply: "[ERR: Math can't 'mult' non-numeric user variable 'multpoints']the points have been multiplied."
+
+
+mult_by_zero_should_work_correct:
+  tests:
+    - source: |
+        + init
+        - <set multpoints=10>points zet to 10.
+        
+        + multiply by zero
+        - <mult multpoints=0>done.
+
+    - input: "init"
+      reply: "points zet to 10."
+
+    - assert:
+        mypoints: 0
+
+
+mult_int_value_to_non_int_user_variable:
+  tests:
+    - source: |
+        + set points to non int value
+        - <set mypoints=divtest>oke done.
+
+        + multiply by 5 points
+        - <mult mypoints=5>the points have been multiplied.
+
+    - input: "set points to non int value"
+      reply: "oke done."
+
+    - assert:
+        mypoints: divtest
+
+    - input: "multiply by 5 points"
+      reply: "[ERR: Math can't 'mult' non-numeric user variable 'mypoints']the points have been multiplied."
+
+    - assert:
+        mypoints: divtest
+
+
+mult_non_int_value_to_int_user_variable:
+  tests:
+    - source: |
+        + set points to int value
+        - <set mypoints=4>yes done.
+
+        + do the multiply thing
+        - <mult mypoints=AB>the points have been multiplied.
+
+    - input: "set points to int value"
+      reply: "yes done."
+
+    - assert:
+        mypoints: "4"
+
+    - input: "do the multiply thing"
+      reply: "[ERR: Math can't 'mult' non-numeric value 'AB']the points have been multiplied."
+
+    - assert:
+        mypoints: "4"
+
+
+embedded_tags_should_work_fine:
+  tests:
+    - source: |
+        + init
+        - <set points=10><set bonuspoints=3>init done
+
+        + multiply bonus points
+        - <mult points=<get bonuspoints>>bonus points have been multiplied.
+
+    - input: "init"
+      reply: "init done"
+
+    - assert:
+        points:  10
+        bonuspoints: 3
+
+    - input: "multiply bonus points"
+      reply: "bonus points have been multiplied."
+
+    - assert:
+        points: 30
+        bonuspoints: 3

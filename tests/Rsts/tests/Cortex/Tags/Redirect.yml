@@ -1,0 +1,136 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the inline redirect {@trigger} and  <@> tag      #
+################################################################################
+
+
+redirects:
+  tests:
+    - source: |
+        + hello
+        - Hi there!
+
+        + hey
+        @ hello
+
+        // Test the {@} tag with and without spaces.
+        + hi there
+        - {@hello}
+
+        + howdy
+        - {@ hello}
+
+        + hola
+        - {@ hello }
+
+    - input: "hello"
+      reply: "Hi there!"
+
+    - input: "hey"
+      reply: "Hi there!"
+
+    - input: "hi there"
+      reply: "Hi there!"
+
+    - input: "howdy"
+      reply: "Hi there!"
+
+    - input: "hola"
+      reply: "Hi there!"
+
+redirects_with_sub_tags:
+  tests:
+    - source: |
+        ! var redirect=hidden trigger
+        
+        + howdy
+        - {@<bot redirect>}
+
+        + hidden trigger
+        - Triggered!
+
+    - input: "howdy"
+      reply: "Triggered!"
+
+
+redirect_with_undefined_input:
+  tests:
+    - source: |
+        + test
+        - {topic=test}{@hi}
+
+        + test *
+        - {topic=test}<@>
+
+        > topic test
+          + hi
+          - hello
+
+          + *
+          - {topic=random}<@>
+        < topic
+
+        + *
+        - Wildcard "<star>"!
+
+    - input: "test"
+      reply: "hello"
+
+    - input: test x"
+      reply: 'Wildcard "x"!'
+
+    - input: "?"
+      reply: 'Wildcard ""!'
+
+redirect_with_undefined_vars:
+  tests:
+    # empty variable test
+    - source: |
+        ! var globaltest = set test name test
+
+        + test
+        - {topic=test}{@<get test_name>}
+
+        + test without redirect
+        - {topic=test}<get test_name>
+
+        + set test name *
+        - <set test_name=<star>>{@test}
+
+        + get global test
+        @ <bot globaltest>
+
+        + get bad global test
+        @ <bot badglobaltest>
+
+        > topic test
+          + test
+          - hello <get test_name>!{topic=random}
+
+          + *
+          - {topic=random}<@>
+        < topic
+
+        + *
+        - Wildcard "<star>"!
+
+    # No variable set, should go through wildcard.
+    - input: "test"
+      reply: 'Wildcard "undefined"!'
+    - input: "test without redirect"
+      reply: "undefined"
+
+    # Variable set, should respond with text
+    - input: "set test name test"
+      reply: "hello test!"
+
+    # Different variable set, should get wildcard
+    - input: "set test name newtest"
+      reply: 'Wildcard "newtest"!'
+
+    # Test redirects using bot variable
+    - input: "get global test"
+      reply: "hello test!"
+    - input: "get bad global test"
+      reply: 'Wildcard "undefined"!'

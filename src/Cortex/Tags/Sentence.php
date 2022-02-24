@@ -58,33 +58,38 @@ class Sentence extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source)[0];
+//            echo "--> {$source}\n";
+            $matches = $this->getMatches($source);
             $wildcards = synapse()->memory->shortTerm()->get("wildcards");
 
-            if ($matches[0] === '<sentence>' && is_array($wildcards) === true && count($wildcards) > 0) {
-                $sub = $wildcards[0];
-            } elseif ($matches[1] === '{' && isset($matches[3])) {
-                $sub = $matches[3];
-            } else {
-                $sub = "undefined";
-            }
-
-            if ($sub !== "undefined") {
-                if (strpos($sub, '.') > -1) {
-                    $parts = explode('.', $sub);
-                    if (count($parts) !== 0) {
-                        array_walk($parts, static function (&$part) {
-                            $part = ucfirst(trim($part));
-                        });
-                    }
-
-                    $sub = implode('.', $parts);
+            foreach ($matches as $match) {
+                if ($match[0] === '<sentence>' && is_array($wildcards) === true && count($wildcards) > 0) {
+                    $sub = $wildcards[0];
+                } elseif ($match[1] === '{' && isset($match[3])) {
+                    $sub = $match[3];
                 } else {
-                    $sub = ucfirst($sub);
+                    $sub = "undefined";
                 }
-            }
 
-            $source = str_replace($matches[0], $sub, $source);
+                if ($sub !== "undefined") {
+                    if (strpos($sub, '.') > -1) {
+                        $parts = explode('.', $sub);
+                        if (count($parts) !== 0) {
+                            array_walk($parts, static function (&$part) {
+                                $part = ucfirst(trim($part));
+                            });
+                        }
+
+                        $sub = implode('.', $parts);
+                    } else {
+                        $sub = ucfirst($sub);
+                    }
+                }
+
+               //  $sub = str_replace(["&#60;", "&#62;"], ["<", ">"], $sub);
+
+                $source = str_replace($match[0], $sub, $source);
+            }
         }
 
         return $source;

@@ -1,0 +1,65 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the {random}..{/random} tag.                     #
+################################################################################
+
+
+tag_{random}..{/random}_(no_delimiters)_works_correct:
+  tests:
+    - source: |
+        + Tell me a random without delimiters
+        - The {random}man woman{/random}
+
+    - input: "Tell me a random without delimiters"
+      reply:
+        - "The man"
+        - "The woman"
+
+tag_{random}..{/random}_(with_delimiters)_works_correct:
+  tests:
+    - source: |
+        + What animals do you love
+        - i love {random}pork's|chickens{/random}
+
+    - input: "What animals do you love"
+      reply:
+        - "i love pork's"
+        - "i love chickens"
+
+tag_{random}..{/random}_(no_delimiters)_can_contain_html:
+  tests:
+    - source: |
+        + Tell me a random without delimiters but with html
+        - The {random}<b>man</b> <b>woman</b>{/random}
+
+    - input: "Tell me a random without delimiters but with html"
+      reply:
+        - "The <b>man</b>"
+        - "The <b>woman</b>"
+
+tag_{random}..{/random}_{with_delimiters)_can_contain_html:
+  tests:
+    - source: |
+        + Tell me who do you love in html
+        - i like {random}<b>you</b>|<b>me</b>{/random}
+
+    - input: "Tell me who do you love in html"
+      reply:
+        - "i like <b>you</b>"
+        - "i like <b>me</b>"
+
+tag_{random}..{/random}_cannot_be_used_in_triggers:
+  tests:
+    - source: |
+        + i have {random}sentence statement{/random}
+        - triggered
+
+        + *
+        - I am so sorry
+
+    - input: "i have {random}sentence statement{/random}"
+      reply: "I am so sorry"
+
+
+

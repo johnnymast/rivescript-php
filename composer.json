@@ -35,7 +35,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Tests\\": "tests/"
+      "Tests\\": "tests/",
+      "Tests\\Rsts\\": "tests/Rsts/src"
     }
   },
   "require": {
@@ -49,11 +50,17 @@
     "phpunit/phpunit": "^9.5.5",
     "monolog/monolog": "~1.0",
     "pestphp/pest": "^1.14",
-    "phpstan/phpstan": "^0.12.94"
+    "phpstan/phpstan": "^0.12.94",
+    "symfony/yaml": "5.4.x-dev"
   },
   "extra": {
     "branch-alias": {
       "dev-develop": "1.0.x-dev"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
     }
   }
 }

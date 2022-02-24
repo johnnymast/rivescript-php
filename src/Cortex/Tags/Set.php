@@ -64,9 +64,12 @@ class Set extends Tag
                 $name = $match[1];
                 $value = $match[2];
 
-                if (empty($match[3]) === false && empty($match[4]) === false) {
-                    $name = $match[3];
-                    $value = $match[4];
+
+                if (count($match) == 5) {
+                    if ($match[3] !== '' && $match[4] !== '') {
+                        $name = $match[3];
+                        $value = $match[4];
+                    }
                 }
 
                 synapse()->rivescript->say("Setting variable :key with value :val", [

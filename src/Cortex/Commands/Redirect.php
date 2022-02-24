@@ -45,6 +45,8 @@ class Redirect implements Command
             $trigger = synapse()->brain->topic($topic)->triggers()->get($key);
 
             $trigger['redirect'] = $node->value();
+            $trigger['value'] = $node->value();
+
 
             synapse()->brain->topic($topic)->triggers()->put($key, $trigger);
         }

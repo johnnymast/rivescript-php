@@ -58,10 +58,14 @@ class Topic extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            [$fullTag, $topic] = $this->getMatches($source)[0];
+            $matches = $this->getMatches($source);
 
-            $source = str_replace($fullTag, '', $source);
-            synapse()->memory->shortTerm()->put("topic", $topic);
+            foreach ($matches as $match) {
+                [$fullTag, $topic] = $match;
+
+                $source = str_replace($fullTag, '', $source);
+                synapse()->memory->shortTerm()->put("topic", $topic);
+            }
         }
 
         return $source;

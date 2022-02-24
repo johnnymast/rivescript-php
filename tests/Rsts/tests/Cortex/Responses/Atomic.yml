@@ -1,0 +1,15 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases the atomic response                                  #
+################################################################################
+
+
+basic_atomic_response:
+  tests:
+    - source: |
+        + hello bot
+        - Hello human.
+
+    - input: "Hello bot"
+      reply: "Hello human."

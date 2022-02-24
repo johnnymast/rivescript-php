@@ -53,6 +53,7 @@ $synapse->triggers = Axiom\Collections\Collection::make(
         "Arrays",
         "Alternation",
         "Wildcard",
+        "Redirect",
         //        "Optional",
     ]
 );
@@ -110,7 +111,7 @@ $synapse->tags = Axiom\Collections\Collection::make([
     "Person",
     "Formal",
     "Topic",
-    "InlineRedirect",
+    "Redirect",
     "ArrayTag",
     "OptionalTag",
     "Ok",
@@ -122,7 +123,8 @@ $synapse->responses = Axiom\Collections\Collection::make(
         "ContinueResponse",
         "Atomic",
         "Condition",
-        "Previous",
+        "Redirect",
+        "Previous"
     ]
 );
 

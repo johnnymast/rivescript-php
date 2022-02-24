@@ -1,0 +1,69 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the <input>|<input1>...</input9> tag.            #
+################################################################################
+
+input_translates_to_last_input:
+  tests:
+    - source: |
+        + hello world
+        - Hi
+        
+        + *
+        - your last input was: <input>
+
+    - input: "hello world"
+      reply: "Hi"
+
+    - input: "what was my last input"
+      reply: "your last input was: Hello World"
+
+
+translates_undefined_unknown_last_input_to_undefined:
+  tests:
+    - source: |
+        + *
+        - your last input was: <input>
+
+    - input: "what was my last input"
+      reply: "your last input was: undefined"
+
+keeps_track_of_last_9_inputs:
+  tests:
+    - source: |
+        + what was input3
+        - your last input was: <input3>
+
+    - input: "input1"
+
+    - input: "input2"
+
+    - input: "input3"
+
+    - input: "input4"
+
+    - input: "input5"
+
+    - input: "input6"
+
+    - input: "input7"
+
+    - input: "input8"
+
+    - input: "input9"
+
+    - input: "what was input3"
+      reply: "your last input was: input3"
+
+cannot_be_used_as_trigger:
+  tests:
+    - source: |
+        + what is my <input>
+        - it is <input>.
+        
+        + *
+        - no trigger detected.
+
+    - input: "what is my <input>"
+      reply: "no trigger detected."

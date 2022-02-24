@@ -12,6 +12,7 @@ namespace Axiom\Rivescript\Cortex\Triggers;
 
 use Axiom\Rivescript\Contracts\Trigger as TriggerContract;
 use Axiom\Rivescript\Cortex\Input;
+use Axiom\Rivescript\Traits\Tags;
 
 /**
  * Trigger class
@@ -31,6 +32,7 @@ use Axiom\Rivescript\Cortex\Input;
  */
 abstract class Trigger implements TriggerContract
 {
+    use Tags;
 
     /**
      * Parse the response through the available Tags.
@@ -40,15 +42,15 @@ abstract class Trigger implements TriggerContract
      *
      * @return string
      */
-    protected function parseTags(string $trigger, Input $input): string
-    {
-        synapse()->tags->each(function ($tag) use (&$trigger, $input) {
-            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
-            $tagClass = new $class("trigger");
-
-            $trigger = $tagClass->parse($trigger, $input);
-        });
-
-        return trim($trigger);
-    }
+//    protected function parseTags(string $trigger, Input $input): string
+//    {
+//        synapse()->tags->each(function ($tag) use (&$trigger, $input) {
+//            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
+//            $tagClass = new $class("trigger");
+//
+//            $trigger = $tagClass->parse($trigger, $input);
+//        });
+//
+//        return trim($trigger);
+//    }
 }

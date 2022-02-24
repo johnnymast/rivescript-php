@@ -1,0 +1,56 @@
+################################################################################
+# RiveScript-PHP TAG Test Suite                                                #
+# -----------------------------------------------------------------------------#
+# This file has testcases for the {sentence}...{/sentence}/<sentence> tag.     #
+################################################################################
+
+
+will_transform_sentences_between_{sentence}_and_{/sentence}_to_uppercase_first_char_(Single-Sentence):
+  tests:
+    - source: |
+        + sentence test 1
+        - roger this is: {sentence}first sentence with ucfirst{/sentence}. curly bracket
+
+    - input: "sentence test 1"
+      reply: "roger this is: First sentence with ucfirst. curly bracket"
+
+will_transform_text_between_{sentence}_and_{/sentence}_to_uppercase_first_char_(Multi-Word):
+  tests:
+    - source: |
+        + sentence test 2 *
+        - roger this is: {sentence}first sentence with ucfirst.this is the second sentence with ucfirst{/sentence}. curly bracket
+
+    - input: "sentence test 2 This is my test"
+      reply: "roger this is: First sentence with ucfirst.This is the second sentence with ucfirst. curly bracket"
+
+
+will_transform_<sentence>_as_alias_of_{sentence}<star>{/sentence}_(Single-Sentence):
+  tests:
+    - source: |
+        + sentence test *
+        - roger this is: <sentence>. angled bracket
+
+    - input: "sentence test This is my test"
+      reply: "roger this is: This is my test. angled bracket"
+
+
+#tag_<sentence>_can_contain_html:
+#  tests:
+#    - source: |
+#        + sentence html test *
+#        - roger html result is: <sentence>.
+#
+#    - input: "sentence html test <b>name</b>"
+#      reply: "roger html result is: <b>name</b>."
+
+cannot_be_used_in_a_trigger:
+  tests:
+    - source: |
+        + do <sentence>
+        - triggered
+        
+        + *
+        - No answers found.
+
+    - input: "do <sentence>"
+      reply: "No answers found."

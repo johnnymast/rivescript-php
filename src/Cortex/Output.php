@@ -57,7 +57,7 @@ class Output
      */
     public function process(): string
     {
-        $triggers = synapse()->brain->topic()->triggers();
+//        $triggers = synapse()->brain->topic()->triggers();
         $begin = synapse()->brain->topic("__begin__");
 
         $this->output = "";
@@ -70,19 +70,19 @@ class Output
          *   - Check if response is redirect
          *   -
          */
-        if ($begin) {
-            synapse()->rivescript->say("Begin label found. Starting processing.");
-
-            $request = $begin->triggers()->get("request");
-
-            if ($request) {
-                $this->output = $request['responses']->process();
-
-                if ($begin->isOk() === false) {
-                    return $this->output;
-                }
-            }
-        }
+//        if ($begin) {
+//            synapse()->rivescript->say("Begin label found. Starting processing.");
+//
+//            $request = $begin->triggers()->get("request");
+//
+//            if ($request) {
+//                $this->output = $request['responses']->process();
+//
+//                if ($begin->isOk() === false) {
+//                    return $this->output;
+//                }
+//            }
+//        }
 
 
         return $this->processTopic();
@@ -90,43 +90,83 @@ class Output
         return trim($this->output);
     }
 
-    protected function processTopic(): string
+    protected function processTopic(int $recursion = 0): string
     {
         $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
+
+        // synapse()->rivescript->say("TOPIC {$topic}...");
         $triggers = synapse()->brain->topic($topic)->triggers();
+
+        if ($recursion == 200) {
+            synapse()->rivescript->warn("Top many recursive calls to :func", ["func" => __CLASS__ . "::" . __FUNCTION__]);
+            exit;
+        }
 
         foreach ($triggers as $trigger => $data) {
             $valid = $this->isValidTrigger($trigger);
 
             if ($valid === true) {
-                synapse()->rivescript->say("Found trigger {$trigger}...");
-                synapse()->memory->shortTerm()->put('trigger', $trigger);
+                synapse()->rivescript->debug("Found trigger \":trigger\".", [
+                    'trigger' => $trigger,
+                ]);
 
+                synapse()->memory->shortTerm()->put('trigger', $trigger);
                 $response = $this->getValidResponse($trigger);
 
                 if ($response) {
-                    if ($response->isChangingTopic() === true) {
-                        // validate target or continue
-                        synapse()->rivescript->warn("Topic change detected.");
-                        break;
-                    } else {
-                        $output = $response->getValue();
 
-                        if ($output) {
-                            $this->output = $output;
-                            break;
-                        }
+
+                    if ($response->isTopicChanged() === true) {
+                        synapse()->rivescript->debug(
+                            "Topic changed from \":from\" to \":to\"",
+                            [
+                                "from" => $topic,
+                                "to" => synapse()->memory->shortTerm()->get('topic') ?? 'random'
+                            ]
+                        );
+
+                        synapse()->rivescript->debug(
+                            "Parsed trigger :trigger",
+                            [
+                                "trigger" => $response->getValue(),
+                            ]
+                        );
+
+                        //     synapse()->memory->shortTerm()->put('trigger', $response->getValue());
+
+                        /**
+                         * The topic has changed to something else during $this->getValidResponse($trigger).
+                         * Call $this->>processTopic again to process the new topic.
+                         *
+                         * @note in this case the input can stay the same.
+                         */
+                        //    return $this->processTopic(++$recursion);
+                    }
+
+                    if ($response->isRedirect() === true) {
+                        synapse()->rivescript->debug("Found redirect to \":redirect\" current topic is \":topic\".", [
+                            "redirect" => $response->getRedirect(),
+                            "topic" => $response->getTopic()
+                        ]);
+
+                        synapse()->input = new Input($response->getRedirect(), synapse()->rivescript->getClientId());
+                        synapse()->memory->shortTerm()->put('trigger', $response->getRedirect());
+
+                        return $this->processTopic(++$recursion);
+                    }
+
+
+                    $output = $response->getValue();
+
+                    if ($output) {
+                        $this->output = $output;
+                        break;
                     }
                 } else {
                     synapse()->rivescript->warn("Could not find a valid response for trigger \":trigger\"", [
                         "trigger" => $trigger
                     ]);
                 }
-            } else {
-                synapse()->rivescript->warn("Could not find a valid trigger \":trigger\"", [
-                    "trigger" => $trigger
-                ]);
-
             }
         }
 
@@ -158,33 +198,6 @@ class Output
         return false;
     }
 
-    /**
-     * Search through available triggers to find a possible match.
-     *
-     * @param string $trigger The trigger to find responses for.
-     *
-     * @return void
-     */
-    protected function searchTriggers2(string $trigger): void
-    {
-        synapse()->triggers->each(
-            function ($class) use ($trigger) {
-                $triggerClass = "\\Axiom\\Rivescript\\Cortex\\Triggers\\$class";
-                $triggerInstance = new $triggerClass(synapse()->input);
-
-                $found = $triggerInstance->parse($trigger, synapse()->input);
-
-                if ($found === true) {
-                    synapse()->rivescript->say("Found trigger {$trigger} van {$triggerClass}...");
-                    synapse()->memory->shortTerm()->put('trigger', $trigger);
-                    $this->output .= $this->getResponse($trigger);
-                    return false;
-                }
-            }
-        );
-    }
-
-
     protected function getValidResponse(string $trigger)
     {
         $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
@@ -199,89 +212,5 @@ class Output
         }
 
         return $queueItem;
-    }
-
-    /**
-     * Fetch a response from the found trigger.
-     *
-     * @param string $trigger The trigger to get a response for.
-     *
-     * @return string
-     */
-    protected function getResponse(string $trigger)
-    {
-
-        $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
-        $originalTrigger = synapse()->brain->topic($topic)->triggers()->get($trigger);
-
-
-//        // FIXME: Temp fix for rsts
-//        if (isset($originalTrigger['responses']) === false) {
-//            synapse()->rivescript->say("No response found.");
-//            $this->output = "";
-//            return $this->output;
-//        }
-
-        /**
-         * Get the best suitable response from
-         * the ResponseQueue.
-         */
-        $queueItem = $originalTrigger['responses']->process();
-        // $queueItem = $this->parseResponse($response);
-
-        /**
-         * It could be possible that Tags have altered the trigger.
-         * If so evaluate possible changes.
-         */
-//
-        $processedTrigger = synapse()->brain->topic()->triggers()->get($trigger, null);
-//        $processedTopic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
-
-//        if ($topic !== $processedTopic) {
-//            synapse()->rivescript->warn("topic changed from :old to :new.", [
-//                "old" => $topic,
-//                "new" => synapse()->memory->shortTerm()->get('topic'),
-//            ]);
-//        }
-//
-//        if (isset($processedTrigger['redirect'])) {
-//            $valid = $this->isValidTrigger($processedTrigger['redirect']);
-//
-//
-//            if ($valid === true) {
-//                synapse()->rivescript->warn("Searching for trigger :trigger in topic :topic", ['trigger' => $processedTrigger["redirect"], 'topic' => $topic]);
-//
-//                $input = new Input($processedTrigger["redirect"], "local-user");
-//                synapse()->input = $input;
-//
-//                return $this->searchTriggers2($processedTrigger['redirect']);
-//            } else {
-//                // FIXME: Tiggers wild wildcards end up in here. We need to fix this.
-//
-//                $trigger = $processedTrigger['redirect'];
-//
-////                if ($trigger == 'set test name test' || $trigger == 'test x') {
-////                    return $output;
-////                }
-//                synapse()->rivescript->warn("Topic :new was not found. Restoring topic :old", [
-//                    "new" => $processedTrigger['redirect'],
-//                    "old" => synapse()->memory->shortTerm()->get('topic'),
-//                ]);
-//
-//                synapse()->input = new Input($trigger, "local-user");
-//
-////                $newTrigger = synapse()->memory->shortTerm()->get('trigger');
-//
-//
-//                print_r('Trigger -->' . $trigger . "<\n");
-////                print_r('newTrigger -->' . $newTrigger . "<\n");
-//                synapse()->memory->shortTerm()->put("topic", null);
-//
-//                return '@'.$this->processTopic( null );
-//           //     return $this->getResponse($trigger);
-//            }
-//        }
-//
-//        return $output;
     }
 }

@@ -27,6 +27,7 @@ namespace Axiom\Rivescript\Cortex;
  */
 class Input
 {
+
     /**
      * The source string.
      *
@@ -54,7 +55,7 @@ class Input
      * @param string $source The source string.
      * @param string $user   The user identifier.
      */
-    public function __construct(string $source, string $user = '0')
+    public function __construct(string $source, string $user = 'local-user')
     {
         $this->original = $source;
         $this->user = $user;

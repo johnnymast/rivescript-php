@@ -26,7 +26,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class InlineRedirect extends Tag
+class Redirect extends Tag
 {
     /**
      * Determines where this tag is allowed to
@@ -58,42 +58,47 @@ class InlineRedirect extends Tag
         }
 
         if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source)[0];
+            $matches = $this->getMatches($source);
             $wildcards = synapse()->memory->shortTerm()->get("wildcards");
 
-            $trigger = null;
-            $target = null;
-            $key = null;
 
-            if ($matches[0] === "<@>" && is_array($wildcards) === true && count($wildcards) > 0) {
-                $target = $wildcards[0];
+            // Open issue: https://play.rivescript.com/s/WEszGV1yMg
+            // Question open.
 
-                $key = trim(synapse()->memory->shortTerm()->get("trigger"));
-                $trigger = synapse()->brain->topic()->triggers()->get($key);
-            } elseif ($matches[1] === '{') {
-                $target = trim($matches[2]);
+            foreach ($matches as $redirect) {
+                $tag = $redirect[0];
 
-                $key = trim(synapse()->memory->shortTerm()->get("trigger"));
-                $trigger = synapse()->brain->topic()->triggers()->get($key);
-            }
+                if ($tag == "<@>" && is_array($wildcards) === true && count($wildcards) > 0) {
 
-            if (is_null($trigger) === false && is_null($key) === false && is_null($target) === false) {
-                $topic = synapse()->memory->shortTerm()->get("topic") ?: "random";
-                $trigger["redirect"] = $target;
+                    /**
+                     * Handle <@>, this is an alias for {@<star>}
+                     */
+                    if (isset($wildcards[0]) === true) {
+                        $response = synapse()->memory->shortTerm()->get("response");
 
+                        if (is_object($response) === true) {
+                            $response->setRedirect($wildcards[0]);
+                            $source = str_replace($tag, '', $source);
+                        }
+                    }
+                    /**
+                     * Break for now.
+                     * Maybe newer rivescript versions
+                     * allow more <@> tags (but i dont see why).
+                     */
+                    break;
+                } elseif ($tag[0] == '{') {
+                    /*
+                     * Handle {@target} there
+                     */
+                    $location = trim($redirect[2]);
+                    $response = synapse()->memory->shortTerm()->get("response");
 
-                synapse()->brain->topic($topic)->triggers()->put($key, $trigger);
-                $source = str_replace($matches[0], '', $source);
-            } elseif (is_null($trigger) === true) {
-                $topic = synapse()->memory->shortTerm()->get("topic") ?: "random";
-                $trigger = synapse()->brain->topic($topic)->triggers()->get($key);
-
-                $trigger["redirect"] = $target;
-
-                synapse()->brain->topic($topic)->triggers()->put($key, $trigger);
-                $source = str_replace($matches[0], '', $source);
-            } else {
-                // Empty for now
+                    if (is_object($response) === true) {
+                        $response->setRedirect($location);
+                        $source = str_replace($tag, '', $source);
+                    }
+                }
             }
         }
 

@@ -64,7 +64,6 @@ class ArrayTag extends Tag
             foreach ($matches as $match) {
                 $name = $match[1];
 
-                $char = $match[0][0];
                 if (($array = synapse()->memory->arrays()->get($name))) {
                     $wildcard = (strpos($source, "(@{$name})") > -1);
 
@@ -74,7 +73,6 @@ class ArrayTag extends Tag
                         /**
                          * Find the match
                          */
-
                         $regex = "(" . implode('|', $array) . ")";
                         if (@preg_match_all('/' . $regex . '/ui', $input->source(), $wildcards)) {
                             array_shift($wildcards);
