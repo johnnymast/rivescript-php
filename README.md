@@ -9,6 +9,9 @@ This is a RiveScript interpreter library for PHP. RiveScript is a simple scripti
 
 The package follows the FIG standards PSR-1, PSR-2, and PSR-4 to ensure a high level of interoperability between shared PHP code.
 
+
+git clone --recurse-submodules https://github.com/johnnymast/rivescript-php.git
+
 ## Documentation
 
 Module documentation is available at <http://rivescript.readthedocs.org/>
