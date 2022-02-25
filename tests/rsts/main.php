@@ -16,9 +16,6 @@ use Tests\Rsts\TestCase;
 use Symfony\Component\Yaml\Yaml;
 use function Tests\Rsts\getTests;
 
-$tests = getTests(TESTS_DIR);
-sort($tests);
-
 $stats = [
     'success' => 0,
     'failed'   => 0,
@@ -27,28 +24,42 @@ $stats = [
 
 $time_start = microtime(true);
 
-/**
- * For all files in the tests directory
- * run its tests.
- */
-foreach ($tests as $filename) {
-    $files = Yaml::parseFile($filename);
-    $basename = basename($filename);
-    $relativeFile = substr($filename, strlen(TESTS_DIR) +1);
+$paths = [
+//    realpath(__DIR__ . '/tests'),
+    realpath(__DIR__ . '\official\tests'),
+];
 
-    echo "{$relativeFile}\n";
 
-    foreach ($files as $name => $cases) {
-        $test = new TestCase($basename, $name, $cases);
-        $result = $test->run();
+foreach ($paths as $path) {
+    $tests = getTests($path);
+    sort($tests);
 
-        $stats['success'] += $result['success'];
-        $stats['failed'] += $result['failed'];
-        $stats['asserts'] += $result['asserts'];
+    print_r($tests);
+    exit;
+    /**
+     * For all files in the tests directory
+     * run its tests.
+     */
+    foreach ($tests as $filename) {
+        $files = Yaml::parseFile($filename);
+        $basename = basename($filename);
+        $relativeFile = substr($filename, strlen(TESTS_DIR) +1);
+
+        echo "{$relativeFile}\n";
+
+        foreach ($files as $name => $cases) {
+            $test = new TestCase($basename, $name, $cases);
+            $result = $test->run();
+
+            $stats['success'] += $result['success'];
+            $stats['failed'] += $result['failed'];
+            $stats['asserts'] += $result['asserts'];
+        }
+
+        echo "\n";
     }
-
-    echo "\n";
 }
+
 
 // Display Script End time
 $time_end = microtime(true);
@@ -62,4 +73,3 @@ EOF;
 if ($stats['failed'] > 0) {
     exit(1);
 }
-
