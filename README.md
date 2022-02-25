@@ -12,6 +12,12 @@ The package follows the FIG standards PSR-1, PSR-2, and PSR-4 to ensure a high l
 
 git clone --recurse-submodules https://github.com/johnnymast/rivescript-php.git
 
+or 
+```
+git submodule init
+git submodule update
+```
+
 ## Documentation
 
 Module documentation is available at <http://rivescript.readthedocs.org/>
