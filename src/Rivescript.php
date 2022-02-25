@@ -99,7 +99,7 @@ class Rivescript extends ContentLoader
         synapse()->brain->setMaster($this);
         synapse()->rivescript = $this;
 
-        $this->setClientId($this->client_id);
+//        $this->setClientId($this->client_id);
         $this->registerTags();
     }
 
@@ -320,6 +320,16 @@ class Rivescript extends ContentLoader
     public function enableDebugMode(bool $enabled = true): void
     {
         synapse()->memory->global()->put('debug', true);
+    }
+
+    public function utf8(bool $status = false)
+    {
+        $this->utf8 = $status;
+    }
+
+    public function isUtf8Enabled(): bool
+    {
+        return ($this->utf8 === true);
     }
 
     /**

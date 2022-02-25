@@ -190,7 +190,7 @@ class ResponseQueueItem
 
         foreach (synapse()->tags as $tag) {
             $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\{$tag}";
-            $instance = new $class();
+            $instance = new $class("response");
 
             $this->value = $instance->parse($this->value, synapse()->input);
         }

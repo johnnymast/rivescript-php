@@ -54,7 +54,7 @@ $synapse->triggers = Axiom\Collections\Collection::make(
         "Alternation",
         "Wildcard",
         "Redirect",
-        //        "Optional",
+        "Optional",
     ]
 );
 
@@ -97,6 +97,8 @@ $synapse->tags = Axiom\Collections\Collection::make([
     "Id",
     "SpecialChars",
     "Random",
+    "Person",
+    "Formal",
     "Set",
     "Get",
     "Sentence",
@@ -108,8 +110,6 @@ $synapse->tags = Axiom\Collections\Collection::make([
     "Mult",
     "Div",
     "Env",
-    "Person",
-    "Formal",
     "Topic",
     "Redirect",
     "ArrayTag",

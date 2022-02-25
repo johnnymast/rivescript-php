@@ -42,7 +42,7 @@ class ArrayTag extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/\@(.+?)\b/ui";
+    protected string $pattern = "/\(@(.+?)\b\)/ui";
 
     /**
      * Parse the source.
@@ -64,39 +64,49 @@ class ArrayTag extends Tag
             foreach ($matches as $match) {
                 $name = $match[1];
 
-                if (($array = synapse()->memory->arrays()->get($name))) {
-                    $wildcard = (strpos($source, "(@{$name})") > -1);
 
-                    if ($wildcard === true) {
-                        array_walk($array, 'preg_quote');
+                if ($this->sourceType == "response") {
+                    $array = synapse()->memory->arrays()->get($name);
+                    if (is_array($array) && count($array) > 0) {
+                        $rnd = array_rand($array, 1);
+                        $source = str_replace($match[0], $array[$rnd], $source);
+                    }
+                } else {
 
-                        /**
-                         * Find the match
-                         */
-                        $regex = "(" . implode('|', $array) . ")";
-                        if (@preg_match_all('/' . $regex . '/ui', $input->source(), $wildcards)) {
-                            array_shift($wildcards);
+                    if (($array = synapse()->memory->arrays()->get($name))) {
+                        $wildcard = (strpos($source, "(@{$name})") > -1);
 
-                            if ($wildcards) {
-                                $wildcards = Collection::make($wildcards)->flatten()->all();
-                                synapse()->memory->shortTerm()->put('wildcards', $wildcards);
+                        if ($wildcard === true) {
+                            array_walk($array, 'preg_quote');
 
-                                foreach ($wildcards as $wildcard) {
-                                    $source = str_replace("(@{$name})", $wildcard, $source);
+                            /**
+                             * Find the match
+                             */
+                            $regex = "(" . implode('|', $array) . ")";
+                            if (@preg_match_all('/' . $regex . '/ui', $input->source(), $wildcards)) {
+                                array_shift($wildcards);
+
+                                if ($wildcards) {
+                                    $wildcards = Collection::make($wildcards)->flatten()->all();
+                                    synapse()->memory->shortTerm()->put('wildcards', $wildcards);
+
+                                    foreach ($wildcards as $wildcard) {
+                                        $source = str_replace("(@{$name})", $wildcard, $source);
+                                    }
                                 }
                             }
-                        }
-                    } else {
-                        /**
-                         * Find the match
-                         */
-                        $regex = "(?:" . implode('|', $array) . ")";
+                        } else {
+                            /**
+                             * Find the match
+                             */
+                            $regex = "(?:" . implode('|', $array) . ")";
 
-                        if (@preg_match_all('/' . $regex . '/ui', $source, $results)) {
-                            foreach ($results as $result) {
-                                $source = str_replace("@{$name}", $result[0], $source);
+                            if (@preg_match_all('/' . $regex . '/ui', $source, $results)) {
+                                foreach ($results as $result) {
+                                    $source = str_replace("@{$name}", $result[0], $source);
+                                }
+                                return $source;
                             }
-                            return $source;
                         }
                     }
                 }

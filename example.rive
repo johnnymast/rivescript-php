@@ -1,5 +1,0 @@
-+ test counter
-- <set counter=0>counter set
-
-+ show
-- counter = <get counter>

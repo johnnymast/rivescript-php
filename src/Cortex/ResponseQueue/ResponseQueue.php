@@ -12,7 +12,7 @@ namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
 use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\Node;
-use Axiom\Rivescript\Traits\Tags;
+//use Axiom\Rivescript\Traits\Tags;
 
 /**
  * ResponseQueue class
@@ -32,7 +32,7 @@ use Axiom\Rivescript\Traits\Tags;
 class ResponseQueue extends Collection
 {
 
-    use Tags;
+//    use Tags;
 
     /**
      * A container with responses.
@@ -242,6 +242,67 @@ class ResponseQueue extends Collection
         }
 
         return 'atomic';
+    }
+
+    /**
+     * Parse the response through the available Tags.
+     *
+     * @param string $source The response string to parse.
+     *
+     * @return string
+     */
+    protected function parseTags(string $source): string
+    {
+
+        $source = $this->escapeUnknownTags($source);
+
+        // This is because Tags trait does not set type response.
+        foreach (synapse()->tags as $class) {
+            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\{$class}";
+            $instance = new $class("response");
+
+            $source = $instance->parse($source, synapse()->input);
+        }
+
+        $source = str_replace(["&#60;", "&#62;"], ["<", ">"], $source);
+
+        return $source;
+        return trim($source);
+    }
+
+    /**
+     * Escape unknown Tags, so they don't get picked up by the parser
+     * later on in the process.
+     *
+     * @param string $source The source to escape.
+     *
+     * @return string
+     */
+    public function escapeUnknownTags(string $source): string
+    {
+
+        $knownTags = synapse()->memory->tags()->keys()->all();
+
+        $pattern = '/<(\S*?)*>.*?<\/\1>/s';
+
+        preg_match_all($pattern, $source, $matches);
+
+        $index = 0;
+        if (is_array($matches[$index]) && isset($matches[$index][0]) && is_null($knownTags) === false && count($matches) == 2) {
+            $matches = $matches[$index];
+
+            foreach ($matches as $match) {
+                $str = str_replace(['<', '>'], ["&#60;", "&#62;"], $match);
+                $parts = explode(' ', $str);
+                $tag = $parts[0] ?? "";
+
+                if (in_array($tag, $knownTags, true) === false) {
+                    $source = str_replace($match, $str, $source);
+                }
+            }
+        }
+
+        return $source;
     }
 
     /**

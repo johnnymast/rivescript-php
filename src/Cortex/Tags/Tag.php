@@ -76,6 +76,18 @@ abstract class Tag implements TagContract
     }
 
     /**
+     * Set the source type (response or trigger)
+     *
+     * @param string $type source type (response or trigger).
+     *
+     * @return void
+     */
+    public function setSourceType(string $type = ""): void
+    {
+        $this->sourceType = $type;
+    }
+
+    /**
      * Determine if the type of source is allowed.
      *
      * @return bool
@@ -90,6 +102,7 @@ abstract class Tag implements TagContract
      *
      * @param string $content The string to parse.
      *
+     * @deprecated
      * @return array
      */
     private function _parseTag(string $content, string $tagName): array
@@ -130,6 +143,7 @@ abstract class Tag implements TagContract
      * @param string $tagName The tag to parse.
      * @param string $endTag  The endTag.
      *
+     * @deprecated
      * @return array
      */
     public function secureSource(string $content, string $tagName, string $endTag = ''): array

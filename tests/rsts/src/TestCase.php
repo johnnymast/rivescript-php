@@ -10,7 +10,6 @@
 
 namespace Tests\Rsts;
 
-
 use Axiom\Rivescript\Rivescript;
 use AssertionError;
 
@@ -27,17 +26,21 @@ use AssertionError;
  * @author   Johnny Mast <mastjohnny@gmail.com>
  * @license  https://opensource.org/licenses/MIT MIT
  * @link     https://github.com/axiom-labs/rivescript-php
- * @since    0.1.0
+ * @since    0.4.0
  */
 class TestCase
 {
 
     /**
+     * The file name.
+     *
      * @var string
      */
     protected string $file;
 
     /**
+     * The suite name.
+     *
      * @var string
      */
     protected string $name;
@@ -57,6 +60,16 @@ class TestCase
     protected string $client_id = "test-user";
 
     /**
+     * Options added for this test
+     * case.
+     *
+     * @see https://github.com/aichaos/rsts/blob/master/tests/test-spec.yml#L3
+     *
+     * @var array
+     */
+    protected array $options = [];
+
+    /**
      * Stores the cases for this test.
      *
      * @var mixed
@@ -66,14 +79,15 @@ class TestCase
     /**
      * TestCase constructor.
      *
-     * @param string $file  The test file to load.
-     * @param string $name  The name of the test.
-     * @param array  $cases The testcases to run.
+     * @param string $file    The test file to load.
+     * @param string $name    The name of the test.
+     * @param array  $options The testcases options.
      */
-    public function __construct(string $file, string $name, array $cases)
+    public function __construct(string $file, string $name, array $options)
     {
         $this->rs = new Rivescript();
-        $this->rs->setClientId($this->client_id);
+
+        $this->options = $options;
 
         $this->rs->onSay = function ($msg) {
             //   echo "{$msg}\n";
@@ -86,11 +100,40 @@ class TestCase
         $this->file = $file;
         $this->name = ucfirst(str_replace("_", " ", $name));
 
-        $this->cases = $cases['tests'];
+        $this->cases = $this->options['tests'];
+
+        unset($this->options['tests']);
+
+        $this->handleOptions();
+
     }
 
     /**
-     * @param string $source
+     * If this test case has defined options
+     * for the interpreter set them.
+     *
+     * @return void
+     */
+    private function handleOptions(): void
+    {
+        foreach ($this->options as $key => $val) {
+            switch ($key) {
+                case 'username':
+                    $this->client_id = $val;
+                    break;
+                case 'utf8':
+                    $this->rs->utf8($val);
+                    break;
+            }
+        }
+
+        $this->rs->setClientId($this->client_id);
+    }
+
+    /**
+     * Apply the test source code.
+     *
+     * @param string $source The script source.
      *
      * @return void
      */
@@ -186,6 +229,8 @@ class TestCase
     }
 
     /**
+     * Tun the tests in this suite.
+     *
      * @return array
      */
     public function run(): array
@@ -238,7 +283,7 @@ class TestCase
     /**
      * Show a failure message.
      *
-     * @param \AssertionError $e
+     * @param \AssertionError $e The fail exception.
      *
      * @return void
      */

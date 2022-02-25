@@ -18,15 +18,22 @@ use function Tests\Rsts\getTests;
 
 $stats = [
     'success' => 0,
-    'failed'   => 0,
+    'failed' => 0,
     'asserts' => 0,
 ];
 
 $time_start = microtime(true);
 
+/**
+ * Please note: It is possible you don't see any files
+ * in official/ in that case you need to run the following
+ * command in the rivescript-php project root.
+ *
+ * git submodule update --init
+ */
 $paths = [
 //    realpath(__DIR__ . '/tests'),
-    realpath(__DIR__ . '\official\tests'),
+realpath(__DIR__ . '\official\tests'),
 ];
 
 
@@ -34,21 +41,19 @@ foreach ($paths as $path) {
     $tests = getTests($path);
     sort($tests);
 
-    print_r($tests);
-    exit;
     /**
-     * For all files in the tests directory
+     * For all the test suites and
      * run its tests.
      */
     foreach ($tests as $filename) {
         $files = Yaml::parseFile($filename);
         $basename = basename($filename);
-        $relativeFile = substr($filename, strlen(TESTS_DIR) +1);
+        $relativeFile = substr($filename, strlen($path) + 1);
 
         echo "{$relativeFile}\n";
 
-        foreach ($files as $name => $cases) {
-            $test = new TestCase($basename, $name, $cases);
+        foreach ($files as $name => $options) {
+            $test = new TestCase($basename, $name, $options);
             $result = $test->run();
 
             $stats['success'] += $result['success'];
@@ -61,7 +66,6 @@ foreach ($paths as $path) {
 }
 
 
-// Display Script End time
 $time_end = microtime(true);
 $execution_time = ($time_end - $time_start);
 

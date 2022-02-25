@@ -82,6 +82,5 @@ trait Tags
         }
 
         return $source;
-
     }
 }
