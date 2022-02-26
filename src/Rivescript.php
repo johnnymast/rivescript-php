@@ -13,6 +13,8 @@ namespace Axiom\Rivescript;
 use Axiom\Rivescript\Cortex\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Cortex\Input;
 use Axiom\Rivescript\Cortex\Output;
+use Axiom\Rivescript\Events\Event;
+use Axiom\Rivescript\Events\EventEmitter;
 use Axiom\Rivescript\Traits\Tags;
 
 /**
@@ -31,7 +33,8 @@ use Axiom\Rivescript\Traits\Tags;
  */
 class Rivescript extends ContentLoader
 {
-    use Tags;
+    use Tags, EventEmitter;
+
 
     public const VERBOSITY_NORMAL = 0;
     public const VERBOSITY_VERBOSE = 1;
@@ -88,13 +91,17 @@ class Rivescript extends ContentLoader
     /**
      * Create a new Rivescript instance.
      *
+     * @param array $options Options for the Rivescript interpreter.
+     *
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      */
-    public function __construct()
+    public function __construct(array $options = [])
     {
         parent::__construct();
 
         include __DIR__ . '/bootstrap.php';
+
+        $options;
 
         synapse()->brain->setMaster($this);
         synapse()->rivescript = $this;
@@ -243,9 +250,7 @@ class Rivescript extends ContentLoader
 
         $message = $this->formatString($message, $args);
 
-        if ($this->onSay) {
-            call_user_func($this->onSay, $message, $verbosity);
-        }
+        $this->emit(EVENT::DEBUG_VERBOSE, $message);
     }
 
     /**
@@ -257,13 +262,13 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function warn(string $message, array $args = [], int $verbosity = Rivescript::VERBOSITY_DEBUG): void
+    public function warn(string $message,
+                         array  $args = [],
+                         int    $verbosity = Rivescript::VERBOSITY_DEBUG): void
     {
         $message = "[WARNING]: " . $this->formatString($message, $args);
 
-        if ($this->onWarn) {
-            call_user_func($this->onWarn, $message, $verbosity);
-        }
+        $this->emit(Event::DEBUG_WARNING, $message);
     }
 
     /**
@@ -275,13 +280,13 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function debug(string $message, array $args = [], int $verbosity = Rivescript::VERBOSITY_NORMAL): void
+    public function debug(string $message,
+                          array  $args = [],
+                          int    $verbosity = Rivescript::VERBOSITY_NORMAL): void
     {
         $message = "[DEBUG]: " . $this->formatString($message, $args);
 
-        if ($this->onDebug) {
-            call_user_func($this->onDebug, $message, $verbosity);
-        }
+        $this->emit(EVENT::DEBUG, $message);
     }
 
 
@@ -289,7 +294,7 @@ class Rivescript extends ContentLoader
      * Create a string PDO style/
      *
      * @param string $msg  The message to write.
-     * @param array  $args The arguments for the message.
+     * @param array[]  $args The arguments for the message.
      *
      * @return string
      */
@@ -313,16 +318,23 @@ class Rivescript extends ContentLoader
     /**
      * Enable debug mode.
      *
-     * @param bool $enabled Enable true/false.
+     * @param bool $status Set debug mode status.
      *
      * @return void
      */
-    public function enableDebugMode(bool $enabled = true): void
+    public function debugMode(bool $status = false): void
     {
-        synapse()->memory->global()->put('debug', true);
+        synapse()->memory->global()->put('debug', $status);
     }
 
-    public function utf8(bool $status = false)
+    /**
+     * Enable or disable utf8 mode.
+     *
+     * @param bool $status
+     *
+     * @return void
+     */
+    public function utf8(bool $status = false): void
     {
         $this->utf8 = $status;
     }
