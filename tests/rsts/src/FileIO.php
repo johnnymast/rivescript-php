@@ -40,8 +40,8 @@ function getTests(string $path): array
         // triggers.yml
         // test-spec.yml
 
-        if ($file->getBasename() !== 'replies.yml') {
-        //        continue;
+        if ($file->getBasename() !== 'begin.yml') {
+//                continue;
         }
 
 

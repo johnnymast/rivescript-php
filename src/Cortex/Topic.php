@@ -103,7 +103,7 @@ class Topic
         $triggers = $this->determineTypeCount($triggers);
 
         return $triggers->sort(function ($current, $previous) {
-            return ($current['order'] < $previous['order']) ? -1 : 1;
+            return ($current->getOrder() < $previous->getOrder()) ? -1 : 1;
         })->reverse();
     }
 
@@ -116,25 +116,28 @@ class Topic
      */
     protected function determineTypeCount(Collection $triggers): Collection
     {
-        return $triggers->each(function ($data, $trigger) use ($triggers) {
-            if (isset($data['type'])) {
-                switch ($data['type']) {
-                    case 'atomic':
-                        $data['order'] += 4000000;
-                        break;
-                    case 'alphabetic':
-                        $data['order'] += 3000000;
-                        break;
-                    case 'numeric':
-                        $data['order'] += 2000000;
-                        break;
-                    case 'global':
-                        $data['order'] += 1000000;
-                        break;
-                }
+        return $triggers->each(function (&$trigger) use ($triggers) {
 
-                $triggers->put($trigger, $data);
+            $order = $trigger->getOrder();
+            $type = $trigger->getType();
+
+            switch ($type) {
+                case 'atomic':
+                    $order += 4000000;
+                    break;
+                case 'alphabetic':
+                    $order += 3000000;
+                    break;
+                case 'numeric':
+                    $order += 2000000;
+                    break;
+                case 'global':
+                    $order += 1000000;
+                    break;
             }
+
+            $trigger->setOrder($order);
+//            $triggers->put($trigger, $data);
         });
     }
 
@@ -148,11 +151,13 @@ class Topic
      */
     protected function determineWordCount(Collection $triggers): Collection
     {
-        return $triggers->each(function ($data, $trigger) use ($triggers) {
-            $data['order'] = count(explode(' ', $trigger));
 
-            $triggers->put($trigger, $data);
-        });
+        foreach ($triggers as &$trigger) {
+            $trigger->setOrder(count(explode(' ', $trigger->getText())));
+        }
+
+
+        return $triggers;
     }
 
     public function isBegin(): bool

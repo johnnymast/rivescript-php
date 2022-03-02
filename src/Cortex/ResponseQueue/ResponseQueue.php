@@ -12,6 +12,8 @@ namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
 use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\Node;
+use Axiom\Rivescript\Cortex\Trigger;
+
 //use Axiom\Rivescript\Traits\Tags;
 
 /**
@@ -79,11 +81,15 @@ class ResponseQueue extends Collection
      *
      * @return void
      */
-    public function attach(Node $node, array $trigger = []): void
+    public function attach(Node $node, Trigger $trigger): void
     {
         $type = $this->determineResponseType($node->source());
         $queueItem = new ResponseQueueItem($node->command(), $node->value(), $type, $trigger, $this->options);
         $this->responses->put($node->value(), $queueItem);
+    }
+
+    public function getAttachedResponses(): Collection {
+        return $this->responses;
     }
 
     /**

@@ -25,7 +25,7 @@ use Axiom\Rivescript\Cortex\Input;
  * @author   Johnny Mast <mastjohnny@gmail.com>
  * @license  https://opensource.org/licenses/MIT MIT
  * @link     https://github.com/axiom-labs/rivescript-php
- * @since    0.3.0
+ * @since    0.4.0
  */
 class Redirect extends Trigger
 {
@@ -43,9 +43,9 @@ class Redirect extends Trigger
         $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
         $triggers = synapse()->brain->topic($topic)->triggers();
 
-        foreach ($triggers as $info) {
-            if ($info['value'] == $trigger) {
-                return (is_array($info) && isset($info['redirect']));
+        foreach ($triggers as $data) {
+            if ($data->getText() === $trigger) {
+                return ($data->getRedirect() !== '');
             }
         }
         return false;

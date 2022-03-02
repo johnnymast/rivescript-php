@@ -13,6 +13,7 @@ namespace Axiom\Rivescript\Cortex\Commands;
 use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
 use Axiom\Rivescript\Contracts\Command;
 use Axiom\Rivescript\Cortex\Node;
+use Axiom\Rivescript\Cortex\Trigger as TriggerData;
 
 /**
  * Trigger class
@@ -44,16 +45,22 @@ class Trigger implements Command
             $topic = synapse()->memory->shortTerm()->get('topic') ?: 'random';
 
             $type = $this->determineTriggerType($node->value());
+//
+//            $data = [
+//                'topic' => $topic,
+//                'type' => $type,
+//                'responses' => new ResponseQueue($node->value()),
+//                'value' => $node->value()
+//            ];
+//
 
-            $data = [
-                'topic' => $topic,
-                'type' => $type,
-                'responses' => new ResponseQueue($node->value()),
-                'value' => $node->value()
-            ];
-
+            $responses = new ResponseQueue($node->value());
+            $trigger = new TriggerData($node->value(), $topic, $type, $responses);
             $topic = synapse()->brain->topic($topic);
-            $topic->triggers->put($node->value(), $data);
+
+//            $topic->triggers->put($node->value(), $data);
+//            $topic->triggers->put($node->value(), $data);
+            $topic->triggers->push($trigger);
             $topic->triggers = $topic->sortTriggers($topic->triggers());
 
             synapse()->memory->shortTerm()->put('trigger', $node->value());

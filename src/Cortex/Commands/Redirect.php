@@ -41,14 +41,25 @@ class Redirect implements Command
     {
         if ($node->command() === '@') {
             $topic = synapse()->memory->shortTerm()->get('topic') ?: 'random';
-            $key = synapse()->memory->shortTerm()->get('trigger');
-            $trigger = synapse()->brain->topic($topic)->triggers()->get($key);
+            $trigger = null;
+            $key = -1;
 
-            $trigger['redirect'] = $node->value();
-            $trigger['value'] = $node->value();
+            // FIXME ugly code award make this global.
+            foreach (synapse()->brain->topic($topic)->triggers() as $index => $info) {
+                if ($info->getText() === $key) {
+                    $trigger = $info;
+                    $key = $index;
+                    break;
+                }
+            }
+
+            if ($key > -1) {
+                $trigger['redirect'] = $node->value();
+                $trigger['value'] = $node->value();
 
 
-            synapse()->brain->topic($topic)->triggers()->put($key, $trigger);
+                synapse()->brain->topic($topic)->triggers()->put($key, $trigger);
+            }
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Axiom\Rivescript\Cortex;
 use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem;
 use Axiom\Rivescript\Traits\Regex;
 use Axiom\Rivescript\Traits\Tags;
+use Axiom\Rivescript\Cortex\Trigger as TriggerData;
 
 /**
  * Output class
@@ -57,11 +58,26 @@ class Output
      */
     public function process(): string
     {
-//        $triggers = synapse()->brain->topic()->triggers();
-        $begin = synapse()->brain->topic("__begin__");
-
         $this->output = "";
 
+        /**
+         * Leaving this function empty for maybe further expansion
+         * later on.
+         */
+        return $this->processTopic();
+    }
+
+    protected function processTopic(int $recursion = 0): string
+    {
+        $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
+        $begin = synapse()->brain->topic("__begin__");
+
+        $triggers = synapse()->brain->topic($topic)->triggers();
+
+        if ($recursion === synapse()->memory->global()->get('depth')) {
+            synapse()->rivescript->warn("Top many recursive calls to :func", ["func" => __CLASS__ . "::" . __FUNCTION__]);
+            return "ERR: Deep Recursion Detected";
+        }
 
         /**
          * 1. Check if topic is valid
@@ -70,52 +86,46 @@ class Output
          *   - Check if response is redirect
          *   -
          */
-//        if ($begin) {
-//            synapse()->rivescript->say("Begin label found. Starting processing.");
-//
+        if ($begin) {
+            synapse()->rivescript->say("Begin label found. Starting processing.");
+
 //            $request = $begin->triggers()->get("request");
-//
-//            if ($request) {
-//                $this->output = $request['responses']->process();
-//
-//                if ($begin->isOk() === false) {
-//                    return $this->output;
-//                }
-//            }
-//        }
+            $request = null;
 
+            // FIXME ugly code award make this global.
+            foreach ($begin->triggers() as $trigger) {
+                if ($trigger->getText() === "request") {
+                    $request = $trigger;
+                    break;
+                }
+            }
 
-        return $this->processTopic();
+            if ($request) {
+                $response = $request->getQueue()->process();
+                $output = $response->getValue();
 
-        return trim($this->output);
-    }
+                if ($output !== '') {
+                    $this->output .= $output;
+                }
 
-    protected function processTopic(int $recursion = 0): string
-    {
-        $topic = synapse()->memory->shortTerm()->get('topic') ?? 'random';
-
-        // synapse()->rivescript->say("TOPIC {$topic}...");
-        $triggers = synapse()->brain->topic($topic)->triggers();
-
-        if ($recursion == 200) {
-            synapse()->rivescript->warn("Top many recursive calls to :func", ["func" => __CLASS__ . "::" . __FUNCTION__]);
-            exit;
+                if ($begin->isOk() === false) {
+                    return $this->output;
+                }
+            }
         }
 
-        foreach ($triggers as $trigger => $data) {
+        foreach ($triggers as $index => $trigger) {
             $valid = $this->isValidTrigger($trigger);
 
             if ($valid === true) {
                 synapse()->rivescript->debug("Found trigger \":trigger\".", [
-                    'trigger' => $trigger,
+                    'trigger' => $trigger->getText(),
                 ]);
 
                 synapse()->memory->shortTerm()->put('trigger', $trigger);
-                $response = $this->getValidResponse($trigger);
+                $response = $this->getValidResponseForTriggerAtIndex($index);
 
                 if ($response) {
-
-
                     if ($response->isTopicChanged() === true) {
                         synapse()->rivescript->debug(
                             "Topic changed from \":from\" to \":to\"",
@@ -155,16 +165,15 @@ class Output
                         return $this->processTopic(++$recursion);
                     }
 
-
                     $output = $response->getValue();
 
                     if ($output) {
-                        $this->output = $output;
+                        $this->output .= $output;
                         break;
                     }
                 } else {
                     synapse()->rivescript->warn("Could not find a valid response for trigger \":trigger\"", [
-                        "trigger" => $trigger
+                        "trigger" => $trigger->getText()
                     ]);
                 }
             }
@@ -177,18 +186,18 @@ class Output
     /**
      * Search through available triggers to find a possible match.
      *
-     * @param string $trigger The trigger to find responses for.
+     * @param TriggerData $trigger The trigger to find responses for.
      *
      * @return bool
      */
-    protected function isValidTrigger(string $trigger): bool
+    protected function isValidTrigger(TriggerData $trigger): bool
     {
         $triggers = synapse()->triggers;
         foreach ($triggers as $class) {
             $triggerClass = "\\Axiom\\Rivescript\\Cortex\\Triggers\\{$class}";
             $triggerInstance = new $triggerClass(synapse()->input);
 
-            $found = $triggerInstance->parse($trigger, synapse()->input);
+            $found = $triggerInstance->parse($trigger->getText(), synapse()->input);
 
             if ($found) {
                 return true;
@@ -198,13 +207,16 @@ class Output
         return false;
     }
 
-    protected function getValidResponse(string $trigger)
+    protected function getValidResponseForTriggerAtIndex(int $index = 0): ?ResponseQueueItem
     {
-        $originalTrigger = synapse()->brain->topic()->triggers()->get($trigger);
+        $originalTrigger = synapse()->brain->topic()->triggers()->get($index);
+//        $originalTrigger = $trigger;
         $queueItem = null;
 
-        if ($originalTrigger['responses']) {
-            $queueItem = $originalTrigger['responses']->process();
+        if ($originalTrigger->hasResponses() === true) {
+            $queueItem = $originalTrigger
+                ->getQueue()
+                ->process();
 
             if ($queueItem) {
                 $queueItem->parse();

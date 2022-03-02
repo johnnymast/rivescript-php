@@ -41,16 +41,30 @@ class Response implements Command
     {
         $types = [
           '-', '*',
-          '^', '@'
+          '^', '@',
+          '%'
         ];
 
         if (in_array($node->command(), $types) === true) {
             $topic = synapse()->memory->shortTerm()->get('topic') ?: 'random';
-            $key = synapse()->memory->shortTerm()->get('trigger');
-            $trigger = synapse()->brain->topic($topic)->triggers()->get($key);
+            $string = synapse()->memory->shortTerm()->get('trigger');
+            //$trigger = synapse()->brain->topic($topic)->triggers()->get($key);
+
+            // FIXME ugly code award make this global.
+
+            $trigger = null;
+            $key = -1;
+            foreach (synapse()->brain->topic($topic)->triggers() as $index => $info) {
+                if ($info->getText() === $string) {
+                    $trigger= $info;
+                    $key = $index;
+                    break;
+                }
+            }
+
 
             if ($trigger) {
-                $trigger['responses']->attach($node, $trigger);
+                $trigger->getQueue()->attach($node, $trigger);
 
                 synapse()->brain->topic($topic)->triggers()->put($key, $trigger);
             }

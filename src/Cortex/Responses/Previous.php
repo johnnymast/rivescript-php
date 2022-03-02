@@ -38,6 +38,7 @@ class Previous extends Response implements ResponseContract
     public function parse()
     {
         if ($this->responseQueueItem()->getCommand() === '%') {
+            $lastReply = synapse()->memory->replies()->last();
             return $this->source();
         }
 

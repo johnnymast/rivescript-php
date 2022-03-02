@@ -106,6 +106,13 @@ class Rivescript extends ContentLoader
         synapse()->brain->setMaster($this);
         synapse()->rivescript = $this;
 
+        /**
+         * Set default global variables. These
+         * can be overwritten by the script.
+         */
+        synapse()->memory->global()->put('depth', 25);
+
+
 //        $this->setClientId($this->client_id);
         $this->registerTags();
     }

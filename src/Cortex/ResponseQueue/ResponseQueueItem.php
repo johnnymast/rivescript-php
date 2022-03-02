@@ -10,6 +10,8 @@
 
 namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
+use Axiom\Rivescript\Cortex\Trigger;
+
 /**
  * ResponseQueueItem class
  *
@@ -105,14 +107,14 @@ class ResponseQueueItem
      * @param string               $type    The type of response.
      * @param array<string,string> $options The local interpreter options.
      */
-    public function __construct(string $command, string $value, string $type, array $trigger = [], array $options = [])
+    public function __construct(string $command, string $value, string $type, Trigger $trigger, array $options = [])
     {
         $this->command = $command;
         $this->value = $this->original = $value;
         $this->type = $type;
         $this->options = $options;
-        $this->triggerString = $trigger['value'];
-        $this->triggerTopic = $trigger['topic'];
+        $this->triggerString = $trigger->getText();
+        $this->triggerTopic = $trigger->getTopic();
     }
 
     /**
@@ -163,6 +165,11 @@ class ResponseQueueItem
     public function isRedirect(): bool
     {
         return ($this->getRedirect() !== '');
+    }
+
+    public function isPrevious(): bool
+    {
+        return ($this->command == '%');
     }
 
     public function isTopicChanged(): bool
