@@ -101,8 +101,6 @@ class Rivescript extends ContentLoader
 
         include __DIR__ . '/bootstrap.php';
 
-        $options;
-
         synapse()->brain->setMaster($this);
         synapse()->rivescript = $this;
 
@@ -372,6 +370,8 @@ class Rivescript extends ContentLoader
         $output = new Output();
 
         synapse()->input = $input;
+
+        synapse()->memory->shortTerm()->remove("wildcards");
 
         $output = $output->process();
 

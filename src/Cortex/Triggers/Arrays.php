@@ -61,7 +61,23 @@ class Arrays extends Trigger
                 if ($wildcards) {
                     $wildcards = Collection::make($wildcards)->flatten()->all();
 
-                    synapse()->memory->shortTerm()->put('wildcards', $wildcards);
+                  //  $x = synapse()->memory->shortTerm()->get('wildcards');
+//                    $trigger = synapse()->memory->shortTerm()->get('trigger');
+
+//                    synapse()->memory->shortTerm()->put('wildcards', $wildcards);
+
+                    synapse()->rivescript->debug("Pattern: {$trigger}\n");
+
+                    $currentWildcards = synapse()->memory->shortTerm()->get("wildcards");
+
+                    $wildcards = Collection::make($wildcards)->flatten()->all();
+
+                    foreach ($wildcards as $wildcard) {
+                        $currentWildcards[] = $wildcard;
+                    }
+
+                    synapse()->memory->shortTerm()->put("wildcards", $currentWildcards);
+
                 }
 
                 return true;

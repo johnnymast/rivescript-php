@@ -41,7 +41,7 @@ trait EventEmitter
     public function on(string $event, $handler): self
     {
         if (!isset($this->registered[$event])) {
-            $this->registered = [];
+            $this->registered[$event] = [];
         }
 
         $this->registered[$event][] = $handler;
@@ -53,7 +53,7 @@ trait EventEmitter
      * Send out a message.
      *
      * @param string $event       The event string.
-     * @param        ...$userdata Arguments for the callback.
+     * @param array  ...$userdata Arguments for the callback.
      *
      * @return self
      */

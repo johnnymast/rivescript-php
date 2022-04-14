@@ -50,7 +50,7 @@ $synapse->commands = Axiom\Collections\Collection::make(
 $synapse->triggers = Axiom\Collections\Collection::make(
     [
         "Atomic",
-        "Arrays",
+     //   "Arrays",
         "Alternation",
         "Wildcard",
         "Redirect",

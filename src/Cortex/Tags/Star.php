@@ -63,9 +63,10 @@ class Star extends Tag
 
             foreach ($matches as $match) {
                 $index = (empty($match[1]) ? 0 : $match[1] - 1);
-                //if (isset($wildcards[$index]) === true) {
+                if (isset($wildcards[$index]) === true) {
+                synapse()->rivescript->debug("STAR: {$match[0]}");
                     $source = str_replace($match[0], $wildcards[$index], $source);
-                //}
+                }
             }
         }
 

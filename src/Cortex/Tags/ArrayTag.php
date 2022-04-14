@@ -58,21 +58,23 @@ class ArrayTag extends Tag
             return $source;
         }
 
+
+
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
+            synapse()->rivescript->say("Array tag");
 
             foreach ($matches as $match) {
                 $name = $match[1];
 
 
-                if ($this->sourceType == "response") {
+                if ($this->sourceType === "response") {
                     $array = synapse()->memory->arrays()->get($name);
                     if (is_array($array) && count($array) > 0) {
                         $rnd = array_rand($array, 1);
                         $source = str_replace($match[0], $array[$rnd], $source);
                     }
                 } else {
-
                     if (($array = synapse()->memory->arrays()->get($name))) {
                         $wildcard = (strpos($source, "(@{$name})") > -1);
 
@@ -83,16 +85,18 @@ class ArrayTag extends Tag
                              * Find the match
                              */
                             $regex = "(" . implode('|', $array) . ")";
-                            if (@preg_match_all('/' . $regex . '/ui', $input->source(), $wildcards)) {
-                                array_shift($wildcards);
+                            if (@preg_match_all('/' . $regex . '/ui', $input->source(), $result)) {
+                                if ($result) {
+                                    array_shift($result);
 
-                                if ($wildcards) {
-                                    $wildcards = Collection::make($wildcards)->flatten()->all();
-                                    synapse()->memory->shortTerm()->put('wildcards', $wildcards);
+                                    $wildcards = synapse()->memory->shortTerm()->get("wildcards") ?? [];
 
-                                    foreach ($wildcards as $wildcard) {
-                                        $source = str_replace("(@{$name})", $wildcard, $source);
+                                    foreach ($result as $wildcard) {
+                                        $wildcards[] = $wildcard[0];
+   //                                     $source = str_replace("(@{$name})", $wildcard[0], $source);
                                     }
+
+                             //       synapse()->memory->shortTerm()->put("wildcards", $wildcards);
                                 }
                             }
                         } else {

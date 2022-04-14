@@ -74,14 +74,13 @@ class TestCase
         $this->rs = new Rivescript();
         $this->rs->setClientId($this->client_id);
 
-        $this->rs->onSay = function ($msg) {
-            //   echo "{$msg}\n";
-        };
+        $this->rs->on(Event::DEBUG, function ($msg) {
+            echo "{$msg}\n";
+        })
+        ->on(Event::DEBUG_VERBOSE, function ($msg) {
+            echo "{$msg}\n";
+        });
 
-
-        $this->rs->onWarn = function ($msg) {
-            //    echo "{$msg}\n";
-        };
         $this->file = $file;
         $this->name = ucfirst(str_replace("_", " ", $name));
 
