@@ -43,4 +43,6 @@ class RegExpressions
     public const TAG_CHARS = "/(\\n|\\s|\\#|\\/)/u";
     public const TAG_BOT = "/<bot (.+?)=(.+?)>\b|<bot (.+?)>/u";
     public const TAG_ENV = "/<env (.+?)=(.+?)>\b|<env (.+?)>/u";
+    public const TAG_RANDOM = "/\{random\}(.+?){\/random\}/u";
+    public const TAG_PERSON = "/({)person(})(.+?)({)\/person(})|(<)person(>)/u";
 }

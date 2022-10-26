@@ -58,18 +58,25 @@ abstract class Command implements CommandValidator
 
     /**
      * Store the wildcards for this
-     * trigger.
+     * command.
      *
      * @var array
      */
     protected array $wildcards = [];
 
     /**
+     * Store the random works for this command.
+     *
+     * @var array
+     */
+    protected array $randomWords = [];
+
+    /**
      * Command Constructor
      *
      * @param \Axiom\Rivescript\Cortex\Node $node
-     * @param array                         $syntaxErrors
-     * @param string                        $content
+     * @param array $syntaxErrors
+     * @param string $content
      */
     public function __construct(
         /**
@@ -77,14 +84,14 @@ abstract class Command implements CommandValidator
          *
          * @var Node
          */
-        public Node      $node,
+        public Node  $node,
 
         /**
          * Storage container for syntax errors.
          *
          * @var array<string>
          */
-        public array     $syntaxErrors = [],
+        public array $syntaxErrors = [],
     )
     {
         $this->checkSyntax();
@@ -136,14 +143,38 @@ abstract class Command implements CommandValidator
     }
 
     /**
+     * Set the random words found in this
+     *
+     * @param array $words The words found in this command.
+     *
+     * @return void
+     */
+    public function setRandomWords(array $words): void
+    {
+        $this->randomWords = $words;
+    }
+
+    /**
      * Check to see if this trigger has wildcards.
      * The answer is true or false.
      *
+     * @deprecated For response it checks the trigger anyways
      * @return bool
      */
     public function hasWildcards(): bool
     {
         return (count($this->wildcards) > 0);
+    }
+
+    /**
+     * Check to see if this command has random
+     * words.
+     *
+     * @return bool
+     */
+    public function hasRandomWords(): bool
+    {
+        return (count($this->randomWords) > 0);
     }
 
     /**
@@ -154,6 +185,16 @@ abstract class Command implements CommandValidator
     public function getWildcards(): array
     {
         return $this->wildcards;
+    }
+
+    /**
+     * Return the random words for this command.
+     *
+     * @return array
+     */
+    public function getRandomWords(): array
+    {
+        return $this->randomWords;
     }
 
     /**
@@ -169,8 +210,8 @@ abstract class Command implements CommandValidator
     /**
      * Add a new syntax error.
      *
-     * @param string        $message The error to add.
-     * @param array<string> $args    (format) extra parameters.
+     * @param string $message The error to add.
+     * @param array<string> $args (format) extra parameters.
      *
      * @return void
      */
@@ -217,7 +258,8 @@ abstract class Command implements CommandValidator
      *
      * @return int
      */
-    public function getContent(): string {
+    public function getContent(): string
+    {
         return $this->getNode()->getContent();
     }
 
@@ -234,13 +276,13 @@ abstract class Command implements CommandValidator
     /**
      * Execute commands.
      *
-     * @param string        $attribute The attribute to find
-     * @param array[]       $arguments Optional additional arguments.
-     * @param array<string> $classes   The classes the attribute can be found in.
-     *
-     * @throws \ReflectionException
+     * @param string $attribute The attribute to find
+     * @param array[] $arguments Optional additional arguments.
+     * @param array<string> $classes The classes the attribute can be found in.
      *
      * @return string|null
+     * @throws \ReflectionException
+     *
      */
     protected function execute(string $attribute, array $arguments, array $classes): ?string
     {

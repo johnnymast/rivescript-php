@@ -25,6 +25,8 @@ use Axiom\Rivescript\Cortex\Tags\Id;
 use Axiom\Rivescript\Cortex\Tags\Input;
 use Axiom\Rivescript\Cortex\Tags\Reply;
 use Axiom\Rivescript\Cortex\Tags\Star;
+use Axiom\Rivescript\Cortex\Tags\Random;
+use Axiom\Rivescript\Cortex\Tags\Person as PersonTag;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,13 +104,18 @@ $synapse->commands = Axiom\Collections\Collection::make(
  * (@array)    # Arrays
  */
 $synapse->tags = Axiom\Collections\Collection::make([
+    // FIXME: Remove parsing the starts from the star class or it wont ever be found for tags like <person>
+
     Star::class,
     Input::class,
     Reply::class,
     Id::class,
     Chars::class,
+    Random::class,
+
     Bot::class,
     Env::class,
+    PersonTag::class,
 
     //    "BotStar",
     //    "Input",

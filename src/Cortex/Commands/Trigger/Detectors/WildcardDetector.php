@@ -87,7 +87,6 @@ class WildcardDetector implements TriggerDetectorInterface
             rsort($positions);
 
             foreach ($positions as $pos) {
-                echo "Checking: {$pos}\n";
                 $types[$character] = $info;
 
                 $info['number']++;
@@ -115,6 +114,7 @@ class WildcardDetector implements TriggerDetectorInterface
                 $value = str_replace("<replaced{$pos}>", $tag, $value);
                 $wildcard->setTag($tag);
                 $wildcard->setOrder($order);
+                $wildcard->setValue($value);
 
                 $wildcards[] = $wildcard;
                 $detected++;

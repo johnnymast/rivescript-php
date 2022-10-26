@@ -14,11 +14,11 @@ use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\RegExpressions;
 
 /**
- * Env class
+ * BotStar class
  *
- * The Env class is responsible for parsing the <env> tag.
+ * The Bot class is responsible for parsing the <bot> tag.
  *
- * @see      https://www.rivescript.com/wd/RiveScript#env
+ * @see      https://www.rivescript.com/wd/RiveScript#bot
  *
  * PHP version 8.0 and higher.
  *
@@ -29,7 +29,7 @@ use Axiom\Rivescript\Cortex\RegExpressions;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Env extends Tag implements TagInterface
+class BotStar extends Tag implements TagInterface
 {
 
     /**
@@ -45,7 +45,7 @@ class Env extends Tag implements TagInterface
      *
      * @var string
      */
-    protected string $pattern = RegExpressions::TAG_ENV;
+    protected string $pattern = RegExpressions::TAG_BOT;
 
     /**
      * @param \Axiom\Rivescript\Cortex\Commands\Command $command
@@ -58,25 +58,6 @@ class Env extends Tag implements TagInterface
 
             $matches = $this->getMatches($command->getNode());
             $content = $command->getNode()->getValue();
-
-            foreach ($matches as $match) {
-                [$string, $key, $value] = $match;
-
-                if (isset($match[3])) {
-                    $key = $match[3];
-                }
-
-                if (!empty($value)) {
-                    $content = str_replace(["&#60;", "&#62;"], ["<", ">"], $content);
-                    synapse()->memory->global()->put($key, $value);
-                    $content = str_replace($string, '', $content);
-                } else {
-                    if (synapse()->memory->global()->has($key)) {
-                        $value = synapse()->memory->global()->get($key);
-                        $content = str_replace($string, $value ?? "undefined", $content);
-                    }
-                }
-            }
 
             $command->setContent($content);
         }

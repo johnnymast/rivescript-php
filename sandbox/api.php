@@ -6,15 +6,18 @@ use Axiom\Rivescript\Exceptions\ParseException;
 use Axiom\Rivescript\Rivescript;
 
 $script = <<<EOF
+  ! person you are = I am
+  ! person i am    = you are
+  ! person you     = I
+  ! person i       = you
+  ! person mine    = yours
 
+  + test1
+  - Umm... {person}you{/person}
 
-! global test = value
-
-+ set 
-- <env test=abc>Lol
-
-+ test
-- my name is <env test>
+  
+  + say *
+  - Umm... yo "<person>"
 EOF;
 
 function onVerbose($msg)
@@ -29,8 +32,6 @@ function onDebug($msg)
     echo "{$msg}\n";
 }
 
-;
-
 $rivescript = new Rivescript();
 
 
@@ -40,10 +41,10 @@ try {
     $rivescript->on(Event::DEBUG, 'onDebug')
         ->on(Event::DEBUG_WARNING, 'onVerbose');
 
-//    $rivescript->reply("set");
-    echo $rivescript->reply("test");
+    echo $rivescript->reply("test1");
+    echo $rivescript->reply("say mine");
 
 } catch (ParseException $e) {
-    echo "Exception: ".$e->getMessage()."\n";
+    echo "Exception: " . $e->getMessage() . "\n";
 }
 

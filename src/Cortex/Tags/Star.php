@@ -73,6 +73,7 @@ class Star extends Tag implements TagInterface
      */
     public function parse(Command $command): void
     {
+        // FIXME BUG IF STAR VALUE HES A SPACE like "you are" it will return you. Example cae ! person you are
 
         if ($this->isSourceOfType(self::RESPONSE)) {
 

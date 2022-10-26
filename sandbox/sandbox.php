@@ -27,9 +27,14 @@ function onDebug($msg)
 
 ;
 
-$rivescript = new Rivescript(utf8: true, depth: 50);
 
-$rivescript->stream($script);
+try {
+    $rivescript = new Rivescript(utf8: true, depth: 50);
+    $rivescript->stream($script);
+
+} catch (\Axiom\Rivescript\Exceptions\ParseException $e) {
+} catch (\Axiom\Rivescript\Exceptions\ContentLoadingException $e) {
+}
 
 $rivescript->on(Event::DEBUG, 'onDebug')
     ->on(Event::SAY, 'onVerbose');
