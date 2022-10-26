@@ -11,18 +11,18 @@
 namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
 use Axiom\Collections\Collection;
-use Axiom\Rivescript\Cortex\Node;
-use Axiom\Rivescript\Cortex\Trigger;
-
-//use Axiom\Rivescript\Traits\Tags;
+use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\TriggerCommand;
+use Axiom\Rivescript\Cortex\TagRunner;
+use Axiom\Rivescript\Cortex\Tags\Tag;
 
 /**
  * ResponseQueue class
  *
- * The ResponseQueue releases the responses in order of sending them
- * back to the user.
+ * The ResponseQueue is responsible for storing responses
+ * for triggers.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext\ResponseQueue
@@ -31,10 +31,8 @@ use Axiom\Rivescript\Cortex\Trigger;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class ResponseQueue extends Collection
+class ResponseQueue
 {
-
-//    use Tags;
 
     /**
      * A container with responses.
@@ -44,300 +42,87 @@ class ResponseQueue extends Collection
     protected Collection $responses;
 
     /**
-     * Store the local interpreter options
-     * for this instance in time (since they can change).
+     * Reference to the parent TriggerCommand.
      *
-     * @var array<string, string>
+     * @var \Axiom\Rivescript\Cortex\Commands\TriggerCommand
      */
-    protected array $options = [];
-
-    /**
-     * The trigger string this ResponseQueue belongs to.
-     *
-     * @var string
-     */
-    protected string $trigger = "";
+    protected TriggerCommand $trigger;
 
     /**
      * ResponseQueue constructor.
-     *
-     * @param string $trigger the trigger this queue belongs to.
      */
-    public function __construct(string $trigger = "")
+    public function __construct(TriggerCommand $trigger)
     {
-        parent::__construct();
-
         $this->responses = new Collection([]);
         $this->trigger = $trigger;
-
-        $this->options = synapse()->memory->local()->all();
     }
 
     /**
-     * Attach a response to the queue.
+     * Attach a new response.
      *
-     * @param Node  $node    The node contains information about the command.
-     * @param array $trigger Contextual information about the trigger.
+     * @param \Axiom\Rivescript\Cortex\Commands\ResponseCommand $response The response to add.
+     * @param string                                            $type     The type of response to archive it as.
      *
      * @return void
      */
-    public function attach(Node $node, Trigger $trigger): void
+    public function attach(ResponseCommand $response, string $type): void
     {
-        $type = $this->determineResponseType($node->source());
-        $queueItem = new ResponseQueueItem($node->command(), $node->value(), $type, $trigger, $this->options);
-        $this->responses->put($node->value(), $queueItem);
+        if ($this->responses->has($type) === false) {
+            $this->responses->put($type, Collection::make([]));
+        }
+        $this->responses->get($type)->push($response);
     }
 
-    public function getAttachedResponses(): Collection {
+    /**
+     * Return the responses.
+     *
+     * @return \Axiom\Collections\Collection<ResponseCommand>
+     */
+    public function getResponses(): Collection
+    {
         return $this->responses;
     }
 
     /**
-     * Sort the responses by order.
+     * Return the trigger.
      *
-     * @param Collection<ResponseQueueItem> $responses The array containing the resources.
-     *
-     * @return Collection<ResponseQueueItem>
+     * @return \Axiom\Rivescript\Cortex\Commands\TriggerCommand
      */
-    private function sortResponses(Collection $responses): Collection
+    public function getTrigger(): TriggerCommand
     {
-        return $responses->sort(
-            function ($current, $previous) {
-                return ($current->order < $previous->order) ? -1 : 1;
-            }
-        )->reverse();
+        return $this->trigger;
     }
 
     /**
-     * Check if a response is allowed to be returned by the bot or not.
+     * Process the response queue.
      *
-     * @param string            $response The response to validate.
-     * @param ResponseQueueItem $item     The ResponseQueueItem.
-     *
-     * @return false|mixed
+     * @return \Axiom\Rivescript\Cortex\Commands\ResponseCommand|null
      */
-    private function validateResponse(string $response, ResponseQueueItem $item)
+    public function process(): ?ResponseCommand
     {
-        $response = $this->parseTags($response);
-        $responses = synapse()->responses;
+        $response = null;
 
-        foreach ($responses as $class) {
-            if (class_exists("\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}")) {
-                $class = "\\Axiom\\Rivescript\\Cortex\\Responses\\{$class}";
-                $instance = new $class($response, $item);
+        // order same as trigger.
+        // parse tags
+        //  TagRunner::run();
 
-                $result = $instance->parse();
-
-                if ($result !== false) {
-                    $item->setValue($result);
-                    return $result;
-                }
+        if ($this->responses->has('atomic')) {
+            foreach ($this->responses->get('atomic') as $type => $command) {
+                TagRunner::run(Tag::RESPONSE, $command);
+                return $command;
             }
         }
 
-
-        return false;
+        return $response;
     }
 
     /**
-     * Merge the ^ continue responses to the last - response.
+     * Check if there are responses in the queue.
      *
-     * @param Collection<ResponseQueueItem> $responses The array containing the responses.
-     *
-     * @return Collection<ResponseQueueItem>
+     * @return bool
      */
-    protected function concatContinues(Collection $responses): Collection
+    public function hasResponses(): bool
     {
-        $lastData = $responses->first();
-        $lastResponse = "";
-
-        $continues = Collection::make($responses->all());
-        $continues->each(
-            function (ResponseQueueItem $data, $response) use (&$lastData, &$lastResponse, &$continues) {
-
-                if ($data->type === 'continue') {
-                    $continues->remove($lastResponse);
-                    $continues->remove($response);
-
-                    /**
-                     * none -- the default, nothing is added when continuation lines are joined together.
-                     * space -- continuation lines are joined by a space character (\s)
-                     * newline -- continuation lines are joined by a line break character (\n)
-                     */
-                    $options = $lastData->options;
-                    $method = $options['concat'];
-
-                    switch ($method) {
-                        case 'space':
-                            $lastResponse .= " {$response}";
-                            break;
-
-                        case 'newline':
-                            $lastResponse .= "\n{$response}";
-                            break;
-
-                        case 'none':
-                        default:
-                            $lastResponse .= $response;
-                            break;
-                    }
-
-                    $lastData->setValue($lastResponse);
-                    $continues->put($lastResponse, $lastData);
-                }
-
-                if ($data->command !== '^') {
-                    $lastData = $data;
-                    $lastResponse = $response;
-                }
-            }
-        );
-
-
-        return $continues;
-    }
-
-    /**
-     * Determine the order of responses by type.
-     *
-     * @param Collection<ResponseQueueItem> $responses The responses to inspect.
-     *
-     * @return Collection<ResponseQueueItem>
-     */
-    private function determineResponseOrder(Collection $responses): Collection
-    {
-        return $responses->each(
-            function (ResponseQueueItem $data, $response) use ($responses) {
-                if (isset($data->type)) {
-                    switch ($data->type) {
-                        case 'condition':
-                            $data->order += 3000000;
-                            break;
-                        case 'weighted':
-                        case 'atomic':
-                            $data->order += 1000000;
-                            break;
-                    }
-
-                    $responses->put($response, $data);
-                }
-            }
-        );
-    }
-
-    /**
-     * Determine the response type.
-     *
-     * @param string $response
-     *
-     * @return string
-     */
-    public function determineResponseType(string $response): string
-    {
-        $wildcards = [
-            'weighted' => '{weight=(.+?)}',
-            'condition' => '/^\*/',
-            'continue' => '/^\^/',
-            'atomic' => '/-/',
-        ];
-
-        foreach ($wildcards as $type => $pattern) {
-            if (@preg_match_all($pattern, $response, $matches)) {
-                return $type;
-            }
-        }
-
-        return 'atomic';
-    }
-
-    /**
-     * Parse the response through the available Tags.
-     *
-     * @param string $source The response string to parse.
-     *
-     * @return string
-     */
-    protected function parseTags(string $source): string
-    {
-
-        $source = $this->escapeUnknownTags($source);
-
-        // This is because Tags trait does not set type response.
-        foreach (synapse()->tags as $class) {
-            $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\{$class}";
-            $instance = new $class("response");
-
-            $source = $instance->parse($source, synapse()->input);
-        }
-
-        $source = str_replace(["&#60;", "&#62;"], ["<", ">"], $source);
-
-        return $source;
-        return trim($source);
-    }
-
-    /**
-     * Escape unknown Tags, so they don't get picked up by the parser
-     * later on in the process.
-     *
-     * @param string $source The source to escape.
-     *
-     * @return string
-     */
-    public function escapeUnknownTags(string $source): string
-    {
-
-        $knownTags = synapse()->memory->tags()->keys()->all();
-
-        $pattern = '/<(\S*?)*>.*?<\/\1>/s';
-
-        preg_match_all($pattern, $source, $matches);
-
-        $index = 0;
-        if (is_array($matches[$index]) && isset($matches[$index][0]) && is_null($knownTags) === false && count($matches) == 2) {
-            $matches = $matches[$index];
-
-            foreach ($matches as $match) {
-                $str = str_replace(['<', '>'], ["&#60;", "&#62;"], $match);
-                $parts = explode(' ', $str);
-                $tag = $parts[0] ?? "";
-
-                if (in_array($tag, $knownTags, true) === false) {
-                    $source = str_replace($match, $str, $source);
-                }
-            }
-        }
-
-        return $source;
-    }
-
-    /**
-     * Process the Response Queue.
-     *
-     * @return mixed
-     */
-    public function process(): ?ResponseQueueItem
-    {
-        $sortedResponses = $this->determineResponseOrder($this->responses);
-
-        $validResponses = new Collection([]);
-        foreach ($sortedResponses as $response => $item) {
-            synapse()->memory->shortTerm()->put('response', $item);
-
-            $result = $this->validateResponse($response, $item);
-
-            if ($result !== false) {
-                $validResponses->put($result, $item);
-            }
-        }
-
-        $validResponses = $this->concatContinues($validResponses);
-        $validResponses = $this->sortResponses($validResponses);
-
-        if ($validResponses->count() > 0) {
-            return $validResponses->values()->first();
-        }
-
-        return null;
+        return (count($this->responses) > 0);
     }
 }

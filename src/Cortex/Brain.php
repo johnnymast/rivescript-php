@@ -10,6 +10,8 @@
 
 namespace Axiom\Rivescript\Cortex;
 
+use Axiom\Collections\Collection;
+use Axiom\Rivescript\Exceptions\ParseException;
 use Axiom\Rivescript\Rivescript;
 
 /**
@@ -18,7 +20,7 @@ use Axiom\Rivescript\Rivescript;
  * The Brain teaches the interpreter how to respond from
  * the user's input.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext
@@ -34,7 +36,14 @@ class Brain
      *
      * @var array<Topic>
      */
-    protected array $topics;
+    protected Collection $topics;
+
+    /**
+     * A collection of topics.
+     *
+     * @var array<CodeObject>
+     */
+    protected Collection $objects;
 
     /**
      * @var \Axiom\Rivescript\Rivescript
@@ -46,6 +55,8 @@ class Brain
      */
     public function __construct()
     {
+        $this->topics = Collection::make([]);
+
         $this->createTopic('random');
     }
 
@@ -66,38 +77,76 @@ class Brain
      *
      * @param resource $stream the stream to read from.
      *
+     * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
     public function teach($stream): void
     {
-        $commands = synapse()->commands;
-
         if (is_resource($stream)) {
             $lineNumber = 0;
 
             rewind($stream);
 
+            $collect = false;
+            $collectFor = null;
+            $collectedContent = '';
+
             while (!feof($stream)) {
                 $line = fgets($stream);
                 $node = new Node($line, $lineNumber++);
+//                synapse()->memory->shortTerm()->put('trigger', null);
 
-                $error = $node->checkSyntax();
+                $command = $node->getCommand();
 
-                if ($error) {
-                    $this->master->say("Error: :error", ['error' => $error]);
-                }
-                if ($node->isInterrupted() === true || $node->isComment() === true || $node->isEmpty()) {
+                if ($command->isEmpty() === true || $command->isComment() === true) {
+                    unset($node);
                     continue;
                 }
 
-                $commands->each(function ($command) use ($node) {
-                    $class = "\\Axiom\\Rivescript\\Cortex\\Commands\\$command";
-                    $commandClass = new $class();
-                    $commandClass->parse($node);
-                });
+                if ($node->getTag() === '>' && str_starts_with($node->getValue(), "object")) {
+                    $collect = true;
+                    $collectFor = $command;
+                    continue;
+                }
+
+                if ($node->getTag() === '<' && str_starts_with($node->getValue(), "object")) {
+                    //    $collectedContent .= $node->getOriginalSource();
+                    $collectedContent = trim($collectedContent);
+                    $collectFor->setContent($collectedContent);
+
+                    $command = $collectFor;
+                    $collect = false;
+                    $collectFor = null;
+                    $collectedContent = '';
+                }
+
+                if ($collect === true) {
+                    $collectedContent .= $node->getOriginalSource();
+                    continue;
+                }
+
+                if ($command->isSyntaxValid() === true) {
+                    //echo get_class($command) . " -- Topic: " . $this->topic()->getName(), "\n";
+                    $command->detect();
+
+                } else {
+
+                    /**
+                     * I am not 100% sure yet on what to do in this case.
+                     * For now, we will debug the syntax errors and continue
+                     * on our way.
+                     */
+                    $errors = $command->getSyntaxErrors();
+
+                    throw new ParseException(current($errors));
+                }
             }
-        } else {
-            echo "CANNOT TEACH INVALID RESOURCE STREAM\n";
+
+
+            /**
+             * @deprecated
+             */
+            $this->topics->each(fn(Topic $topic) => $topic->sortTriggers($topic->triggers()));
         }
     }
 
@@ -106,19 +155,55 @@ class Brain
      *
      * @param string|null $name The name of the topic to return.
      *
-     * @return mixed|null
+     * @return Topic|null
      */
-    public function topic(string $name = null)
+    public function topic(string $name = null): Topic|null
     {
         if (is_null($name)) {
             $name = synapse()->memory->shortTerm()->get('topic') ?: 'random';
         }
 
-        if (!isset($this->topics[$name])) {
+        if (!$this->topics->has($name) === true) {
             return null;
         }
 
-        return $this->topics[$name];
+        return $this->topics->get($name);
+    }
+
+    /**
+     * Return a codeobject.
+     *
+     * @param string|null $name The name of the topic to return.
+     *
+     * @return mixed|null
+     */
+    public function codeObject(string $name = null): mixed
+    {
+        if (!isset($this->objects[$name])) {
+            return null;
+        }
+
+        return $this->objects[$name];
+    }
+
+    /**
+     * Return the defined topics.
+     *
+     * @return \Axiom\Collections\Collection
+     */
+    public function topics(): Collection
+    {
+        return $this->topics;
+    }
+
+    /**
+     * Return all defined code objects.
+     *
+     * @return \Axiom\Rivescript\Cortex\CodeObject[]
+     */
+    public function codeObjects(): array
+    {
+        return $this->objects;
     }
 
     /**
@@ -133,5 +218,21 @@ class Brain
         $this->topics[$name] = new Topic($name);
 
         return $this->topics[$name];
+    }
+
+    /**
+     * Create a code object.
+     *
+     * @param string $name     The name of the object.
+     * @param string $language The name of the programming language.
+     * @param string $code     The code for this code object.
+     *
+     * @return \Axiom\Rivescript\Cortex\CodeObject
+     */
+    public function createCodeObject(string $name, string $language, string $code): CodeObject
+    {
+        $this->objects[$name] = new CodeObject($name, $language, $code);
+
+        return $this->objects[$name];
     }
 }

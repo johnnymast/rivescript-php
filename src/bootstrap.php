@@ -8,6 +8,23 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * Commands
+ */
+
+use Axiom\Rivescript\Cortex\Commands\Definition\Arrays;
+use Axiom\Rivescript\Cortex\Commands\Definition\Globals;
+use Axiom\Rivescript\Cortex\Commands\Definition\Person;
+use Axiom\Rivescript\Cortex\Commands\Definition\Sub;
+use Axiom\Rivescript\Cortex\Commands\Definition\Variable;
+use Axiom\Rivescript\Cortex\Commands\Definition\Version;
+use Axiom\Rivescript\Cortex\Tags\Bot;
+use Axiom\Rivescript\Cortex\Tags\Chars;
+use Axiom\Rivescript\Cortex\Tags\Env;
+use Axiom\Rivescript\Cortex\Tags\Id;
+use Axiom\Rivescript\Cortex\Tags\Input;
+use Axiom\Rivescript\Cortex\Tags\Reply;
+use Axiom\Rivescript\Cortex\Tags\Star;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,42 +39,37 @@
 
 $synapse = new Axiom\Rivescript\Cortex\Synapse();
 
+//
 /*
 |--------------------------------------------------------------------------
-| Bind Important Variables
+| Bind Command types
 |--------------------------------------------------------------------------
 |
-| Next, we will bind some important variables within the synapse so
-| we will be able to resolve them when needed.
-|
+| These are all the commands listen in the Rivescript
+| working draft stated here: https://www.rivescript.com/wd/RiveScript
 */
-
 $synapse->commands = Axiom\Collections\Collection::make(
-    [
-        "VariablePerson",
-        "VariableSubstitute",
-        "VariableGlobal",
-        "VariableLocal",
-        "VariableArray",
-        "Variable",
-        "Redirect",
-        "Response",
-        "Topic",
-        "Trigger",
+    items: [
+        Arrays::class,
+        Globals::class,
+        Person::class,
+        Variable::class,
+        Version::class,
+        Sub::class,
     ]
 );
-
-$synapse->triggers = Axiom\Collections\Collection::make(
-    [
-        "Atomic",
-     //   "Arrays",
-        "Alternation",
-        "Wildcard",
-        "Redirect",
-        "Optional",
-    ]
-);
-
+//
+//$synapse->triggers = Axiom\Collections\Collection::make(
+//    [
+//        "Atomic",
+//     //   "Arrays",
+//        "Alternation",
+//        "Wildcard",
+//        "RedirectCommand",
+//        "Optional",
+//    ]
+//);
+//
 /**
  * Within Replies
  * The order that the Tags should be processed within a response or anywhere else that a tag is allowed is as follows:
@@ -90,76 +102,83 @@ $synapse->triggers = Axiom\Collections\Collection::make(
  * (@array)    # Arrays
  */
 $synapse->tags = Axiom\Collections\Collection::make([
-    "Star",
-    "BotStar",
-    "Input",
-    "Reply",
-    "Id",
-    "SpecialChars",
-    "Random",
-    "Person",
-    "Formal",
-    "Set",
-    "Get",
-    "Sentence",
-    "Uppercase",
-    "Lowercase",
-    "Bot",
-    "Add",
-    "Sub",
-    "Mult",
-    "Div",
-    "Env",
-    "Topic",
-    "Redirect",
-    "ArrayTag",
-    "OptionalTag",
-    "Ok",
+    Star::class,
+    Input::class,
+    Reply::class,
+    Id::class,
+    Chars::class,
+    Bot::class,
+    Env::class,
+
+    //    "BotStar",
+    //    "Input",
+    //    "Reply",
+    //    "Id",
+    //    "SpecialChars",
+    //    "Random",
+    //    "Person",
+    //    "Formal",
+    //    "Set",
+    //    "Get",
+    //    "Sentence",
+    //    "Uppercase",
+    //    "Lowercase",
+    //    "Bot",
+    //    "Add",
+    //    "Sub",
+    //    "Mult",
+    //    "Div",
+    //    "Env",
+    //    "Topic",
+    //    "RedirectCommand",
+    //    "ArrayTag",
+    //    "OptionalTag",
+    //    "Ok",
 ]);
-
-$synapse->responses = Axiom\Collections\Collection::make(
-    [
-        "Weighted",
-        "ContinueResponse",
-        "Atomic",
-        "Condition",
-        "Redirect",
-        "Previous"
-    ]
-);
-
-$synapse->conditions = Axiom\Collections\Collection::make(
-    [
-        "Equals",
-        "NotEquals",
-        "LessThan",
-        "LessOrEqualTo",
-        "GreaterThan",
-        "GreaterThanOrEqual",
-    ]
-);
-
-/*
-|--------------------------------------------------------------------------
-| Bind Important Interfaces
-|--------------------------------------------------------------------------
-|
-| Finally, we will bind some important interfaces within the synapse so
-| we will be able to resolve them when needed as well.
-|
-*/
-
+//
+//$synapse->responses = Axiom\Collections\Collection::make(
+//    [
+//        "Weighted",
+//        "ContinueResponse",
+//        "Atomic",
+//        "ConditionCommand",
+//        "RedirectCommand",
+//        "PreviousCommand"
+//    ]
+//);
+//
+//$synapse->conditions = Axiom\Collections\Collection::make(
+//    [
+//        "Equals",
+//        "NotEquals",
+//        "LessThan",
+//        "LessOrEqualTo",
+//        "GreaterThan",
+//        "GreaterThanOrEqual",
+//    ]
+//);
+//
+///*
+//|--------------------------------------------------------------------------
+//| Bind Important Interfaces
+//|--------------------------------------------------------------------------
+//|
+//| Finally, we will bind some important interfaces within the synapse so
+//| we will be able to resolve them when needed as well.
+//|
+//*/
+//
 $synapse->memory = new Axiom\Rivescript\Cortex\Memory();
 $synapse->brain = new Axiom\Rivescript\Cortex\Brain();
-
-/*
-|--------------------------------------------------------------------------
-| Autoload Additional Files
-|--------------------------------------------------------------------------
-|
-| Now we will autoload some files to aid in using the Rivescript
-| interpreter.
-|
-*/
-
+//
+///*
+//|--------------------------------------------------------------------------
+//| Autoload Additional Files
+//|--------------------------------------------------------------------------
+//|
+//| Now we will autoload some files to aid in using the Rivescript
+//| interpreter.
+//|
+//*/
+//
 include 'helpers.php';

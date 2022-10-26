@@ -10,19 +10,20 @@
 
 namespace Axiom\Rivescript;
 
-use Axiom\Rivescript\Cortex\ContentLoader\ContentLoader;
+use Axiom\Rivescript\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Cortex\Input;
 use Axiom\Rivescript\Cortex\Output;
 use Axiom\Rivescript\Events\Event;
 use Axiom\Rivescript\Events\EventEmitter;
-use Axiom\Rivescript\Traits\Tags;
+use Axiom\Rivescript\SessionManager\SessionManagerInterface;
+use Axiom\Rivescript\Utils\Misc;
 
 /**
  * Rivescript class
  *
  * The entry point for using the interpreter.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext
@@ -33,53 +34,7 @@ use Axiom\Rivescript\Traits\Tags;
  */
 class Rivescript extends ContentLoader
 {
-    use Tags, EventEmitter;
-
-
-    public const VERBOSITY_NORMAL = 0;
-    public const VERBOSITY_VERBOSE = 1;
-    public const VERBOSITY_VERY_VERBOSE = 2;
-    public const VERBOSITY_DEBUG = 3;
-
-    public $onSay = null;
-    public $onWarn = null;
-    public $onDebug = null;
-
-    /**
-     * A recursion limit before an attempt to
-     * fetch a reply will be abandoned.
-     *
-     * @var int
-     */
-    public int $depth = 50;
-
-    /**
-     * Error messages.
-     *
-     * @var array|string[]
-     */
-    public array $errors = [
-        "replyNotMatched" => "ERR: No Reply Matched",
-        "replyNotFound" => "ERR: No Reply Found",
-        "objectNotFound" => "[ERR: Object Not Found]",
-        "deepRecursion" => "ERR: Deep Recursion Detected"
-    ];
-
-    /**
-     * Flag to indicating if utf8
-     * modes is enabled.
-     *
-     * @var bool
-     */
-    protected bool $utf8 = false;
-
-    /**
-     * Flag to indicate debug mode
-     * is enabled or not.
-     *
-     * @var bool
-     */
-    public bool $debug = false;
+    use EventEmitter;
 
     /**
      * This is the user identification.
@@ -91,52 +46,42 @@ class Rivescript extends ContentLoader
     /**
      * Create a new Rivescript instance.
      *
-     * @param array $options Options for the Rivescript interpreter.
+     * You can set the options by using named options.
+     *
+     * ```php
+     * $rivescript-cli = new RiveScript(debug=true, utf8=true);
+     * ```
+     *
+     * @param bool                     $utf8            Enable utf8 mode true/false
+     * @param bool                     $debug           Enable utf8 debug true/false
+     * @param bool                     $strict          Enable utf8 strict true/false
+     * @param int                      $depth           Max recursion depth.
+     * @param string                   $logfile         Use this logfile.
+     * @param ?SessionManagerInterface $session_manager pass a customSessionManager.
      *
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      */
-    public function __construct(array $options = [])
+    public function __construct(
+        public bool                     $utf8 = false,
+        public bool                     $debug = false,
+        public bool                     $strict = true,
+        public int                      $depth = 25,
+        public string                   $logfile = '',
+        public ?SessionManagerInterface $session_manager = null
+    )
     {
         parent::__construct();
 
         include __DIR__ . '/bootstrap.php';
 
-        synapse()->brain->setMaster($this);
-        synapse()->rivescript = $this;
-
         /**
          * Set default global variables. These
          * can be overwritten by the script.
          */
+        synapse()->rivescript = $this;
         synapse()->memory->global()->put('depth', 25);
-
-
-//        $this->setClientId($this->client_id);
-        $this->registerTags();
-    }
-
-    /**
-     * Initialize the Tags
-     *
-     * @return void
-     */
-    private function registerTags(): void
-    {
-        synapse()->tags->each(
-            function ($tag) {
-                $class = "\\Axiom\\Rivescript\\Cortex\\Tags\\$tag";
-                $tagInstance = new $class();
-
-                $tagInfo = $tagInstance->getTagName();
-                if (is_array($tagInfo)) {
-                    foreach ($tagInfo as $tagName) {
-                        synapse()->memory->tags()->put($tagName, $tagInstance);
-                    }
-                } else {
-                    synapse()->memory->tags()->put($tagInfo, $tagInstance);
-                }
-            }
-        );
+        synapse()->memory->global()->put('debug', false);
+        synapse()->memory->global()->put('verbose', false);
     }
 
     /**
@@ -152,12 +97,13 @@ class Rivescript extends ContentLoader
      *
      * Please note 2:
      *
-     * If you profile a directory with rivescript documents make sure they are
+     * If you profile a directory with rivescript-cli documents make sure they are
      * all interpretable Rivescript will throw syntax errors while trying to
      * parse those files.
      *
      * @param array<string>|string $info The files to read
      *
+     * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
     public function load($info): void
@@ -171,11 +117,12 @@ class Rivescript extends ContentLoader
      *
      * @param string $string The string of information to feed the brain.
      *
+     * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
     public function stream(string $string): void
     {
-        fseek($this->getStream(), 0, SEEK_SET);
+        fseek($this->getStream(), 0);
         rewind($this->getStream());
 
         $this->writeToMemory($string);
@@ -186,6 +133,7 @@ class Rivescript extends ContentLoader
      * Process new information in the
      * stream.
      *
+     * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
     private function processInformation(): void
@@ -195,65 +143,31 @@ class Rivescript extends ContentLoader
     }
 
     /**
-     * Set the client id.
+     * Write a warning.
      *
-     * @param string $client_id The client id for this user.
-     *
-     * @return void
-     */
-    public function setClientId(string $client_id = 'local-user'): void
-    {
-        $this->client_id = $client_id;
-    }
-
-    /**
-     * Return the client id.
-     *
-     * @return string
-     */
-    public function getClientId(): string
-    {
-        return $this->client_id;
-    }
-
-    /**
-     * Set user variables.
-     *
-     * @param string $name  The name of the variable.
-     * @param string $value The value of the variable.
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) extra parameters.
      *
      * @return void
      */
-    public function set_uservar(string $name, string $value): void
+    public function debug(string $message, array $args = []): void
     {
-        synapse()->memory->user($this->client_id)->put($name, $value);
+        $message = "[DEBUG] " . Misc::formatString($message, $args);
+
+        $this->emit(EVENT::DEBUG, $message);
     }
 
     /**
-     * Get user variable.
+     * Write a verbose debug message.
      *
-     * @param string $name The name of the variable.
-     *
-     * @return mixed
-     */
-    public function get_uservar(string $name)
-    {
-        return synapse()->memory->user($this->client_id)->get($name) ?? "undefined";
-    }
-
-    /**
-     * Log a message to say.
-     *
-     * @param string $message   The message to print out.
-     * @param array  $args      (format) arguments for the message.
-     * @param int    $verbosity The verbosity level of the message.
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) extra parameters.
      *
      * @return void
      */
-    public function say(string $message, array $args = [], int $verbosity = Rivescript::VERBOSITY_NORMAL): void
+    public function verbose(string $message, array $args = []): void
     {
-
-        $message = $this->formatString($message, $args);
+        $message = "[VERBOSE] " . Misc::formatString($message, $args);
 
         $this->emit(EVENT::DEBUG_VERBOSE, $message);
     }
@@ -261,125 +175,70 @@ class Rivescript extends ContentLoader
     /**
      * Write a debug message.
      *
-     * @param string $message   The message to print out.
-     * @param array  $args      (format) arguments for the message.
-     * @param int    $verbosity The verbosity level of the message.
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) arguments for the message.
      *
      * @return void
      */
-    public function warn(string $message,
-                         array  $args = [],
-                         int    $verbosity = Rivescript::VERBOSITY_DEBUG): void
+    public function warn(string $message, array $args = []): void
     {
-        $message = "[WARNING]: " . $this->formatString($message, $args);
+        $message = "[WARNING] " . Misc::formatString($message, $args);
 
         $this->emit(Event::DEBUG_WARNING, $message);
     }
 
+
     /**
-     * Write a warning.
+     * Write a error message.
      *
-     * @param string $message   The message to print out.
-     * @param array  $args      (format) arguments for the message.
-     * @param int    $verbosity The verbosity level of the message.
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) extra parameters.
      *
      * @return void
      */
-    public function debug(string $message,
-                          array  $args = [],
-                          int    $verbosity = Rivescript::VERBOSITY_NORMAL): void
+    public function error(string $message, array $args = []): void
     {
-        $message = "[DEBUG]: " . $this->formatString($message, $args);
+        $message = "[ERROR] " . Misc::formatString($message, $args);
 
-        $this->emit(EVENT::DEBUG, $message);
-    }
-
-
-    /**
-     * Create a string PDO style/
-     *
-     * @param string $msg  The message to write.
-     * @param array[]  $args The arguments for the message.
-     *
-     * @return string
-     */
-    private function formatString(string $msg, array $args = []): string
-    {
-        $search = [];
-        $replace = [];
-
-        if (is_array($args) === true && count($args) > 0) {
-            foreach ($args as $key => $value) {
-                $search [] = ":{$key}";
-                $replace [] = $value;
-            }
-
-            $msg = str_replace($search, $replace, $msg);
-        }
-
-        return $msg;
+        $this->emit(EVENT::DEBUG_ERROR, $message);
     }
 
     /**
-     * Enable debug mode.
+     * Log a message to say.
      *
-     * @param bool $status Set debug mode status.
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) arguments for the message.
      *
      * @return void
      */
-    public function debugMode(bool $status = false): void
+    public function say(string $message, array $args = []): void
     {
-        synapse()->memory->global()->put('debug', $status);
-    }
 
-    /**
-     * Enable or disable utf8 mode.
-     *
-     * @param bool $status
-     *
-     * @return void
-     */
-    public function utf8(bool $status = false): void
-    {
-        $this->utf8 = $status;
-    }
+        $message = Misc::formatString($message, $args);
 
-    public function isUtf8Enabled(): bool
-    {
-        return ($this->utf8 === true);
+        $this->emit(EVENT::SAY, $message);
     }
 
     /**
      * Make the client respond to a message.
      *
-     * @param string      $msg   The message the client has to process and respond to.
-     * @param string      $user  The user id.
-     * @param string|null $scope Not used at this point.
+     * @param string $msg  The message the client has to process and respond to.
+     * @param string $user The user id.
      *
      * @return string
      */
-    public function reply(string $msg, string $user = 'local-user', string $scope = null): string
+    public function reply(string $msg, string $user = 'local-user'): string
     {
 
-        // FIXME: Must be $user, $message, Sscope
-        //    $msg = $this->stripNasties($msg, "");
         synapse()->rivescript->say("Asked to reply to :user :msg", ['user' => $user, 'msg' => $msg]);
 
-
-        $input = new Input($msg, $user);
-        $output = new Output();
-
-        synapse()->input = $input;
-
-        synapse()->memory->shortTerm()->remove("wildcards");
-
-        $output = $output->process();
-
-        if (empty($output)) {
-            $output = $this->errors['replyNotMatched'];
-        }
+        synapse()->input = new Input($msg, $user);
 
         synapse()->memory->inputs()->push($msg);
+
+        $output = (new Output())
+            ->processInput();
+
         synapse()->memory->replies()->push($output);
 
         return $output;

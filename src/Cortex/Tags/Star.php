@@ -2,7 +2,7 @@
 /*
  * This file is part of Rivescript-php
  *
- * (c) Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,14 +10,19 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input as SourceInput;
+use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\RegExpressions;
+use Axiom\Rivescript\Utils\Misc;
 
 /**
  * Star class
  *
- * This class is responsible parsing the <star> tag.
+ * The start tag matches the wildcards in the response
+ * and replaces them with the words from the triggerr.
  *
- * PHP version 7.4 and higher.
+ * @see      https://www.rivescript.com/wd/RiveScript#star-star1---starN
+ *
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext\Tags
@@ -26,60 +31,100 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.3.0
  */
-class Star extends Tag
+class Star extends Tag implements TagInterface
 {
+
     /**
      * Determines where this tag is allowed to
      * be used.
      *
      * @var array<string>
      */
-    protected array $allowedSources = ["response", "trigger"];
+    protected array $allowedSources = [self::RESPONSE];
 
     /**
-     * Regex expression pattern.
+     * Star signs arnt they nice :)
+     *
+     * @var array
+     */
+    protected array $stars = [
+        ['star', 'star1'],
+        'star2',
+        'star3',
+        'star4',
+        'star5',
+        'star6',
+        'star7',
+        'star8',
+        'star9'
+    ];
+
+    /**
+     * The pattern for this tag.
      *
      * @var string
      */
-    protected string $pattern = "/<star(\d+)?>/i";
+    protected string $pattern = RegExpressions::TAG_STAR;
 
     /**
-     * Parse the source.
+     * @param \Axiom\Rivescript\Cortex\Commands\Command $command
      *
-     * @param string      $source The string containing the Tag.
-     * @param SourceInput $input  The input information.
-     *
-     * @return string
+     * @return void
      */
-    public function parse(string $source, SourceInput $input): string
+    public function parse(Command $command): void
     {
-        if (!$this->sourceAllowed()) {
-            return $source;
-        }
 
-        if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source);
-            $wildcards = synapse()->memory->shortTerm()->get("wildcards");
+        if ($this->isSourceOfType(self::RESPONSE)) {
 
-            foreach ($matches as $match) {
-                $index = (empty($match[1]) ? 0 : $match[1] - 1);
-                if (isset($wildcards[$index]) === true) {
-                synapse()->rivescript->debug("STAR: {$match[0]}");
-                    $source = str_replace($match[0], $wildcards[$index], $source);
+            /**
+             * @var \Axiom\Rivescript\Cortex\Commands\ResponseCommand $command ;
+             */
+            $trigger = $command->getTrigger();
+            $wildcards = $trigger->getWildcards();
+            $input = synapse()->input->source();
+            $node = $trigger->getNode()->getValue();
+
+            /**
+             * Wild cards are stored ordered by position ascending
+             * but if we replace below from the start of the string to
+             * the end it ends with invalid results. So reverse te array
+             * and replace from the end of the node to the front.
+             */
+            $wildcards = array_reverse($wildcards);
+            foreach ($wildcards as $wildcard) {
+                $position = $wildcard->getStringPosition();
+                $node = substr_replace($node, $wildcard->getTag(), $position, strlen($wildcard->getCharacter()));
+            }
+
+            $triggerParts = explode(' ', $node);
+            $inputParts = explode(' ', $input);
+
+            $diff = array_diff($triggerParts, $inputParts);
+            $result = [];
+
+            foreach ($diff as $key => $value) {
+                $noColon = substr($value, 1);
+                $result[$noColon] = $inputParts[$key];
+            }
+
+            $values = array_values($result);
+            $replacements = [];
+
+            foreach ($this->stars as $index => $star) {
+                if (isset($values[$index])) {
+                    if ($index == 0 && is_array($star) === true) {
+                        foreach ($star as $name) {
+                            $replacements[$name] = $values[$index];
+                        }
+                    } else {
+                        $replacements[$star] = $values[$index];
+                    }
                 }
             }
+
+            // i hate red but i like blue
+            $content = Misc::formatString($node, $result);
+            $command->setContent($content);
         }
-
-        return $source;
-    }
-
-    /**
-     * Return the tag that the class represents.
-     *
-     * @return array
-     */
-    public function getTagName(): array
-    {
-        return ["star", "star1", "star2", "star3", "star4", "star5", "star6", "star7", "star8", "star9"];
     }
 }

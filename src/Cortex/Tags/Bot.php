@@ -2,7 +2,7 @@
 /*
  * This file is part of Rivescript-php
  *
- * (c) Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,56 +10,54 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input as SourceInput;
+use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\RegExpressions;
 
 /**
  * Bot class
  *
- * This class is responsible parsing the <bot> tag.
+ * The Bot class is responsible for parsing the <bot> tag.
  *
- * PHP version 7.4 and higher.
+ * @see      https://www.rivescript.com/wd/RiveScript#bot
+ *
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext\Tags
- * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @author   Johnny Mast <mastjohnny@gmail.com>
  * @license  https://opensource.org/licenses/MIT MIT
  * @link     https://github.com/axiom-labs/rivescript-php
- * @since    0.3.0
+ * @since    0.4.0
  */
-class Bot extends Tag
+class Bot extends Tag implements TagInterface
 {
+
     /**
      * Determines where this tag is allowed to
      * be used.
      *
      * @var array<string>
      */
-    protected array $allowedSources = ["response", "trigger"];
+    protected array $allowedSources = [self::RESPONSE];
 
     /**
-     * Regex expression pattern.
+     * The pattern for this tag.
      *
      * @var string
      */
-    protected string $pattern = "/<bot (.+?)=(.+?)>\b|<bot (.+?)>/u";
+    protected string $pattern = RegExpressions::TAG_BOT;
 
     /**
-     * Parse the source.
+     * @param \Axiom\Rivescript\Cortex\Commands\Command $command
      *
-     * @param string      $source The string containing the Tag.
-     * @param SourceInput $input  The input information.
-     *
-     * @return string
+     * @return void
      */
-    public function parse(string $source, SourceInput $input): string
+    public function parse(Command $command): void
     {
-        if (!$this->sourceAllowed()) {
-            return $source;
-        }
+        if ($this->isSourceOfType(self::RESPONSE)) {
 
-        if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source);
-            $variables = synapse()->memory->variables();
+            $matches = $this->getMatches($command->getNode());
+            $content = $command->getNode()->getValue();
 
             foreach ($matches as $match) {
                 [$string, $key, $value] = $match;
@@ -68,27 +66,20 @@ class Bot extends Tag
                     $key = $match[3];
                 }
 
-                if (empty($value) === false) {
-                    $value = str_replace(["&#60;", "&#62;"], ["<", ">"], $value);
-
+                if (!empty($value)) {
+                    $content = str_replace(["&#60;", "&#62;"], ["<", ">"], $content);
                     synapse()->memory->variables()->put($key, $value);
-                    $source = str_replace($string, '', $source);
+                    $content = str_replace($string, '', $content);
                 } else {
-                    $source = str_replace($string, $variables[$key] ?? "undefined", $source);
+                    if (synapse()->memory->variables()->has($key)) {
+                        $value = synapse()->memory->variables()->get($key);
+                        $content = str_replace($string, $value ?? "undefined", $content);
+                    }
                 }
             }
+
+            echo "CONTENT: {$content}\n";
+            $command->setContent($content);
         }
-
-        return $source;
-    }
-
-    /**
-     * Return the tag that the class represents.
-     *
-     * @return string
-     */
-    public function getTagName(): string
-    {
-        return "bot";
     }
 }

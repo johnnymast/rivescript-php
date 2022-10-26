@@ -17,7 +17,7 @@ namespace Axiom\Rivescript\Events;
  * to communicate with the developer using the
  * interpreter.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Events
@@ -33,12 +33,12 @@ trait EventEmitter
     /**
      * Receive a message.
      *
-     * @param string $event   The event string.
-     * @param mixed  $handler The event handler.
+     * @param string          $event   The event string.
+     * @param string|callable $handler The event handler.
      *
      * @return self
      */
-    public function on(string $event, $handler): self
+    public function on(string $event, string|callable $handler): self
     {
         if (!isset($this->registered[$event])) {
             $this->registered[$event] = [];
@@ -53,7 +53,7 @@ trait EventEmitter
      * Send out a message.
      *
      * @param string $event       The event string.
-     * @param array  ...$userdata Arguments for the callback.
+     * @param mixed  ...$userdata Arguments for the callback.
      *
      * @return self
      */

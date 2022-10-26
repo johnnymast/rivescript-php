@@ -10,14 +10,18 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input as UserInput;
+use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\RegExpressions;
+use Axiom\Rivescript\Utils\Misc;
 
 /**
  * Input class
  *
- * This class is responsible parsing the <input>...<input9> tag.
+ * The Input class is responsible for parsing the <input> tag.
  *
- * PHP version 7.4 and higher.
+ * @see      https://www.rivescript.com/wd/RiveScript#input1---input9-reply1---reply9
+ *
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext\Tags
@@ -26,64 +30,75 @@ use Axiom\Rivescript\Cortex\Input as UserInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Input extends Tag
+class Input extends Tag implements TagInterface
 {
+
     /**
      * Determines where this tag is allowed to
      * be used.
      *
      * @var array<string>
      */
-    protected array $allowedSources = ["response"];
+    protected array $allowedSources = [self::RESPONSE];
 
     /**
-     * Regex expression pattern.
+     * The pattern for this tag.
      *
      * @var string
      */
-    protected string $pattern = "/<input(\d+)?>/i";
+    protected string $pattern = RegExpressions::TAG_INPUT;
 
     /**
-     * Parse the source.
+     * All input signs in a row.
      *
-     * @param  string     $source  The string containing the Tag.
-     * @param  UserInput  $input   The input information.
-     *
-     * @return string
+     * @var array
      */
-    public function parse(string $source, UserInput $input): string
-    {
-        if (!$this->sourceAllowed()) {
-            return $source;
-        }
+    protected array $stars = [
+        ['input', 'input1'],
+        'input2',
+        'input3',
+        'input4',
+        'input5',
+        'input6',
+        'input7',
+        'input8',
+        'input9'
+    ];
 
-        if ($this->hasMatches($source)) {
+    /**
+     * @param \Axiom\Rivescript\Cortex\Commands\Command $command
+     *
+     * @return void
+     */
+    public function parse(Command $command): void
+    {
+        if ($this->isSourceOfType(self::RESPONSE)) {
+            $value = $command->getNode()->getValue();
+            $matches = $this->getMatches($command->getNode());
             $inputs = array_values(synapse()->memory->inputs()->all());
 
-            $tags = [
-                "<input>" => 0,
-            ];
+            /**
+             * First of replace all the inputs with a colon before
+             * it. This is so we can use it in our format string function
+             * later.
+             */
+            $results = [];
+            foreach ($matches as $match) {
+                $input = $match[0];
+                $replace = str_replace(['<', '>'], ['[', ']'], $input);
+                $number = (int)substr($input, -2, 1);
 
-            for ($tagIndex = 1, $inputIndex = 0; $tagIndex < 10; $tagIndex++, $inputIndex++) {
-                $tags["<input{$tagIndex}>"] = $inputIndex;
-            }
+                if ($number < 2) {
+                    $results[$replace] = $inputs[0] ?? "undefined";;
+                    $value = str_replace(["<input>", "<input1>"], [":[input]", ":[input1]"], $value);
+                } else {
+                    $results[$replace] = $inputs[$number-1] ?? "undefined";
+                    $value = str_replace("<input{$number}>", ":[input{$number}]", $value);
+                }
+            };
 
-            foreach ($tags as $tag => $inputIndex) {
-                $reply = $inputs[$inputIndex] ?? "undefined";
-                $source = str_replace($tag, $reply, $source);
-            }
+            $content = Misc::formatString($value, $results);
+            $command->setContent($content);
         }
-
-        return $source;
-    }
-
-    /**
-     * Return the tag that the class represents.
-     *
-     * @return array
-     */
-    public function getTagName(): array
-    {
-        return ["input", "input1", "input2", "input3", "input4", "input5", "input6", "input7", "input8", "input9"];
     }
 }

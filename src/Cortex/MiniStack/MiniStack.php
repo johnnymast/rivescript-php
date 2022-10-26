@@ -18,7 +18,7 @@ use Axiom\Collections\Collection;
  * The mini stack remembers an x number of items on
  * its stack. This value is passed through to the constructor.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext\MiniStack

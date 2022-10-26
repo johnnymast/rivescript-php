@@ -42,7 +42,7 @@ class TestCase
     protected string $name;
 
     /**
-     * Instance of the rivescript interpreter.
+     * Instance of the rivescript-cli interpreter.
      *
      * @var \Axiom\Rivescript\Rivescript
      */

@@ -16,7 +16,7 @@ namespace Axiom\Rivescript\Exceptions;
  * This exception is thrown if a given script was
  * not able to be parsed correctly.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Exceptions

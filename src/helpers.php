@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-use Axiom\Rivescript\Support\Str;
 use Axiom\Rivescript\Cortex\Synapse;
 use Axiom\Rivescript\Support\Logger;
+use Axiom\Rivescript\Utils\Str;
 
 if (!function_exists('synapse')) {
     /**

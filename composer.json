@@ -4,7 +4,7 @@
   "minimum-stability": "stable",
   "license": "MIT",
   "keywords": [
-    "rivescript",
+    "rivescript-cli",
     "bot",
     "ai",
     "chatterbot",
@@ -27,7 +27,7 @@
   },
   "autoload": {
     "files": [
-      "src\\helpers.php"
+      "src\\bootstrap.php"
     ],
     "psr-4": {
       "Axiom\\Rivescript\\": "src/"
@@ -40,18 +40,16 @@
     }
   },
   "require": {
-    "php": ">=7.4",
-    "symfony/console": "^5.0",
-    "symfony/finder": "^3.2",
-    "axiom/collections": "~2.0"
+    "php": ">=8.0",
+    "axiom/collections": "^2.0",
+    "monolog/monolog": "^2.5",
+    "symfony/console": "^6.0"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "*",
-    "phpunit/phpunit": "^9.5.5",
-    "monolog/monolog": "~1.0",
-    "pestphp/pest": "^1.14",
-    "phpstan/phpstan": "^0.12.94",
-    "symfony/yaml": "5.4.x-dev"
+    "squizlabs/php_codesniffer": "^3.6",
+    "pestphp/pest": "^1.21",
+    "phpstan/phpstan": "^1.5",
+    "pestphp/pest-plugin-global-assertions": "^1.0"
   },
   "extra": {
     "branch-alias": {

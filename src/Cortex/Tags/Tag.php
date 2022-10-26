@@ -1,36 +1,25 @@
 <?php
-/*
- * This file is part of Rivescript-php
- *
- * (c) Shea Lewis <shea.lewis89@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Traits\Regex;
-use Axiom\Rivescript\Contracts\Tag as TagContract;
+use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\Node;
+use Axiom\Rivescript\Cortex\RegExpressions;
+use Axiom\Rivescript\Cortex\Traits\Regex;
 use LogicException;
 
-/**
- * Tag class
- *
- * The tag base class.
- *
- * PHP version 7.4 and higher.
- *
- * @category Core
- * @package  Cortext\Tags
- * @author   Shea Lewis <shea.lewis89@gmail.com>
- * @license  https://opensource.org/licenses/MIT MIT
- * @link     https://github.com/axiom-labs/rivescript-php
- * @since    0.3.0
- */
-abstract class Tag implements TagContract
+abstract class Tag
 {
     use Regex;
+
+    /**
+     *
+     */
+    public const TRIGGER = "trigger";
+    /**
+     *
+     */
+    public const RESPONSE = "response";
 
     /**
      * @var string
@@ -76,15 +65,15 @@ abstract class Tag implements TagContract
     }
 
     /**
-     * Set the source type (response or trigger)
+     * Test if the source if of a given type.
      *
-     * @param string $type source type (response or trigger).
+     * @param string $type Type eithert trigger or response.
      *
-     * @return void
+     * @return bool
      */
-    public function setSourceType(string $type = ""): void
+    public function isSourceOfType(string $type): bool
     {
-        $this->sourceType = $type;
+        return ($this->sourceType == $type);
     }
 
     /**
@@ -98,107 +87,26 @@ abstract class Tag implements TagContract
     }
 
     /**
-     * Detect a tag and its value.
-     *
-     * @param string $content The string to parse.
-     *
-     * @deprecated
-     * @return array
-     */
-    private function _parseTag(string $content, string $tagName): array
-    {
-        $tag = "";
-        $len = strlen($content);
-        $reminder = '';
-
-        for ($i = 0; $i < $len; $i++) {
-            if (strtolower($tag) === strtolower($tagName)) {
-                $reminder = substr($content, $i + 1);
-                break;
-            }
-
-            if ($content[$i] === ' ') {
-                $reminder = substr($content, $i + 1);
-                break;
-            } elseif ($content[$i] === '>') {
-                $reminder = substr($content, $i + 1);
-                return ['response' => "<" . $tag . ">", 'reminder' => $reminder];
-            }
-
-            $tag .= $content[$i];
-        }
-
-        $result = $this->secureSource($reminder, $tagName, ">");
-        $reminder = $result['reminder'];
-
-        $response = (isset($tags[$tag]) === true) ? $result['response'] : "<" . $tag . " " . $result['response'] . ">";
-
-        return ['response' => $response, 'reminder' => $reminder];
-    }
-
-    /**
-     * Parse Tags if html is used.
-     *
-     * @param string $content The content string.
-     * @param string $tagName The tag to parse.
-     * @param string $endTag  The endTag.
-     *
-     * @deprecated
-     * @return array
-     */
-    public function secureSource(string $content, string $tagName, string $endTag = ''): array
-    {
-
-        $response = '';
-        $reminder = $content;
-        $nextTag = strpos($reminder, '<');
-        $nextEnd = $endTag ? strpos($reminder, $endTag) : strlen($reminder);
-
-        while ($reminder !== '' && $nextTag > -1 && $nextTag < $nextEnd) {
-            $response .= substr($reminder, 0, $nextTag);
-            $reminder = substr($reminder, $nextTag + 1);
-
-            $result = $this->_parseTag($reminder, $tagName);
-
-            $response .= $result['response'];
-            $reminder = $result['reminder'];
-            $nextTag = strpos($reminder, '<');
-            $nextEnd = $endTag ? strpos($reminder, $endTag) : strlen($reminder);
-        }
-
-        $response .= substr($reminder, 0, $nextEnd);
-        $reminder = substr($nextEnd, $nextEnd + strlen($endTag));
-
-        return ['response' => $response, 'reminder' => $reminder];
-    }
-
-
-    /**
-     * Does the source have any matches?
-     *
-     * @param string $source
-     *
+     * @param Node $node
      * @return bool
      */
-    protected function hasMatches(string $source): bool
+    public function isMatching(Node $node): bool
     {
-        return $this->matchesPattern($this->pattern, $source);
+        return $this->matchesPattern($this->pattern, $node->getValue());
     }
 
     /**
-     * Get the regular expression matches from the source.
-     *
-     * @param string $source
-     *
-     * @return array[]
+     * @param Node $node
+     * @return array|array[]|bool
      */
-    protected function getMatches(string $source): array
-    {
-        return $this->getMatchesFromPattern($this->pattern, $source) ?? [];
+    public function getMatches(Node $node) {
+        return $this->getMatchesFromPattern($this->pattern, $node->getValue());
     }
 
     /**
-     * @return mixed
+     * @param \Axiom\Rivescript\Cortex\Commands\Command $command
+     *
+     * @return void
      */
-    abstract public function getTagName();
+    abstract public function parse(Command $command): void;
 }

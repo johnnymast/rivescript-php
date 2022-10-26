@@ -11,13 +11,15 @@
 namespace Axiom\Rivescript\Cortex;
 
 use Axiom\Collections\Collection;
+use Axiom\Rivescript\Cortex\Commands\TriggerCommand;
+use Axiom\Rivescript\Cortex\Tags\Tag;
 
 /**
  * Topic class
  *
  * Stores information about a topic.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext
@@ -45,7 +47,7 @@ class Topic
     /**
      * The responses for this Topic.
      *
-     * @var Collection<string, mixed>
+     * @var Collection<string, TriggerCommand>
      */
     public Collection $responses;
 
@@ -70,6 +72,19 @@ class Topic
     }
 
     /**
+     * Addd a trigger to this topic.
+     *
+     * @param \Axiom\Rivescript\Cortex\Commands\TriggerCommand $trigger
+     *
+     * @return void
+     */
+    public function addTrigger(TriggerCommand $trigger): void
+    {
+        $this->triggers->push($trigger);
+        $this->sortTriggers();
+    }
+
+    /**
      * Return triggers associated with this branch.
      *
      * @return Collection<string, mixed>
@@ -90,21 +105,52 @@ class Topic
     }
 
     /**
-     * Sort triggers based on type and word count from
-     * largest to smallest.
+     * Sorting +Triggers
+     * Triggers should be sorted in a "most specific first" order. That is:
      *
-     * @param \Axiom\Collections\Collection $triggers
+     * 1. Atomic triggers first. Sort them so that the triggers with the most amount
+     * of words are on top. For multiple triggers with the same amount of words,
+     * sort them by length, and then alphabetically if there are still matches
+     * in length.
+     * 2. Sort triggers that contain optionals in their triggers next. Sort them in
+     * the same manner as the atomic triggers.
+     * 3. Sort triggers containing wildcards next. Sort them by the number of words
+     * that aren't wildcards. The order of wildcard sorting should be as follows:
      *
-     * @return \Axiom\Collections\Collection
+     * A. Alphabetic wildcards (_)
+     * B. Numeric wildcards (#)
+     * C. Global wildcards (*)
+     *
+     * 4. The very bottom of the list will be a trigger that simply matches * by
+     * itself, if it exists. If triggers of only _ or only # exist, sort them in
+     * the same order as in step 3.
+     *
+     * Sorting %PreviousCommand
+     * % PreviousCommand triggers should be sorted in the same manner as + Triggers, and associated with the reply
+     * group that they belong to (creating pseudotopics for each % PreviousCommand is a good way to go).
+     *
+     * @return void
      */
-    public function sortTriggers(Collection $triggers): Collection
+    public function sortTriggers(): void
     {
-        $triggers = $this->determineWordCount($triggers);
-        $triggers = $this->determineTypeCount($triggers);
+        $triggers = $this->sortTriggersByType($this->triggers);
+        // TODO:
+        // $triggers = $this->sortTriggersByWordCount($triggers);
 
-        return $triggers->sort(function ($current, $previous) {
+        $this->triggers = $triggers->sort(function ($current, $previous) {
             return ($current->getOrder() < $previous->getOrder()) ? -1 : 1;
         })->reverse();
+
+
+        $index = 1;
+        $triggers->each(function ($trigger) use (&$index) {
+            synapse()->rivescript->verbose(":index) :value", [
+                'index' => $index,
+                'value' => $trigger->node->getValue(),
+            ]);
+
+            $index++;
+        });
     }
 
     /**
@@ -114,31 +160,39 @@ class Topic
      *
      * @return Collection<array>
      */
-    protected function determineTypeCount(Collection $triggers): Collection
+    protected function sortTriggersByType(Collection $triggers): Collection
     {
         return $triggers->each(function (&$trigger) use ($triggers) {
 
-            $order = $trigger->getOrder();
-            $type = $trigger->getType();
+            $order = 4000000;
 
-            switch ($type) {
-                case 'atomic':
-                    $order += 4000000;
-                    break;
-                case 'alphabetic':
-                    $order += 3000000;
-                    break;
-                case 'numeric':
-                    $order += 2000000;
-                    break;
-                case 'global':
-                    $order += 1000000;
-                    break;
+            if ($trigger->isFullyAtomic() === false) {
+
+                if ($trigger->hasOptionals() === true) {
+                    $order = 3000000;
+                } else {
+                    $order = 2000000;
+                }
             }
 
             $trigger->setOrder($order);
-//            $triggers->put($trigger, $data);
         });
+    }
+
+    public function detectTrigger(): TriggerCommand|null
+    {
+
+        /** @var TriggerCommand $trigger */
+        foreach ($this->triggers as $trigger) {
+            TagRunner::run(Tag::TRIGGER, $trigger);
+            $value = $trigger->parse();
+
+            if ($value) {
+                return $trigger;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -149,15 +203,26 @@ class Topic
      *
      * @return Collection<array>
      */
-    protected function determineWordCount(Collection $triggers): Collection
+    protected function sortTriggersByWordCount(Collection $triggers): Collection
     {
 
         foreach ($triggers as &$trigger) {
-            $trigger->setOrder(count(explode(' ', $trigger->getText())));
+            if ($trigger->getType() === 'atomic' || $trigger->hasOptionals() === true) {
+                $trigger->setOrder(count(explode(' ', $trigger->getNode()->getValue())));
+            }
         }
 
-
         return $triggers;
+    }
+
+    /**
+     * Return the name of the topic.
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function isBegin(): bool

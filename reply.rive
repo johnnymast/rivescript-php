@@ -1,0 +1,29 @@
+! global verbose = 1
+! global debug = 1
+
+! array colors = red green blue cyan magenta yellow black white orange brown
+! array more = more
+! array arrray3 = more
+
+! var gender    = male
+
+
++ i like *
+- yes <star> is nice. Because of <star1> :).
+
+
++ i hate * but i like *
+- yes <star> is nasty. but <star1> (<star>) is awesome <star2>.
+
++ hello bot
+- hello human
+
+
+
+
+
+
+
+
+- *
++ i dont understand

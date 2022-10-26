@@ -10,13 +10,27 @@
 
 namespace Axiom\Rivescript\Cortex;
 
+use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\Commands\CommentCommand;
+use Axiom\Rivescript\Cortex\Commands\ConditionCommand;
+use Axiom\Rivescript\Cortex\Commands\ContinueCommand;
+use Axiom\Rivescript\Cortex\Commands\DefinitionCommand;
+use Axiom\Rivescript\Cortex\Commands\LabelCommand;
+use Axiom\Rivescript\Cortex\Commands\PreviousCommand;
+use Axiom\Rivescript\Cortex\Commands\RedirectCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\UnknownCommand;
+use Axiom\Rivescript\Cortex\Commands\TriggerCommand;
+use Axiom\Rivescript\Cortex\Traits\Regex;
+use Axiom\Rivescript\Utils\Str;
+
 /**
  * Node class
  *
  * The Node class stores information about a parsed
  * line from the script.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext
@@ -27,61 +41,57 @@ namespace Axiom\Rivescript\Cortex;
  */
 class Node
 {
+    use Regex;
+
     /**
-     * The source string for the node.
+     * The string on the line.
+     *
+     * @var string
+     */
+    protected string $original = '';
+
+    /**
+     * The string on the line.
      *
      * @var string
      */
     protected string $source = '';
 
     /**
-     * The line number of the node source.
-     *
-     * @var int
-     */
-    protected int $number = 0;
-
-    /**
-     * The command symbol.
-     *
-     * @var string
-     */
-    protected string $command = '';
-
-    /**
-     * The source without the command symbol.
+     * The command string.
      *
      * @var string
      */
     protected string $value = '';
 
     /**
-     * Is this line part of a docblock.
+     * Alterations will be done on
+     * this string.
      *
-     * @var bool
+     * @var string
      */
-    protected bool $isInterrupted = false;
+    protected string $content = '';
 
     /**
-     * Is this node a comment.
+     * The line number of the line.
      *
-     * @var bool
+     * @var int
      */
-    protected bool $isComment = false;
+    protected int $lineNumber = 0;
 
     /**
-     * Is this an empty line.
+     * This will be the command tag +,-,^ etc.
      *
-     * @var bool
+     * @var string
      */
-    public bool $isEmpty = false;
+    protected string $tag = '';
 
     /**
-     * Is UTF8 modes enabled.
+     * The class of the command type.
      *
-     * @var bool
+     * @var ?Command
      */
-    protected bool $allowUtf8 = false;
+    protected ?Command $command = null;
 
     /**
      * Create a new Source instance.
@@ -91,269 +101,127 @@ class Node
      */
     public function __construct(string $source, int $number)
     {
-        $this->source = remove_whitespace($source);
-        $this->number = $number;
+        $this->original = $source;
+        $this->source = Str::removeWhitespace($this->original);
 
-        $this->determineEmpty();
-        $this->determineComment();
-        $this->determineCommand();
-        $this->determineValue();
+        $this->lineNumber = $number;
+
+        $this->command = $this->detectCommand();
     }
 
     /**
-     * Returns the node's command trigger.
+     * Return the line string
      *
      * @return string
      */
-    public function command(): string
-    {
-        return $this->command;
-    }
-
-    /**
-     * Returns the node's value.
-     *
-     * @return string
-     */
-    public function value(): string
-    {
-        return $this->value;
-    }
-
-    /**
-     * Returns the node's source.
-     *
-     * @return string
-     */
-    public function source(): string
+    public function getSource(): string
     {
         return $this->source;
     }
 
     /**
-     * Returns the node's line number.
-     *
-     * @return int
-     */
-    public function number(): int
-    {
-        return $this->number;
-    }
-
-    public function isEmpty(): bool
-    {
-        return $this->isEmpty;
-    }
-
-    /**
-     * Returns true if node is a comment.
-     *
-     * @return bool
-     */
-    public function isComment(): bool
-    {
-        return $this->isComment;
-    }
-
-    /**
-     * Returns true is node has been interrupted.
-     *
-     * @return bool
-     */
-    public function isInterrupted(): bool
-    {
-        return $this->isInterrupted;
-    }
-
-    /**
-     * Determine the command type of the node.
-     *
-     * @return void
-     */
-    protected function determineCommand(): void
-    {
-        if ($this->source === '') {
-            $this->isInterrupted = true;
-
-            return;
-        }
-
-        $this->command = mb_substr($this->source, 0, 1);
-    }
-
-    protected function determineEmpty(): void
-    {
-        $this->isEmpty = empty(trim($this->source()));
-    }
-
-    /**
-     * Determine if the current node source is a comment.
-     *
-     * @return void
-     */
-    protected function determineComment(): void
-    {
-        if (starts_with($this->source, '//')) {
-            $this->isInterrupted = true;
-        } elseif (starts_with($this->source, '#')) {
-            log_warning('Using the # symbol for comments is deprecated');
-            $this->isInterrupted = true;
-        } elseif (starts_with($this->source, '/*')) {
-            if (ends_with($this->source, '*/')) {
-                return;
-            }
-            $this->isComment = true;
-        } elseif (ends_with($this->source, '*/')) {
-            $this->isComment = false;
-        }
-    }
-
-    /**
-     * Determine the value of the node.
-     *
-     * @return void
-     */
-    protected function determineValue(): void
-    {
-        $this->value = trim(mb_substr($this->source, 1));
-    }
-
-    /**
-     * Enable the UTF8 mode.
-     *
-     * @param bool $allowUtf8 True of false.
-     */
-    public function setAllowUtf8(bool $allowUtf8): void
-    {
-        $this->allowUtf8 = $allowUtf8;
-    }
-
-    /**
-     * Check the syntax
+     * Return resulting command string
      *
      * @return string
      */
-    public function checkSyntax(): string
+    public function getValue(): string
     {
-        if (starts_with($this->source, '!')) {
-            # ! Definition
-            #   - Must be formatted like this:
-            #     ! type name = value
-            #     OR
-            #     ! type = value
-            #   - Type options are NOT enforceable, for future compatibility; if RiveScript
-            #     encounters a new type that it can't handle, it can safely warn and skip it.
-            if ($this->matchesPattern("/^.+(?:\s+.+|)\s*=\s*.+?$/", $this->source) === false) {
-                return "Invalid format for !Definition line: must be '! type name = value' OR '! type = value'";
-            }
-        } elseif (starts_with($this->source, '>')) {
-            # > Label
-            #   - The "begin" label must have only one argument ("begin")
-            #   - "topic" labels must be lowercase but can inherit other topics ([A-Za-z0-9_\s])
-            #   - "object" labels follow the same rules as "topic" labels, but don't need be lowercase
-            if ($this->matchesPattern("/^begin/", $this->value) === true
-                && $this->matchesPattern("/^begin$/", $this->value) === false) {
-                return "The 'begin' label takes no additional arguments, should be verbatim '> begin'";
-            } elseif ($this->matchesPattern("/^topic/", $this->value) === true
-                && $this->matchesPattern("/[^a-z0-9_\-\s]/", $this->value) === true) {
-                return "Topics should be lowercased and contain only numbers and letters!";
-            } elseif ($this->matchesPattern("/^object/", $this->value) === true
-                && $this->matchesPattern("/[^a-z0-9_\-\s]/", $this->value) === true) {
-                return "Objects can only contain numbers and lowercase letters!";
-            }
-        } elseif (starts_with($this->source, '+') || starts_with($this->source, '%')
-            || starts_with($this->source, '@')) {
-            # + Trigger, % Previous, @ Redirect
-            #   This one is strict. The triggers are to be run through Perl's regular expression
-            #   engine. Therefore, it should be acceptable by the regexp engine.
-            #   - Entirely lowercase
-            #   - No symbols except: ( | ) [ ] * _ # @ { } < > =
-            #   - All brackets should be matched
+        return $this->value;
+    }
 
-            if ($this->allowUtf8 === true) {
-                if ($this->matchesPattern("/[A-Z\\.]/", $this->value) === true) {
-                    return "Triggers can't contain uppercase letters, backslashes or dots in UTF-8 mode.";
-                }
-            } elseif ($this->matchesPattern("/[^a-z0-9(\|)\[\]*_#\@{}<>=\s]/", $this->value) === true) {
-                return "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =";
-            }
-
-            $parens = 0; # Open parenthesis
-            $square = 0; # Open square brackets
-            $curly = 0; # Open curly brackets
-            $chevron = 0; # Open angled brackets
-            $len = strlen($this->value);
-
-            for ($i = 0; $i < $len; $i++) {
-                $chr = $this->value[$i];
-
-                # Count brackets.
-                if ($chr === '(') {
-                    $parens++;
-                }
-                if ($chr === ')') {
-                    $parens--;
-                }
-                if ($chr === '[') {
-                    $square++;
-                }
-                if ($chr === ']') {
-                    $square--;
-                }
-                if ($chr === '{') {
-                    $curly++;
-                }
-                if ($chr === '}') {
-                    $curly--;
-                }
-                if ($chr === '<') {
-                    $chevron++;
-                }
-                if ($chr === '>') {
-                    $chevron--;
-                }
-            }
-
-            if ($parens) {
-                return "Unmatched " . ($parens > 0 ? "left" : "right") . " parenthesis bracket ()";
-            }
-            if ($square) {
-                return "Unmatched " . ($square > 0 ? "left" : "right") . " square bracket []";
-            }
-            if ($curly) {
-                return "Unmatched " . ($curly > 0 ? "left" : "right") . " curly bracket {}";
-            }
-            if ($chevron) {
-                return "Unmatched " . ($chevron > 0 ? "left" : "right") . " angled bracket <>";
-            }
-        } elseif (starts_with($this->source, '-') || starts_with($this->source, '^')
-            || starts_with($this->source, '/')) {
-            # - Trigger, ^ Continue, / Comment
-            # These commands take verbatim arguments, so their syntax is loose.
-        } elseif (starts_with($this->source, '*') === true && $this->isComment() === false) {
-            # * Condition
-            #   Syntax for a conditional is as follows:
-            #   * value symbol value => response
-            if ($this->matchesPattern("/.+?\s(==|eq|!=|ne|<>|<|<=|>|>=)\s.+?=>.+?$/", $this->value) === false) {
-                return "Invalid format for !Condition: should be like `* value symbol value => response`";
-            }
-        }
-
-        return "";
+    public function getContent(): string {
+        return $this->content;
     }
 
     /**
-     * Check for patterns in a given string.
+     * This will be the command symbol.
      *
-     * @param string $regex  The pattern to detect.
-     * @param string $string The string that could contain the pattern.
-     *
-     * @return bool
+     * @return string
      */
-    private function matchesPattern(string $regex = '', string $string = ''): bool
+    public function getTag(): string
     {
-        preg_match_all($regex, $string, $matches);
+        return $this->tag;
+    }
 
-        return isset($matches[0][0]);
+    /**
+     * Return the original line source. This
+     * may still include whitespace symbols.
+     *
+     * @return string
+     */
+    public function getOriginalSource(): string
+    {
+        return $this->original;
+    }
+
+    /**
+     * Return the line number of this line.
+     *
+     * @return int
+     */
+    public function getLineNumber(): int
+    {
+        return $this->lineNumber;
+    }
+
+    /**
+     * Return the command for this line.
+     *
+     * @return \Axiom\Rivescript\Cortex\Commands\Command
+     */
+    public function getCommand(): Command
+    {
+        return $this->command;
+    }
+
+    /**
+     * Detect the type of command.
+     *
+     * @return Command
+     */
+    private function detectCommand(): Command
+    {
+        $this->tag = current(explode(" ", $this->source));
+
+        $class = match ($this->tag) {
+            '!' => DefinitionCommand::class,
+            '>' => LabelCommand::class,
+            '+' => TriggerCommand::class,
+            '-' => ResponseCommand::class,
+            '%' => PreviousCommand::class,
+            '^' => ContinueCommand::class,
+            '@' => RedirectCommand::class,
+            '*' => ConditionCommand::class,
+            "//", '#' => CommentCommand::class,
+            default => UnknownCommand::class,
+        };
+
+        $this->value = $this->content = trim(mb_substr($this->source, 1));
+
+        return new $class($this);;
+    }
+
+
+    /**
+     * Update the content.
+     *
+     * @param string $content The value to set.
+     *
+     * @return void
+     */
+    public function setContent(string $content): void {
+        $this->content = $content;
+    }
+
+    /**
+     * Update the value.
+     *
+     * @param string $value The value to set.
+     *
+     * @return void
+     */
+    public function setValue(string $value): void
+    {
+        $this->value = $value;
     }
 }

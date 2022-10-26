@@ -19,7 +19,7 @@ use Axiom\Rivescript\Cortex\MiniStack\MiniStack;
  * The memory class stores information about different
  * parts of the brain (short or long term).
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext
@@ -97,9 +97,9 @@ class Memory
     /**
      * A Collection of the Tags.
      *
-     * @var Collection<string, \Axiom\Rivescript\Cortex\Tags\Tag>
+     * @var Collection<string, object>
      */
-    protected $tags;
+    protected Collection $tags;
 
     /**
      * Create a new Memory instance.

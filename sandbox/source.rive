@@ -1,0 +1,14 @@
+> object encode perl
+    my ($obj,$method,@args) = @_;
+    my $msg = join(" ",@args);
+
+    use Digest::MD5 qw(md5_hex);
+    use MIME::Base64 qw(encode_base64);
+
+    if ($method eq 'md5') {
+      return md5_hex($msg);
+    }
+    else {
+      return encode_base64($msg);
+    }
+ < object

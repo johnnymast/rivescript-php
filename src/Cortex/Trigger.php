@@ -14,12 +14,12 @@ use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
 
 /**
- * Trigger class
+ * TriggerCommand class
  *
  * This class contains information about
- * a Trigger itself.
+ * a TriggerCommand itself.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext\Commands
@@ -37,22 +37,47 @@ class Trigger
      */
     public string $text = '';
 
+    /**
+     * The topic the TriggerCommand belongs in.
+     *
+     * @var string
+     */
     public string $topic = '';
 
+    /**
+     * The type of trigger atom/weighted etc.
+     *
+     * @var string
+     */
     public string $type = '';
 
+    /**
+     * The weight of the TriggerCommand.
+     *
+     * @var int
+     */
     public int $order = 0;
 
+    /**
+     * A reference to the ResponseCommand queue.
+     *
+     * @var \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue
+     */
     public ResponseQueue $queue;
 
+    /**
+     * If this TriggerCommand is a redirect this will store
+     * the target trigger string.
+     *
+     * @var string
+     */
     public string $redirect = '';
-
 
     /**
      * @param string                                               $text
      * @param string                                               $topic
      * @param string                                               $type
-     * @param \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue $responses
+     * @param \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue $queue
      */
     public function __construct(string $text, string $topic, string $type, ResponseQueue $queue)
     {
@@ -62,12 +87,23 @@ class Trigger
         $this->queue = $queue;
     }
 
+    /**
+     * Indicate if this trigger has responses
+     * true or false.
+     *
+     * @return bool
+     */
     public function hasResponses(): bool
     {
-        return ($this->getQueue()->getAttachedResponses()->count() > 0);
+        return ($this->getQueue()->getResponses()->count() > 0);
     }
 
-    public function getQueue(): Collection
+    /**
+     * Return the response queue.
+     *
+     * @return \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue
+     */
+    public function getQueue(): ResponseQueue
     {
         return $this->queue;
     }
@@ -85,7 +121,7 @@ class Trigger
         return $this->topic;
     }
 
-    public function setRedirect(string $redirect)
+    public function setRedirect(string $redirect): void
     {
         $this->redirect = $redirect;
     }

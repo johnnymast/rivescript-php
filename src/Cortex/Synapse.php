@@ -10,20 +10,22 @@
 
 namespace Axiom\Rivescript\Cortex;
 
+use Axiom\Rivescript\Rivescript;
+
 /**
  * Synapse class
  *
  * The Synapse is used in the brain as a storage
  * container for all kinds of information.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @property \Axiom\Collections\Collection $commands
  * @property \Axiom\Collections\Collection $triggers
- * @property \Axiom\Collections\Collection $Tags
+ * @property \Axiom\Collections\Collection $tags
  * @property \Axiom\Collections\Collection $responses
  * @property \Axiom\Collections\Collection $conditions
- * @property \Axiom\Rivescript\Rivescript  $rivescript
+ * @property \Axiom\Rivescript\Rivescript  $rivescript-cli
  * @property Memory                        $memory
  * @property Brain                         $brain
  * @property Input                         $input
@@ -38,9 +40,16 @@ namespace Axiom\Rivescript\Cortex;
 class Synapse
 {
     /**
+     * Instance of the main rivescript class.
+     *
+     * @var \Axiom\Rivescript\Rivescript
+     */
+    public Rivescript $rivescript;
+
+    /**
      * Object hash map.
      *
-     * @var array[]
+     * @var array<string>
      */
     private array $map = [];
 
@@ -77,7 +86,7 @@ class Synapse
      *
      * @return void
      */
-    public function __set(string $key, $value): void
+    public function __set(string $key, mixed $value): void
     {
         $this->map[$key] = $value;
     }
@@ -99,10 +108,14 @@ class Synapse
      *
      * @param string $key The key to use to store a value.
      *
-     * @return array
+     * @return string|null
      */
-    public function __get(string $key)
+    public function __get(string $key): mixed
     {
-        return $this->map[$key];
+        if (isset($this->map[$key]) === true) {
+            return $this->map[$key];
+        }
+
+        return null;
     }
 }

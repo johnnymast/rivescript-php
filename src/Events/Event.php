@@ -16,7 +16,7 @@ namespace Axiom\Rivescript\Events;
  * This class defines some default Rivescript-php
  * events.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Events
@@ -28,12 +28,17 @@ namespace Axiom\Rivescript\Events;
 class Event
 {
     /**
+     * A verbose statement.
+     */
+    public const SAY = 'say';
+
+    /**
      * General debug statement.
      */
     public const DEBUG = 'debug';
 
     /**
-     * A verbose statement.
+     * A verbose debug statement.
      */
     public const DEBUG_VERBOSE = 'debug_verbose';
 
@@ -42,4 +47,8 @@ class Event
      */
     public const DEBUG_WARNING = 'debug_warning';
 
+    /**
+     * A error statement
+     */
+    public const DEBUG_ERROR = 'debug_error';
 }

@@ -10,14 +10,18 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Input as SourceInput;
+use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\RegExpressions;
 
 /**
  * Id class
  *
- * This class is responsible parsing the <id> tag.
+ * The Id class is responsible for parsing the <id> tag.
+ * It will replace the <id> tag with the client-id.
  *
- * PHP version 7.4 and higher.
+ * @see      https://www.rivescript.com/wd/RiveScript#id
+ *
+ * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Cortext\Tags
@@ -26,54 +30,35 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Id extends Tag
+class Id extends Tag implements TagInterface
 {
+
     /**
      * Determines where this tag is allowed to
      * be used.
      *
      * @var array<string>
      */
-    protected array $allowedSources = ["response"];
+    protected array $allowedSources = [self::RESPONSE];
 
     /**
-     * Regex expression pattern.
+     * The pattern for this tag.
      *
      * @var string
      */
-    protected string $pattern = "/<id>/u";
+    protected string $pattern = RegExpressions::TAG_ID;
 
     /**
-     * Parse the source.
+     * @param \Axiom\Rivescript\Cortex\Commands\Command $command
      *
-     * @param  string       $source  The string containing the Tag.
-     * @param  SourceInput  $input   The input information.
-     *
-     * @return string
+     * @return void
      */
-    public function parse(string $source, SourceInput $input): string
+    public function parse(Command $command): void
     {
-        if (!$this->sourceAllowed()) {
-            return $source;
+        if ($this->isSourceOfType(self::RESPONSE)) {
+            $content = $command->getNode()->getValue();
+            $content = str_replace("<id>", synapse()->input->user(), $content);
+            $command->setContent($content);
         }
-
-        if ($this->hasMatches($source)) {
-            $matches = $this->getMatches($source);
-            foreach ($matches as $match) {
-                $source = str_replace($match[0], $input->user(), $source);
-            }
-        }
-
-        return $source;
-    }
-
-    /**
-     * Return the tag that the class represents.
-     *
-     * @return string
-     */
-    public function getTagName(): string
-    {
-        return "id";
     }
 }
