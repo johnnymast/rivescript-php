@@ -43,23 +43,6 @@ class Star extends Tag implements TagInterface
     protected array $allowedSources = [self::RESPONSE];
 
     /**
-     * Star signs arnt they nice :)
-     *
-     * @var array
-     */
-    protected array $stars = [
-        ['star', 'star1'],
-        'star2',
-        'star3',
-        'star4',
-        'star5',
-        'star6',
-        'star7',
-        'star8',
-        'star9'
-    ];
-
-    /**
      * The pattern for this tag.
      *
      * @var string
@@ -81,51 +64,9 @@ class Star extends Tag implements TagInterface
              * @var \Axiom\Rivescript\Cortex\Commands\ResponseCommand $command ;
              */
             $trigger = $command->getTrigger();
-            $wildcards = $trigger->getWildcards();
-            $input = synapse()->input->source();
-            $node = $trigger->getNode()->getValue();
 
-            /**
-             * Wild cards are stored ordered by position ascending
-             * but if we replace below from the start of the string to
-             * the end it ends with invalid results. So reverse te array
-             * and replace from the end of the node to the front.
-             */
-            $wildcards = array_reverse($wildcards);
-            foreach ($wildcards as $wildcard) {
-                $position = $wildcard->getStringPosition();
-                $node = substr_replace($node, $wildcard->getTag(), $position, strlen($wildcard->getCharacter()));
-            }
+            print_r($trigger->stars);
 
-            $triggerParts = explode(' ', $node);
-            $inputParts = explode(' ', $input);
-
-            $diff = array_diff($triggerParts, $inputParts);
-            $result = [];
-
-            foreach ($diff as $key => $value) {
-                $noColon = substr($value, 1);
-                $result[$noColon] = $inputParts[$key];
-            }
-
-            $values = array_values($result);
-            $replacements = [];
-
-            foreach ($this->stars as $index => $star) {
-                if (isset($values[$index])) {
-                    if ($index == 0 && is_array($star) === true) {
-                        foreach ($star as $name) {
-                            $replacements[$name] = $values[$index];
-                        }
-                    } else {
-                        $replacements[$star] = $values[$index];
-                    }
-                }
-            }
-
-            // i hate red but i like blue
-            $content = Misc::formatString($node, $result);
-            $command->setContent($content);
         }
     }
 }

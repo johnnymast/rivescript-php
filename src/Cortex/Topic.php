@@ -134,8 +134,8 @@ class Topic
     public function sortTriggers(): void
     {
         $triggers = $this->sortTriggersByType($this->triggers);
-        // TODO:
-        // $triggers = $this->sortTriggersByWordCount($triggers);
+        // TODO: Order by word count
+//         $triggers = $this->sortTriggersByWordCount($triggers);
 
         $this->triggers = $triggers->sort(function ($current, $previous) {
             return ($current->getOrder() < $previous->getOrder()) ? -1 : 1;
@@ -162,7 +162,7 @@ class Topic
      */
     protected function sortTriggersByType(Collection $triggers): Collection
     {
-        return $triggers->each(function (&$trigger) use ($triggers) {
+        return $triggers->each(function (TriggerCommand &$trigger) {
 
             $order = 4000000;
 

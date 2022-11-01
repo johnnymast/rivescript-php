@@ -34,14 +34,14 @@ class Brain
     /**
      * A collection of topics.
      *
-     * @var array<Topic>
+     * @var Collection<Topic>
      */
     protected Collection $topics;
 
     /**
      * A collection of topics.
      *
-     * @var array<CodeObject>
+     * @var Collection<CodeObject>
      */
     protected Collection $objects;
 
@@ -91,10 +91,14 @@ class Brain
             $collectFor = null;
             $collectedContent = '';
 
+//            while (!feof($stream)) {
+//                $content .= fgets($stream);
+//            }
+
+            $str = '';
             while (!feof($stream)) {
                 $line = fgets($stream);
                 $node = new Node($line, $lineNumber++);
-//                synapse()->memory->shortTerm()->put('trigger', null);
 
                 $command = $node->getCommand();
 
@@ -146,7 +150,8 @@ class Brain
             /**
              * @deprecated
              */
-            $this->topics->each(fn(Topic $topic) => $topic->sortTriggers($topic->triggers()));
+            $this->topics->each(fn(Topic $topic) => $topic->sortTriggers());
+//            $this->topics->each(fn(Topic $topic) => $topic->sortTriggers($topic->triggers()));
         }
     }
 
@@ -171,7 +176,7 @@ class Brain
     }
 
     /**
-     * Return a codeobject.
+     * Return a code object.
      *
      * @param string|null $name The name of the topic to return.
      *
@@ -189,7 +194,7 @@ class Brain
     /**
      * Return the defined topics.
      *
-     * @return \Axiom\Collections\Collection
+     * @return \Axiom\Collections\Collection<Topic>
      */
     public function topics(): Collection
     {
@@ -199,9 +204,9 @@ class Brain
     /**
      * Return all defined code objects.
      *
-     * @return \Axiom\Rivescript\Cortex\CodeObject[]
+     * @return Collection<CodeObject>
      */
-    public function codeObjects(): array
+    public function codeObjects(): Collection
     {
         return $this->objects;
     }

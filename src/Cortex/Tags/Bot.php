@@ -60,25 +60,29 @@ class Bot extends Tag implements TagInterface
             $content = $command->getNode()->getValue();
 
             foreach ($matches as $match) {
-                [$string, $key, $value] = $match;
+                $string = $match[0];
+                $isSetter = !empty($match[1]);
 
-                if (isset($match[3])) {
-                    $key = $match[3];
-                }
+                if ($isSetter === true) {
+                    $value = trim($match[2]);
+                    $key = trim($match[1]);
 
-                if (!empty($value)) {
-                    $content = str_replace(["&#60;", "&#62;"], ["<", ">"], $content);
                     synapse()->memory->variables()->put($key, $value);
+
                     $content = str_replace($string, '', $content);
+
                 } else {
+                    $value = "undefined";
+                    $key = trim($match[3]);
+
                     if (synapse()->memory->variables()->has($key)) {
                         $value = synapse()->memory->variables()->get($key);
-                        $content = str_replace($string, $value ?? "undefined", $content);
                     }
+
+                    $content = str_replace($string, $value, $content);
                 }
             }
 
-            echo "CONTENT: {$content}\n";
             $command->setContent($content);
         }
     }

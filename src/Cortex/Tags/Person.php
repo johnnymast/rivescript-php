@@ -15,9 +15,9 @@ use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\RegExpressions;
 
 /**
- * Env class
+ * Person class
  *
- * The Env class is responsible for parsing the {person}...{/person}, <person> tags.
+ * The Person class is responsible for parsing the {person}...{/person}, <person> tags.
  *
  * @see      https://www.rivescript.com/wd/RiveScript#person-...-person-person
  *
@@ -48,76 +48,6 @@ class Person extends Tag implements TagInterface
      */
     protected string $pattern = RegExpressions::TAG_PERSON;
 
-    /**
-     * @param \Axiom\Rivescript\Cortex\Commands\Command $command
-     * @return array
-     * @deprecated Put this in a trait
-     *
-     */
-    private function getStars(Command $command)
-    {
-
-        // FIXME BUG IF STAR VALUE HES A SPACE like "you are" it will return you
-        $stars = [
-            ['star', 'star1'],
-            'star2',
-            'star3',
-            'star4',
-            'star5',
-            'star6',
-            'star7',
-            'star8',
-            'star9'
-        ];
-
-        /**
-         * @var \Axiom\Rivescript\Cortex\Commands\ResponseCommand $command ;
-         */
-        $trigger = $command->getTrigger();
-        $wildcards = $trigger->getWildcards();
-        $input = synapse()->input->source();
-        $node = $trigger->getNode()->getValue();
-
-        /**
-         * Wild cards are stored ordered by position ascending
-         * but if we replace below from the start of the string to
-         * the end it ends with invalid results. So reverse te array
-         * and replace from the end of the node to the front.
-         */
-        $wildcards = array_reverse($wildcards);
-        foreach ($wildcards as $wildcard) {
-            $position = $wildcard->getStringPosition();
-            $node = substr_replace($node, $wildcard->getTag(), $position, strlen($wildcard->getCharacter()));
-        }
-
-        $triggerParts = explode(' ', $node);
-        $inputParts = explode(' ', $input);
-
-        $diff = array_diff($triggerParts, $inputParts);
-        $result = [];
-
-        foreach ($diff as $key => $value) {
-            $noColon = substr($value, 1);
-            $result[$noColon] = $inputParts[$key];
-        }
-
-        $values = array_values($result);
-        $replacements = [];
-
-        foreach ($stars as $index => $star) {
-            if (isset($values[$index])) {
-                if ($index == 0 && is_array($star) === true) {
-                    foreach ($star as $name) {
-                        $replacements[$name] = $values[$index];
-                    }
-                } else {
-                    $replacements[$star] = $values[$index];
-                }
-            }
-        }
-
-        return $replacements;
-    }
 
     /**
      * @param \Axiom\Rivescript\Cortex\Commands\Command $command
@@ -129,9 +59,20 @@ class Person extends Tag implements TagInterface
         if ($this->isSourceOfType(self::RESPONSE)) {
 
             $matches = $this->getMatches($command->getNode());
+            $original = synapse()->input->original();
             $content = $command->getNode()->getValue();
 
+            $patterns = synapse()->memory->person()->keys()->all();
+            $replacements = synapse()->memory->person()->values()->all();
+            $unescaped = [];
+
+            foreach ($patterns as $index => $pattern) {
+                $unescaped[$index] = $pattern;
+                $patterns[$index] = "/\b" . $pattern . "\b/i";
+            }
+
             foreach ($matches as $match) {
+                $didReplaceWith = [];
                 $hasCurly = ($match[1] === '{');
                 $text = $match[0];
 
@@ -140,30 +81,49 @@ class Person extends Tag implements TagInterface
 
                     if (synapse()->memory->person()->has($context)) {
                         $value = synapse()->memory->person()->get($context);
+
+                        if (count($patterns) > 0) {
+                            foreach ($patterns as $index => $pattern) {
+                                $value = preg_replace($pattern, $replacements[$index], $value);// ?? 'undefined';
+                            }
+                        }
+
                         $content = str_replace($text, $value, $content);
                     }
                 } else {
                     /**
-                     * @var ResponseCommand $response
+                     * @var ResponseCommand $command
                      */
-                    $response = $command;
-                    $trigger = $response->getTrigger();
+                    $trigger = $command->getTrigger();
 
-                    if ($trigger->hasWildcards()) {
-                        $stars = $this->getStars($command);
+                    if ($trigger->hasStars()) {
+                        if ($trigger->stars->has('<star>')) {
+                            $value = $trigger->stars->get('<star>');
 
-                        if (isset($stars['star'])) {
-                            $context = $stars['star'];
+                            if (count($patterns) > 0) {
+                                foreach ($patterns as $index => $pattern) {
+                                    echo "Checking if >{$unescaped[$index]}< was already replaced in {$original}\n";
 
-                            if (synapse()->memory->person()->has($context)) {
-                                $value = synapse()->memory->person()->get($context);
-                                $content = str_replace($text, $value, $content);
+                                    if (!in_array($unescaped[$index], $didReplaceWith)) {
+                                        if ($original == "say You are dumb") echo "NO in {$value}\n";
+                                        $value = preg_replace($pattern, $replacements[$index], $value);// ?? 'undefined';
+
+                                        $didReplaceWith[] = $replacements[$index];
+                                    } else {
+                                        if ($original == "say You are dumb") echo "YES so skipping {$pattern} in {$value}\n";
+                                    }
+                                }
                             }
+
+
+                            $content = str_replace($text, $value, $content);
                         }
                     }
                 }
-
             }
+
+
+            // FIXME: De replace mag alleen op de person tag value.
 
             $command->setContent($content);
         }

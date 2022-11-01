@@ -57,7 +57,7 @@ trait EventEmitter
      *
      * @return self
      */
-    public function emit(string $event, ...$userdata): self
+    public function emit(string $event, mixed ...$userdata): self
     {
         if (isset($this->registered[$event]) === true) {
             $set = $this->registered[$event];

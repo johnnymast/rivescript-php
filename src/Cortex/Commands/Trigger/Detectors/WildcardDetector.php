@@ -105,7 +105,7 @@ class WildcardDetector implements TriggerDetectorInterface
             usort($parsed, fn(Wildcard $current, Wildcard $previous) => $current->getStringPosition() < $previous->getStringPosition() ? -1 : 1);
 
             /**
-             * Change the <replaced0> with wildcardd0.
+             * Change the <replaced0> with wildcard0.
              */
             foreach ($parsed as $order => $wildcard) {
                 $pos = $wildcard->getStringPosition();
@@ -114,14 +114,11 @@ class WildcardDetector implements TriggerDetectorInterface
                 $value = str_replace("<replaced{$pos}>", $tag, $value);
                 $wildcard->setTag($tag);
                 $wildcard->setOrder($order);
-                $wildcard->setValue($value);
 
                 $wildcards[] = $wildcard;
                 $detected++;
             }
         }
-
-        //    $trigger->getNode()->setValue($value);
 
         if (count($wildcards) > 0) {
 

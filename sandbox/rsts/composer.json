@@ -5,7 +5,8 @@
     "require": {
         "php": ">=7.4",
         "symfony/console": "5.4.x-dev",
-        "symfony/yaml": "5.4.x-dev"
+        "symfony/yaml": "5.4.x-dev",
+        "axiom/rivescript": "@dev"
     },
     "license": "MIT",
     "authors": [

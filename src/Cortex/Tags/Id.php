@@ -56,7 +56,7 @@ class Id extends Tag implements TagInterface
     public function parse(Command $command): void
     {
         if ($this->isSourceOfType(self::RESPONSE)) {
-            $content = $command->getNode()->getValue();
+            $content = $command->getNode()->getContent();
             $content = str_replace("<id>", synapse()->input->user(), $content);
             $command->setContent($content);
         }

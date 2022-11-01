@@ -10,6 +10,7 @@
 
 namespace Axiom\Rivescript\Cortex\Commands;
 
+use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\Attributes\TriggerDetector;
 use Axiom\Rivescript\Cortex\Attributes\FindTrigger;
 use Axiom\Rivescript\Cortex\Commands\Trigger\AtomicTrigger;
@@ -79,6 +80,14 @@ class TriggerCommand extends Command
     protected array $optionals = [];
 
     /**
+     * Store the stars for this
+     * command.
+     *
+     * @var Collection<string, string>
+     */
+    public Collection $stars;
+
+    /**
      * A list of responses for this trigger.
      *
      * @var \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue
@@ -94,6 +103,7 @@ class TriggerCommand extends Command
     {
         parent::__construct($node, $syntaxErrors, $content);
 
+        $this->stars = Collection::make([]);
         $this->responses = new ResponseQueue($this);
     }
 
@@ -293,27 +303,25 @@ class TriggerCommand extends Command
                     if ($parsedTrigger === $this->getNode()->getValue()) {
                         continue;
                     }
-                    echo "Parsed trigger: {$parsedTrigger}\n";
+
                     if (@preg_match_all('/' . $parsedTrigger . '$/iu', synapse()->input->source(), $wildcards)) {
 
                         $value = $this->getNode()->getValue();
-                        echo "Value: {$value}\n";
 
 
                         $detected++;
-                      //  return $this;
+                        //  return $this;
                     }
                 }
 
                 $count = count($wildcards);
                 $value = $this->getNode()->getValue();
                 $source = synapse()->input->source();
-                echo "Detected: {$detected} vs {$count} for {$source} - Trigger: {$value} \n";
-                if ($detected == count($wildcards)-1) {
+
+                if ($detected == count($wildcards) - 1) {
                     return $this;
                 }
             }
-
 
 
 //            echo "{$this->getNode()->getValue()} is not fully attomic\n";
@@ -331,8 +339,6 @@ class TriggerCommand extends Command
     {
         $this->arrays = $arrays;
     }
-
-
 
     /**
      * Set the alternations.
@@ -412,6 +418,17 @@ class TriggerCommand extends Command
     public function hasPriority(): bool
     {
         return ($this->priority > 0);
+    }
+
+    /**
+     * Answer the question if this trigger
+     * has stars true or false.
+     *
+     * @return bool
+     */
+    public function hasStars(): bool
+    {
+        return ($this->stars->count() > 0);
     }
 
     /**

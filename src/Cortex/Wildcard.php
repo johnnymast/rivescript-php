@@ -53,7 +53,7 @@ class Wildcard
      * Array with wildcard
      * symbols.
      *
-     * @var array|string[]
+     * @var array<string, array>
      */
     public static array $types = [
         '_' => [
@@ -81,13 +81,6 @@ class Wildcard
      * @var string
      */
     protected string $tag = '';
-
-    /**
-     * The value of this wildcard.
-     *
-     * @var string
-     */
-    protected string $value = '';
 
     /**
      * @param string $character
@@ -119,7 +112,8 @@ class Wildcard
      *
      * @return string
      */
-    public function getCharacter(): string {
+    public function getCharacter(): string
+    {
         return $this->character;
     }
 
@@ -172,17 +166,6 @@ class Wildcard
     }
 
     /**
-     * Return the value for this wildcard.
-     *
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-
-    /**
      * Return the tag fore this wildcard.
      *
      * @return string
@@ -202,18 +185,6 @@ class Wildcard
     public function setOrder(int $order): void
     {
         $this->order = $order;
-    }
-
-    /**
-     * Set the value for this wildcard.
-     *
-     * @param string $value The value to set.
-     *
-     * @return void
-     */
-    public function setValue(string $value): void
-    {
-        $this->value = $value;
     }
 
     /**

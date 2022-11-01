@@ -21,6 +21,7 @@ use Axiom\Rivescript\Cortex\Commands\Definition\Version;
 use Axiom\Rivescript\Cortex\Tags\Bot;
 use Axiom\Rivescript\Cortex\Tags\Chars;
 use Axiom\Rivescript\Cortex\Tags\Env;
+use Axiom\Rivescript\Cortex\Tags\Formal;
 use Axiom\Rivescript\Cortex\Tags\Id;
 use Axiom\Rivescript\Cortex\Tags\Input;
 use Axiom\Rivescript\Cortex\Tags\Reply;
@@ -52,12 +53,17 @@ $synapse = new Axiom\Rivescript\Cortex\Synapse();
 */
 $synapse->commands = Axiom\Collections\Collection::make(
     items: [
-        Arrays::class,
-        Globals::class,
+        Sub::class,
         Person::class,
+        Globals::class,
+        // local here
+        Arrays::class,
         Variable::class,
         Version::class,
-        Sub::class,
+        // Redirect
+        // Response
+        // Topic
+
     ]
 );
 //
@@ -107,15 +113,16 @@ $synapse->tags = Axiom\Collections\Collection::make([
     // FIXME: Remove parsing the starts from the star class or it wont ever be found for tags like <person>
 
     Star::class,
-    Input::class,
-    Reply::class,
-    Id::class,
-    Chars::class,
-    Random::class,
+//    Input::class,
+//    Reply::class,
+//    Id::class,
+//    Chars::class,
+//    Random::class,
 
     Bot::class,
     Env::class,
     PersonTag::class,
+//    Formal::class,
 
     //    "BotStar",
     //    "Input",

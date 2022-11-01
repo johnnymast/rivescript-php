@@ -53,7 +53,7 @@ class Input
      * Create a new Input instance.
      *
      * @param string $source The source string.
-     * @param string $user   The user identifier.
+     * @param string $user The user identifier.
      */
     public function __construct(string $source, string $user = 'local-user')
     {
@@ -106,6 +106,7 @@ class Input
 
         $this->source = mb_strtolower($this->original);
         $this->source = preg_replace($patterns, $replacements, $this->source);
+
         $this->source = preg_replace('/[^\pL\d\s]+/u', '', $this->source);
         $this->source = remove_whitespace($this->source);
     }

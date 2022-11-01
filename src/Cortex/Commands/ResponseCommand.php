@@ -11,10 +11,12 @@
 
 namespace Axiom\Rivescript\Cortex\Commands;
 
+use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\Attributes\FindResponse;
 use Axiom\Rivescript\Cortex\Attributes\ResponseDetector;
 use Axiom\Rivescript\Cortex\Commands\Response\AtomicResponse;
 use Axiom\Rivescript\Cortex\Commands\Response\Detectors\WeightedDetector;
+use Axiom\Rivescript\Cortex\Commands\Response\Detectors\WildcardDetector;
 
 /**
  * TriggerCommand class
@@ -45,7 +47,25 @@ class ResponseCommand extends Command
      */
     protected int $weight = 0;
 
+    /**
+     * @var \Axiom\Rivescript\Cortex\Commands\TriggerCommand
+     */
     protected TriggerCommand $trigger;
+
+    /**
+     * @var array
+     */
+    protected array $stars = [
+        ['star', 'star1'],
+        'star2',
+        'star3',
+        'star4',
+        'star5',
+        'star6',
+        'star7',
+        'star8',
+        'star9'
+    ];
 
     /**
      * At this point in time continue for
@@ -86,6 +106,12 @@ class ResponseCommand extends Command
         ) ?? "atomic";
 
         /**
+         * @var \Axiom\Rivescript\Cortex\Commands\TriggerCommand $trigger
+         */
+        $trigger->attachResponse($this, $this->type);
+
+
+        /**
          * Lets run some detectors on this
          * trigger to see what it contains.
          */
@@ -94,7 +120,6 @@ class ResponseCommand extends Command
             arguments: [$this],
             classes: [
                 WeightedDetector::class,
-               // WildcardDetector::class
             ]
         );
 
@@ -109,10 +134,6 @@ class ResponseCommand extends Command
             'trigger' => $triggerText,
         ]);
 
-        /**
-         * @var \Axiom\Rivescript\Cortex\Commands\TriggerCommand $trigger
-         */
-        $trigger->attachResponse($this, $this->type);
 
         return false;
     }
@@ -171,5 +192,56 @@ class ResponseCommand extends Command
     public function getWeight(): int
     {
         return $this->weight;
+    }
+
+
+    /**
+     * @return void
+     */
+    public function invokeStars()
+    {
+
+        //if (!$this->getTrigger()->hasStars()) {
+
+        $this->getTrigger()->stars = new Collection([]);
+
+            $wildcards = [
+                '/_/' => '[^\s\d]+?',
+                '/#/' => '\\d+?',
+                '/\*/' => '.*?',
+                '/<zerowidthstar>/' => '^\*$',
+            ];
+
+            $trigger = $this->getTrigger();
+            $value = $this->getTrigger()
+                ->getNode()
+                ->getValue();
+
+            foreach ($wildcards as $pattern => $replacement) {
+                $parsedTrigger = preg_replace($pattern, '(' . $replacement . ')', $value);
+
+                if ($parsedTrigger === $value) {
+                    continue;
+                }
+
+                if (@preg_match_all('/' . $parsedTrigger . '$/iu', synapse()->input->source(), $parsed)) {
+                    array_shift($parsed);
+
+                    if (is_array($parsed)) {
+                        foreach ($this->stars as $index => $star) {
+                            if (isset($parsed[$index])) {
+                                if ($index == 0 && is_array($star) === true) {
+                                    foreach ($star as $name) {
+                                        $trigger->stars->put('<' . $name . '>', current($parsed[$index]));
+                                    }
+                                } else {
+                                    $trigger->stars->put('<' . $star . '>', current($parsed[$index]));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+       // }
     }
 }

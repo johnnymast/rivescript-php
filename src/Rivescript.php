@@ -11,8 +11,10 @@
 namespace Axiom\Rivescript;
 
 use Axiom\Rivescript\ContentLoader\ContentLoader;
+use Axiom\Rivescript\Cortex\Command\Trigger;
 use Axiom\Rivescript\Cortex\Input;
 use Axiom\Rivescript\Cortex\Output;
+use Axiom\Rivescript\Cortex\Topic;
 use Axiom\Rivescript\Events\Event;
 use Axiom\Rivescript\Events\EventEmitter;
 use Axiom\Rivescript\SessionManager\SessionManagerInterface;
@@ -118,15 +120,26 @@ class Rivescript extends ContentLoader
      * @param string $string The string of information to feed the brain.
      *
      * @throws \Axiom\Rivescript\Exceptions\ParseException
+     * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      * @return void
      */
     public function stream(string $string): void
     {
-        fseek($this->getStream(), 0);
-        rewind($this->getStream());
-
+        $this->openStream();
         $this->writeToMemory($string);
         $this->processInformation();
+        $this->sortReplies();
+        $this->closeStream();
+    }
+
+    /**
+     * Sort the replies.
+     *
+     * @return void
+     */
+    public function sortReplies(): void
+    {
+        synapse()->brain->topics()->each(fn(Topic $topic) => $topic->sortTriggers());
     }
 
     /**
@@ -187,7 +200,6 @@ class Rivescript extends ContentLoader
         $this->emit(Event::DEBUG_WARNING, $message);
     }
 
-
     /**
      * Write a error message.
      *
@@ -234,12 +246,16 @@ class Rivescript extends ContentLoader
 
         synapse()->input = new Input($msg, $user);
 
-        synapse()->memory->inputs()->push($msg);
+        synapse()->memory
+            ->inputs()
+            ->push($msg);
 
         $output = (new Output())
             ->processInput();
 
-        synapse()->memory->replies()->push($output);
+        synapse()->memory
+            ->replies()
+            ->push($output);
 
         return $output;
     }

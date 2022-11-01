@@ -73,7 +73,7 @@ class Reply extends Tag implements TagInterface
     public function parse(Command $command): void
     {
         if ($this->isSourceOfType(self::RESPONSE)) {
-            $value = $command->getNode()->getValue();
+            $content = $command->getNode()->getContent();
             $matches = $this->getMatches($command->getNode());
             $replies = array_values(synapse()->memory->replies()->all());
 
@@ -90,14 +90,14 @@ class Reply extends Tag implements TagInterface
 
                 if ($number < 2) {
                     $results[$replace] = $replies[0] ?? "undefined";;
-                    $value = str_replace(["<reply>", "<reply1>"], [":[reply]", ":[reply1]"], $value);
+                    $content = str_replace(["<reply>", "<reply1>"], [":[reply]", ":[reply1]"], $content);
                 } else {
                     $results[$replace] = $replies[$number-1] ?? "undefined";
-                    $value = str_replace("<reply{$number}>", ":[reply{$number}]", $value);
+                    $content = str_replace("<reply{$number}>", ":[reply{$number}]", $content);
                 }
             };
 
-            $content = Misc::formatString($value, $results);
+            $content = Misc::formatString($content, $results);
             $command->setContent($content);
         }
     }

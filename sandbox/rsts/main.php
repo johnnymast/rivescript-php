@@ -9,8 +9,8 @@
  */
 define('TESTS_DIR', realpath(__DIR__ . '.\tests\Cortex'));
 
-require(__DIR__ . '/../../vendor/autoload.php');
 require(__DIR__ . '/vendor/autoload.php');
+require(__DIR__ . '/../../vendor/autoload.php');
 require(__DIR__ . '/app/FileIO.php');
 
 use App\TestCase;

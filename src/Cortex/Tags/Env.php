@@ -59,26 +59,34 @@ class Env extends Tag implements TagInterface
             $matches = $this->getMatches($command->getNode());
             $content = $command->getNode()->getValue();
 
-            foreach ($matches as $match) {
-                [$string, $key, $value] = $match;
+            //if (is_array($matches)) {
+                foreach ($matches as $match) {
+                    $string = $match[0];
+                    $isSetter = !empty($match[1]);
 
-                if (isset($match[3])) {
-                    $key = $match[3];
-                }
+                    if ($isSetter === true) {
+                        $value = trim($match[2]);
+                        $key = trim($match[1]);
 
-                if (!empty($value)) {
-                    $content = str_replace(["&#60;", "&#62;"], ["<", ">"], $content);
-                    synapse()->memory->global()->put($key, $value);
-                    $content = str_replace($string, '', $content);
-                } else {
-                    if (synapse()->memory->global()->has($key)) {
-                        $value = synapse()->memory->global()->get($key);
-                        $content = str_replace($string, $value ?? "undefined", $content);
+                        synapse()->memory->global()->put($key, $value);
+
+                        $content = str_replace($string, '', $content);
+
+                    } else {
+                        $value = "undefined";
+                        $key = trim($match[3]);
+
+                        if (synapse()->memory->global()->has($key)) {
+                            $value = synapse()->memory->global()->get($key);
+                        }
+
+                        $content = str_replace($string, $value, $content);
                     }
                 }
-            }
 
-            $command->setContent($content);
+                $command->setContent($content);
+            //}
+
         }
     }
 }

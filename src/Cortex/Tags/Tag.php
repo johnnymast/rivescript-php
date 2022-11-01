@@ -99,8 +99,18 @@ abstract class Tag
      * @param Node $node
      * @return array|array[]|bool
      */
-    public function getMatches(Node $node) {
+    public function getMatches(Node $node): array|bool
+    {
         return $this->getMatchesFromPattern($this->pattern, $node->getValue());
+    }
+
+    /**
+     * @param Node $node
+     * @return array|array[]|bool
+     */
+    public function getMatchesFromContent(Node $node): array|bool
+    {
+        return $this->getMatchesFromPattern($this->pattern, $node->getContent());
     }
 
     /**

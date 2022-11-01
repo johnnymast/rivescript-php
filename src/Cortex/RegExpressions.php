@@ -45,4 +45,5 @@ class RegExpressions
     public const TAG_ENV = "/<env (.+?)=(.+?)>\b|<env (.+?)>/u";
     public const TAG_RANDOM = "/\{random\}(.+?){\/random\}/u";
     public const TAG_PERSON = "/({)person(})(.+?)({)\/person(})|(<)person(>)/u";
+    public const TAG_FORMAL = "/({)formal(})(.+?)({)\/formal(})|(<)formal(>)/u";
 }

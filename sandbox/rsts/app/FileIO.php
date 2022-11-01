@@ -41,8 +41,8 @@ function getTests(string $path): array
         // triggers.yml
         // test-spec.yml
 
-        if ($file->getBasename() !== 'rep.yml') {
-            //    continue;
+        if ($file->getBasename() !== 'substitutions.yml') {
+                continue;
         }
 
 

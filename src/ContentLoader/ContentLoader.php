@@ -41,7 +41,7 @@ class ContentLoader
      *
      * @var mixed
      */
-    private $stream;
+    private mixed $stream;
 
     /**
      * The stream wrapper name.
@@ -65,17 +65,7 @@ class ContentLoader
      */
     public function __construct()
     {
-        $existed = in_array($this->name, stream_get_wrappers(), true);
-        if ($existed) {
-            stream_wrapper_unregister($this->name);
-        }
-        if (stream_wrapper_register($this->name, ContentStream::class) === true) {
-            $this->stream = fopen($this->name . "://input", 'wb+');
-        }
-
-        if (is_resource($this->stream) === false) {
-            throw new ContentLoadingException("Could not instantiate new rivescript-cli content stream.");
-        }
+        $this->openStream();
     }
 
     /**
@@ -84,7 +74,7 @@ class ContentLoader
     public function __destruct()
     {
         if (is_resource($this->getStream())) {
-            fclose($this->getStream());
+            $this->closeStream();
         }
     }
 
@@ -171,5 +161,34 @@ class ContentLoader
             $line = $file->fgets();
             $this->writeToMemory($line);
         }
+    }
+
+    /**
+     * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
+     * @return void
+     */
+    public function openStream(): void
+    {
+        $existed = in_array($this->name, stream_get_wrappers(), true);
+        if ($existed) {
+            stream_wrapper_unregister($this->name);
+        }
+        if (stream_wrapper_register($this->name, ContentStream::class) === true) {
+            $this->stream = fopen($this->name . "://input", 'wb+');
+        }
+
+        if (is_resource($this->stream) === false) {
+            throw new ContentLoadingException("Could not instantiate new rivescript-cli content stream.");
+        }
+    }
+
+    /**
+     * Close the stream.
+     *
+     * @return void
+     */
+    public function closeStream(): void
+    {
+        fclose($this->getStream());
     }
 }

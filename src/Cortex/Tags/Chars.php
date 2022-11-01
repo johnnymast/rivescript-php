@@ -58,7 +58,7 @@ class Chars extends Tag implements TagInterface
     public function parse(Command $command): void
     {
         if ($this->isSourceOfType(self::RESPONSE)) {
-            $content = $command->getNode()->getValue();
+            $content = $command->getNode()->getContent();
 
 
             $symbols = [

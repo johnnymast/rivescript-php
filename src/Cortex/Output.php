@@ -105,7 +105,9 @@ class Output
         if (is_null($trigger) === false) {
             $queue = $trigger->getQueue();
             if ($queue->hasResponses()) {
+
                 $response = $queue->process();
+
                 if ($response) {
                     $result = $response->getNode()->getContent();
                 }

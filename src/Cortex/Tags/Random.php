@@ -57,7 +57,7 @@ class Random extends Tag implements TagInterface
         if ($this->isSourceOfType(self::RESPONSE)) {
 
             $matches = $this->getMatches($command->getNode());
-            $content = $command->getNode()->getValue();
+            $content = $command->getNode()->getContent();
             $delimiters = [' ', '|'];
             $allWords = [];
 

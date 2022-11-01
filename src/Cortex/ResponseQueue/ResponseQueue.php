@@ -108,6 +108,7 @@ class ResponseQueue
 
         if ($this->responses->has('atomic')) {
             foreach ($this->responses->get('atomic') as $type => $command) {
+                $command->invokeStars();;
                 TagRunner::run(Tag::RESPONSE, $command);
                 return $command;
             }

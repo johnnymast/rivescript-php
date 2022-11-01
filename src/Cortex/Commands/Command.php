@@ -75,8 +75,8 @@ abstract class Command implements CommandValidator
      * Command Constructor
      *
      * @param \Axiom\Rivescript\Cortex\Node $node
-     * @param array $syntaxErrors
-     * @param string $content
+     * @param array                         $syntaxErrors
+     * @param string                        $content
      */
     public function __construct(
         /**
@@ -135,7 +135,7 @@ abstract class Command implements CommandValidator
     /**
      * Set the wildcards.
      *
-     * @param array $wildcards The wildcards to set.
+     * @param array<string, string> $wildcards The wildcards to set.
      */
     public function setWildcards(array $wildcards): void
     {
@@ -145,7 +145,7 @@ abstract class Command implements CommandValidator
     /**
      * Set the random words found in this
      *
-     * @param array $words The words found in this command.
+     * @param array<string> $words The words found in this command.
      *
      * @return void
      */
@@ -158,8 +158,8 @@ abstract class Command implements CommandValidator
      * Check to see if this trigger has wildcards.
      * The answer is true or false.
      *
-     * @deprecated For response it checks the trigger anyways
      * @return bool
+     * @deprecated For response it checks the trigger anyways
      */
     public function hasWildcards(): bool
     {
@@ -180,12 +180,14 @@ abstract class Command implements CommandValidator
     /**
      * Return the wildcards.
      *
-     * @return array
+     * @return array<string, string>
      */
     public function getWildcards(): array
     {
         return $this->wildcards;
     }
+
+
 
     /**
      * Return the random words for this command.
@@ -210,8 +212,8 @@ abstract class Command implements CommandValidator
     /**
      * Add a new syntax error.
      *
-     * @param string $message The error to add.
-     * @param array<string> $args (format) extra parameters.
+     * @param string        $message The error to add.
+     * @param array<string> $args    (format) extra parameters.
      *
      * @return void
      */
@@ -276,13 +278,13 @@ abstract class Command implements CommandValidator
     /**
      * Execute commands.
      *
-     * @param string $attribute The attribute to find
-     * @param array[] $arguments Optional additional arguments.
-     * @param array<string> $classes The classes the attribute can be found in.
+     * @param string        $attribute The attribute to find
+     * @param array[]       $arguments Optional additional arguments.
+     * @param array<string> $classes   The classes the attribute can be found in.
      *
-     * @return string|null
      * @throws \ReflectionException
      *
+     * @return string|null
      */
     protected function execute(string $attribute, array $arguments, array $classes): ?string
     {
