@@ -51,6 +51,10 @@ class RegExpressions
     public const TAG_UPPERCASE = "/({)uppercase(})(.+?)({)\/uppercase(})|(<)uppercase(>)/u";
     public const TAG_LOWERCASE = "/({)lowercase(})(.+?)({)\/lowercase(})|(<)lowercase(>)/u";
     public const TAG_SET = "/<set (.+?)=(.+?)>/U";
+    public const TAG_ADD = "/<add (.+?)=(.+?)>/u";
+    public const TAG_SUB = "/<sub (.+?)=(.+?)>/u";
+    public const TAG_MULT = "/<mult (.+?)=(.+?)>/u";
+    public const TAG_DIV = "/<div (.+?)=(.+?)>/u";
 
 
 

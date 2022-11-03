@@ -13,9 +13,9 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
- * Sub class
+ * Mult class
  *
- * This class is responsible parsing the <sub> tag.
+ * This class is responsible parsing the <mult> tag.
  *
  * PHP version 7.4 and higher.
  *
@@ -26,7 +26,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Sub extends Tag
+class __Mult extends Tag
 {
     /**
      * Determines where this tag is allowed to
@@ -41,7 +41,7 @@ class Sub extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/<sub (.+?)=(.+?)>/u";
+    protected string $pattern = "/<mult (.+?)=(.+?)>/u";
 
     /**
      * Parse the source.
@@ -73,12 +73,12 @@ class Sub extends Tag
                 $source = str_replace($match[0], '', $source);
 
                 if (is_numeric($value) === false) {
-                    return "[ERR: Math can't 'sub' non-numeric value '{$value}']{$source}";
+                    return "[ERR: Math can't 'mult' non-numeric value '{$value}']{$source}";
                 } elseif ($variable === "undefined" || is_numeric($variable) === false) {
-                    return "[ERR: Math can't 'sub' non-numeric user variable '{$name}']{$source}";
+                    return "[ERR: Math can't 'mult' non-numeric user variable '{$name}']{$source}";
                 }
 
-                $variable -= $value;
+                $variable *= $value;
                 synapse()->memory->user($input->user())->put($name, $variable);
             }
         }
@@ -93,6 +93,6 @@ class Sub extends Tag
      */
     public function getTagName(): string
     {
-        return "sub";
+        return "mult";
     }
 }

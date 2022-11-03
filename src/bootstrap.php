@@ -117,7 +117,9 @@ $synapse->tags = Axiom\Collections\Collection::make([
     // FIXME: Remove parsing the starts from the star class or it wont ever be found for tags like <person>
 
     Star::class,
-    //    Input::class,
+    // Botstar
+
+        Input::class,
     //    Reply::class,
     //    Id::class,
     //    Chars::class,
@@ -132,10 +134,10 @@ $synapse->tags = Axiom\Collections\Collection::make([
     \Axiom\Rivescript\Cortex\Tags\Uppercase::class,
     \Axiom\Rivescript\Cortex\Tags\Lowercase::class,
     \Axiom\Rivescript\Cortex\Tags\Set::class,
-    // add
-    // sub
-    // mult
-    // div
+    \Axiom\Rivescript\Cortex\Tags\Add::class,
+    \Axiom\Rivescript\Cortex\Tags\Sub::class,
+    \Axiom\Rivescript\Cortex\Tags\Mult::class,
+    \Axiom\Rivescript\Cortex\Tags\Div::class,
     \Axiom\Rivescript\Cortex\Tags\Get::class,
 
     // Topic

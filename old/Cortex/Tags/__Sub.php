@@ -13,9 +13,9 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
- * Div class
+ * Sub class
  *
- * This class is responsible parsing the <div> tag.
+ * This class is responsible parsing the <sub> tag.
  *
  * PHP version 7.4 and higher.
  *
@@ -26,7 +26,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Div extends Tag
+class __Sub extends Tag
 {
     /**
      * Determines where this tag is allowed to
@@ -41,7 +41,7 @@ class Div extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/<div (.+?)=(.+?)>/u";
+    protected string $pattern = "/<sub (.+?)=(.+?)>/u";
 
     /**
      * Parse the source.
@@ -60,7 +60,7 @@ class Div extends Tag
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
             foreach ($matches as $match) {
-                $name = $match[1];
+                $name  = $match[1];
                 $value = $match[2];
 
                 if (empty($match[3]) === false && empty($match[4]) === false) {
@@ -68,19 +68,17 @@ class Div extends Tag
                     $value = $match[4];
                 }
 
+
                 $variable = synapse()->memory->user($input->user())->get($name) ?? "undefined";
                 $source = str_replace($match[0], '', $source);
 
-                if (is_numeric($value) === true && (int)$value == 0) {
-                    return "[ERR: Can't Divide By Zero]{$source}";
-                } elseif (is_numeric($value) === false) {
-                    return "[ERR: Math can't 'div' non-numeric value '{$value}']{$source}";
+                if (is_numeric($value) === false) {
+                    return "[ERR: Math can't 'sub' non-numeric value '{$value}']{$source}";
                 } elseif ($variable === "undefined" || is_numeric($variable) === false) {
-                    return "[ERR: Math can't 'div' non-numeric user variable '{$name}']{$source}";
+                    return "[ERR: Math can't 'sub' non-numeric user variable '{$name}']{$source}";
                 }
 
-
-                $variable /= $value;
+                $variable -= $value;
                 synapse()->memory->user($input->user())->put($name, $variable);
             }
         }
@@ -95,6 +93,6 @@ class Div extends Tag
      */
     public function getTagName(): string
     {
-        return "div";
+        return "sub";
     }
 }
