@@ -2,7 +2,7 @@
 /*
  * This file is part of Rivescript-php
  *
- * (c) Johnny Mast <mastjohnny@gmail.com>
+ * (c) Shea Lewis <shea.lewis89@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,20 +13,20 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
- * Lowercase class
+ * Set class
  *
- * This class is responsible parsing the {lowercase}/{/lowercase} tag.
+ * This class is responsible parsing the <set> tag.
  *
  * PHP version 7.4 and higher.
  *
  * @category Core
  * @package  Cortext\Tags
- * @author   Johnny Mast <mastjohnny@gmail.com>
+ * @author   Shea Lewis <shea.lewis89@gmail.com>
  * @license  https://opensource.org/licenses/MIT MIT
  * @link     https://github.com/axiom-labs/rivescript-php
- * @since    0.4.0
+ * @since    0.3.0
  */
-class Lowercase extends Tag
+class __Set extends Tag
 {
     /**
      * Determines where this tag is allowed to
@@ -41,7 +41,7 @@ class Lowercase extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/{lowercase}(.+?){\/lowercase}|<lowercase>/u";
+    protected string $pattern = '/<set (.+?)=(.+?)\B>|<set (.+?)=(.+?)>/u';
 
     /**
      * Parse the source.
@@ -59,29 +59,31 @@ class Lowercase extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
-            $wildcards = synapse()->memory->shortTerm()->get("wildcards");
-            $wildcard = 0;
 
             foreach ($matches as $match) {
-                if ($match[0] === '<lowercase>' && is_array($wildcards) === true && count($wildcards) > 0) {
-                    if (isset($wildcards[$wildcard])) {
-                        $sub = strtolower($wildcards[$wildcard]);
-                        $pos = strpos($source, $match[0]);
-                        if ($pos !== false) {
-                            $source = substr_replace($source, $sub, $pos, strlen($match[0]));
-                        }
+                $name = $match[1];
+                $value = $match[2];
 
-                        $wildcards = array_shift($wildcards);
+
+                if (count($match) == 5) {
+                    if ($match[3] !== '' && $match[4] !== '') {
+                        $name = $match[3];
+                        $value = $match[4];
                     }
-                } elseif ($match[0][0] == '{' && isset($match[1])) {
-                    $sub = strtolower($match[1]);
-                } else {
-                    $sub = "undefined";
                 }
 
-                $source = str_replace($match[0], $sub, $source);
+                synapse()->rivescript->say("Setting variable :key with value :val", [
+                    'key' => $name,
+                    'val' => $value,
+                ]);
+
+                $value = str_replace(["&#60;", "&#62;"], ["<", ">"], $value);
+
+                synapse()->memory->user($input->user())->put($name, $value);
+                $source = str_replace($match[0], '', $source);
             }
         }
+
 
         return $source;
     }
@@ -93,6 +95,6 @@ class Lowercase extends Tag
      */
     public function getTagName(): string
     {
-        return "lowercase";
+        return "set";
     }
 }

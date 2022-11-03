@@ -18,12 +18,14 @@ use Axiom\Rivescript\Cortex\Commands\Definition\Person;
 use Axiom\Rivescript\Cortex\Commands\Definition\Sub;
 use Axiom\Rivescript\Cortex\Commands\Definition\Variable;
 use Axiom\Rivescript\Cortex\Commands\Definition\Version;
+use Axiom\Rivescript\Cortex\Tags\Arrays as ArraysAlias;
 use Axiom\Rivescript\Cortex\Tags\Bot;
 use Axiom\Rivescript\Cortex\Tags\Chars;
 use Axiom\Rivescript\Cortex\Tags\Env;
 use Axiom\Rivescript\Cortex\Tags\Formal;
 use Axiom\Rivescript\Cortex\Tags\Id;
 use Axiom\Rivescript\Cortex\Tags\Input;
+use Axiom\Rivescript\Cortex\Tags\Last;
 use Axiom\Rivescript\Cortex\Tags\Reply;
 use Axiom\Rivescript\Cortex\Tags\Star;
 use Axiom\Rivescript\Cortex\Tags\Random;
@@ -64,6 +66,7 @@ $synapse->commands = Axiom\Collections\Collection::make(
         // Response
         // Topic
 
+
     ]
 );
 //
@@ -91,6 +94,7 @@ $synapse->commands = Axiom\Collections\Collection::make(
  * \n          #
  * \\          #
  * \#          #
+ * (@array)    # Arrays ??
  * {random}    # Random text insertion (which may contain other Tags)
  * <bot>       # Insert bot variables
  * <env>       # Insert environment variables
@@ -107,22 +111,36 @@ $synapse->commands = Axiom\Collections\Collection::make(
  * <get>       # Get user variables
  * {topic}     # Set user topic
  * <@>         # Inline redirection
- * (@array)    # Arrays
+ * <call>      # Object macros.
  */
 $synapse->tags = Axiom\Collections\Collection::make([
     // FIXME: Remove parsing the starts from the star class or it wont ever be found for tags like <person>
 
     Star::class,
-//    Input::class,
-//    Reply::class,
-//    Id::class,
-//    Chars::class,
-//    Random::class,
+    //    Input::class,
+    //    Reply::class,
+    //    Id::class,
+    //    Chars::class,
+    \Axiom\Rivescript\Cortex\Tags\Random::class,
 
-    Bot::class,
-    Env::class,
-    PersonTag::class,
-//    Formal::class,
+    \Axiom\Rivescript\Cortex\Tags\Bot::class,
+    \Axiom\Rivescript\Cortex\Tags\Env::class,
+
+    \Axiom\Rivescript\Cortex\Tags\Person::class,
+    \Axiom\Rivescript\Cortex\Tags\Formal::class,
+    \Axiom\Rivescript\Cortex\Tags\Sentence::class,
+    \Axiom\Rivescript\Cortex\Tags\Uppercase::class,
+    \Axiom\Rivescript\Cortex\Tags\Lowercase::class,
+    \Axiom\Rivescript\Cortex\Tags\Set::class,
+    // add
+    // sub
+    // mult
+    // div
+    \Axiom\Rivescript\Cortex\Tags\Get::class,
+
+    // Topic
+    // <@>
+    // call
 
     //    "BotStar",
     //    "Input",
@@ -148,6 +166,8 @@ $synapse->tags = Axiom\Collections\Collection::make([
     //    "ArrayTag",
     //    "OptionalTag",
     //    "Ok",
+
+
 ]);
 //
 //$synapse->responses = Axiom\Collections\Collection::make(

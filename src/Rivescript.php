@@ -17,6 +17,7 @@ use Axiom\Rivescript\Cortex\Output;
 use Axiom\Rivescript\Cortex\Topic;
 use Axiom\Rivescript\Events\Event;
 use Axiom\Rivescript\Events\EventEmitter;
+use Axiom\Rivescript\ObjectMacros\ObjectMacrosManager;
 use Axiom\Rivescript\SessionManager\SessionManagerInterface;
 use Axiom\Rivescript\Utils\Misc;
 
@@ -44,6 +45,15 @@ class Rivescript extends ContentLoader
      * @var string
      */
     private string $client_id = 'local-user';
+
+    /**
+     * Return the Object Macro Manager.
+     *
+     * @var \Axiom\Rivescript\ObjectMacros\ObjectMacrosManager
+     */
+    private ObjectMacrosManager $macroManager;
+
+    private $dbCounter = 0;
 
     /**
      * Create a new Rivescript instance.
@@ -76,6 +86,8 @@ class Rivescript extends ContentLoader
 
         include __DIR__ . '/bootstrap.php';
 
+        $this->macroManager = new ObjectMacrosManager();
+
         /**
          * Set default global variables. These
          * can be overwritten by the script.
@@ -84,6 +96,16 @@ class Rivescript extends ContentLoader
         synapse()->memory->global()->put('depth', 25);
         synapse()->memory->global()->put('debug', false);
         synapse()->memory->global()->put('verbose', false);
+    }
+
+    /**
+     * Return the macro manager.
+     *
+     * @return \Axiom\Rivescript\ObjectMacros\ObjectMacrosManager
+     */
+    public function getObjectMacroManager(): ObjectMacrosManager
+    {
+        return $this->macroManager;
     }
 
     /**
@@ -108,7 +130,8 @@ class Rivescript extends ContentLoader
      * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
-    public function load($info): void
+    public
+    function load($info): void
     {
         parent::load($info);
         $this->processInformation();
@@ -123,13 +146,16 @@ class Rivescript extends ContentLoader
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      * @return void
      */
-    public function stream(string $string): void
+    public
+    function stream(string $string): void
     {
+
         $this->openStream();
         $this->writeToMemory($string);
         $this->processInformation();
         $this->sortReplies();
         $this->closeStream();
+        $this->dbCounter++;
     }
 
     /**
@@ -137,7 +163,8 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function sortReplies(): void
+    public
+    function sortReplies(): void
     {
         synapse()->brain->topics()->each(fn(Topic $topic) => $topic->sortTriggers());
     }
@@ -149,7 +176,8 @@ class Rivescript extends ContentLoader
      * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
-    private function processInformation(): void
+    private
+    function processInformation(): void
     {
         synapse()->memory->local()->put('concat', 'none');
         synapse()->brain->teach($this->getStream());
@@ -163,7 +191,8 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function debug(string $message, array $args = []): void
+    public
+    function debug(string $message, array $args = []): void
     {
         $message = "[DEBUG] " . Misc::formatString($message, $args);
 
@@ -178,7 +207,8 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function verbose(string $message, array $args = []): void
+    public
+    function verbose(string $message, array $args = []): void
     {
         $message = "[VERBOSE] " . Misc::formatString($message, $args);
 
@@ -193,7 +223,8 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function warn(string $message, array $args = []): void
+    public
+    function warn(string $message, array $args = []): void
     {
         $message = "[WARNING] " . Misc::formatString($message, $args);
 
@@ -208,7 +239,8 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function error(string $message, array $args = []): void
+    public
+    function error(string $message, array $args = []): void
     {
         $message = "[ERROR] " . Misc::formatString($message, $args);
 
@@ -223,7 +255,8 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function say(string $message, array $args = []): void
+    public
+    function say(string $message, array $args = []): void
     {
 
         $message = Misc::formatString($message, $args);
@@ -239,7 +272,8 @@ class Rivescript extends ContentLoader
      *
      * @return string
      */
-    public function reply(string $msg, string $user = 'local-user'): string
+    public
+    function reply(string $msg, string $user = 'local-user'): string
     {
 
         synapse()->rivescript->say("Asked to reply to :user :msg", ['user' => $user, 'msg' => $msg]);

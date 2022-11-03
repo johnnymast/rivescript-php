@@ -14,30 +14,9 @@ use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
 use Axiom\Rivescript\Cortex\RegExpressions;
 
-/**
- * Formal class
- *
- * Description:
- *
- * Formalize A String Of Text (Capitalize Every First Letter Of Every Word).
- *
- * + my name is *
- * - Nice to meet you, <formal>.
- *
- * <formal> is an alias for {formal}<star>{/formal}.
- *
- * @see      https://www.rivescript.com/wd/RiveScript#formal-...-formal-formal
- *
- * PHP version 8.0 and higher.
- *
- * @category Core
- * @package  Cortext\Tags
- * @author   Johnny Mast <mastjohnny@gmail.com>
- * @license  https://opensource.org/licenses/MIT MIT
- * @link     https://github.com/axiom-labs/rivescript-php
- * @since    0.4.0
- */
-class Formal extends Tag implements TagInterface
+// FIXME ADD GOOD DESCRIPTION
+//https://www.rivescript.com/wd/RiveScript#sentence-...-sentence-sentence
+class Sentence extends Tag implements TagInterface
 {
 
     /**
@@ -53,7 +32,7 @@ class Formal extends Tag implements TagInterface
      *
      * @var string
      */
-    protected string $pattern = RegExpressions::TAG_FORMAL;
+    protected string $pattern = RegExpressions::TAG_SENTENCE;
 
     /**
      * @param \Axiom\Rivescript\Cortex\Commands\Command $command
@@ -70,12 +49,11 @@ class Formal extends Tag implements TagInterface
 
             foreach ($matches as $match) {
                 $hasCurly = ($match[1] === '{');
-                $text = $match[0];
 
                 if ($hasCurly) {
-                    $context = ucwords(trim($match[3]));
-                    $content = str_replace($text, $context, $value);
-
+                    $context = trim($match[3]);
+                    $replacement = $this->ucfirstSentence($context);
+                    $content = str_replace($context, $replacement, $value);
                 } else {
                     /**
                      * @var ResponseCommand $response
@@ -83,17 +61,26 @@ class Formal extends Tag implements TagInterface
                     $response = $command;
                     $trigger = $response->getTrigger();
 
-
                     if ($trigger->hasStars()) {
                         if ($trigger->stars->has('<star>')) {
-                            $replacement = $trigger->stars->get('<star>');
-                            $content = str_replace($text, $replacement, $value);
+                            $context = $trigger->stars->get('<star>');
+                            $replacement = $this->ucfirstSentence($context);
+
+                            $content = str_replace($match[0], $replacement, $value);
                         }
                     }
                 }
-
             }
+
+            $command->setContent($content);
         }
-        $command->setContent($content);
+    }
+
+
+    private function ucfirstSentence(string $string): string
+    {
+        $string = ucfirst(strtolower($string));
+        $string = preg_replace_callback('/([.!?])\s*(\w)/', fn($matches) => strtoupper($matches[0]), $string);
+        return $string;
     }
 }

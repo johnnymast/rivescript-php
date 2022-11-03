@@ -15,6 +15,7 @@ use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\Attributes\FindResponse;
 use Axiom\Rivescript\Cortex\Attributes\ResponseDetector;
 use Axiom\Rivescript\Cortex\Commands\Response\AtomicResponse;
+use Axiom\Rivescript\Cortex\Commands\Response\Detectors\ArrayDetector;
 use Axiom\Rivescript\Cortex\Commands\Response\Detectors\WeightedDetector;
 use Axiom\Rivescript\Cortex\Commands\Response\Detectors\WildcardDetector;
 
@@ -120,6 +121,7 @@ class ResponseCommand extends Command
             arguments: [$this],
             classes: [
                 WeightedDetector::class,
+                ArrayDetector::class,
             ]
         );
 

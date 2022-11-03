@@ -2,7 +2,7 @@
 /*
  * This file is part of Rivescript-php
  *
- * (c) Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -13,20 +13,20 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
- * Set class
+ * Uppercase class
  *
- * This class is responsible parsing the <set> tag.
+ * This class is responsible parsing the {uppercase}{/uppercase} tag.
  *
  * PHP version 7.4 and higher.
  *
  * @category Core
  * @package  Cortext\Tags
- * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @author   Johnny Mast <mastjohnny@gmail.com>
  * @license  https://opensource.org/licenses/MIT MIT
  * @link     https://github.com/axiom-labs/rivescript-php
- * @since    0.3.0
+ * @since    0.4.0
  */
-class Set extends Tag
+class __Uppercase extends Tag
 {
     /**
      * Determines where this tag is allowed to
@@ -41,7 +41,7 @@ class Set extends Tag
      *
      * @var string
      */
-    protected string $pattern = '/<set (.+?)=(.+?)\B>|<set (.+?)=(.+?)>/u';
+    protected string $pattern = "/{uppercase}(.+?){\/uppercase}|<uppercase>/u";
 
     /**
      * Parse the source.
@@ -59,31 +59,29 @@ class Set extends Tag
 
         if ($this->hasMatches($source)) {
             $matches = $this->getMatches($source);
+            $wildcards = synapse()->memory->shortTerm()->get("wildcards");
+            $wildcard = 0;
 
             foreach ($matches as $match) {
-                $name = $match[1];
-                $value = $match[2];
+                if ($match[0] === '<uppercase>' && is_array($wildcards) === true && count($wildcards) > 0) {
+                    if (isset($wildcards[$wildcard])) {
+                        $sub = strtoupper($wildcards[$wildcard]);
+                        $pos = strpos($source, $match[0]);
+                        if ($pos !== false) {
+                            $source = substr_replace($source, $sub, $pos, strlen($match[0]));
+                        }
 
-
-                if (count($match) == 5) {
-                    if ($match[3] !== '' && $match[4] !== '') {
-                        $name = $match[3];
-                        $value = $match[4];
+                        $wildcards = array_shift($wildcards);
                     }
+                } elseif ($match[0][0] == '{' && isset($match[1])) {
+                    $sub = strtoupper($match[1]);
+                } else {
+                    $sub = "undefined";
                 }
 
-                synapse()->rivescript->say("Setting variable :key with value :val", [
-                    'key' => $name,
-                    'val' => $value,
-                ]);
-
-                $value = str_replace(["&#60;", "&#62;"], ["<", ">"], $value);
-
-                synapse()->memory->user($input->user())->put($name, $value);
-                $source = str_replace($match[0], '', $source);
+                $source = str_replace($match[0], $sub, $source);
             }
         }
-
 
         return $source;
     }
@@ -95,6 +93,6 @@ class Set extends Tag
      */
     public function getTagName(): string
     {
-        return "set";
+        return "uppercase";
     }
 }

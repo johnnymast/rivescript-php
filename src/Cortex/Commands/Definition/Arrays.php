@@ -55,15 +55,15 @@ class Arrays
     {
 
         if (str_starts_with($node->getValue(), $this->type)) {
-            $value = substr($node->getValue(), strlen($this->type));
-            [$key, $value] = explode('=', $value);
+            $variableValue = substr($node->getValue(), strlen($this->type));
+            [$variableKey, $variableValue] = explode('=', $variableValue);
 
-            $key = trim($key);
-            $value = trim($value);
+            $variableKey = trim($variableKey);
+            $variableValue = trim($variableValue);
 
-            $value = explode(strpos($value, '|') ? '|' : ' ', $value);
+            $variableValue = explode(strpos($variableValue, '|') ? '|' : ' ', $variableValue);
 
-            $storage->put($key, $value);
+            $storage->put($variableKey, $variableValue);
         }
     }
 }

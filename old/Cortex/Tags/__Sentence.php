@@ -13,9 +13,9 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Input as SourceInput;
 
 /**
- * Uppercase class
+ * SpecialChars.yml class
  *
- * This class is responsible parsing the {uppercase}{/uppercase} tag.
+ * This class parses the {sentence}{/sentence} tag.
  *
  * PHP version 7.4 and higher.
  *
@@ -26,7 +26,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Uppercase extends Tag
+class __Sentence extends Tag
 {
     /**
      * Determines where this tag is allowed to
@@ -41,13 +41,13 @@ class Uppercase extends Tag
      *
      * @var string
      */
-    protected string $pattern = "/{uppercase}(.+?){\/uppercase}|<uppercase>/u";
+    protected string $pattern = "/({)sentence(})(.+?)({)\/sentence(})|(<)sentence(>)/u";
 
     /**
      * Parse the source.
      *
-     * @param string      $source The string containing the Tag.
-     * @param SourceInput $input  The input information.
+     * @param  string       $source  The string containing the Tag.
+     * @param  SourceInput  $input   The input information.
      *
      * @return string
      */
@@ -58,26 +58,35 @@ class Uppercase extends Tag
         }
 
         if ($this->hasMatches($source)) {
+//            echo "--> {$source}\n";
             $matches = $this->getMatches($source);
             $wildcards = synapse()->memory->shortTerm()->get("wildcards");
-            $wildcard = 0;
 
             foreach ($matches as $match) {
-                if ($match[0] === '<uppercase>' && is_array($wildcards) === true && count($wildcards) > 0) {
-                    if (isset($wildcards[$wildcard])) {
-                        $sub = strtoupper($wildcards[$wildcard]);
-                        $pos = strpos($source, $match[0]);
-                        if ($pos !== false) {
-                            $source = substr_replace($source, $sub, $pos, strlen($match[0]));
-                        }
-
-                        $wildcards = array_shift($wildcards);
-                    }
-                } elseif ($match[0][0] == '{' && isset($match[1])) {
-                    $sub = strtoupper($match[1]);
+                if ($match[0] === '<sentence>' && is_array($wildcards) === true && count($wildcards) > 0) {
+                    $sub = $wildcards[0];
+                } elseif ($match[1] === '{' && isset($match[3])) {
+                    $sub = $match[3];
                 } else {
                     $sub = "undefined";
                 }
+
+                if ($sub !== "undefined") {
+                    if (strpos($sub, '.') > -1) {
+                        $parts = explode('.', $sub);
+                        if (count($parts) !== 0) {
+                            array_walk($parts, static function (&$part) {
+                                $part = ucfirst(trim($part));
+                            });
+                        }
+
+                        $sub = implode('.', $parts);
+                    } else {
+                        $sub = ucfirst($sub);
+                    }
+                }
+
+               //  $sub = str_replace(["&#60;", "&#62;"], ["<", ">"], $sub);
 
                 $source = str_replace($match[0], $sub, $source);
             }
@@ -93,6 +102,6 @@ class Uppercase extends Tag
      */
     public function getTagName(): string
     {
-        return "uppercase";
+        return "sentence";
     }
 }

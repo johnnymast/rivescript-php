@@ -26,7 +26,7 @@ use Axiom\Rivescript\Cortex\Input as SourceInput;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.3.0
  */
-class Get extends Tag
+class __Get extends Tag
 {
     /**
      * Determines where this tag is allowed to

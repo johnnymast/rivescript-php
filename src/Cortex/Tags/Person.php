@@ -59,25 +59,22 @@ class Person extends Tag implements TagInterface
         if ($this->isSourceOfType(self::RESPONSE)) {
 
             $matches = $this->getMatches($command->getNode());
-            $original = synapse()->input->original();
             $content = $command->getNode()->getValue();
 
             $patterns = synapse()->memory->person()->keys()->all();
             $replacements = synapse()->memory->person()->values()->all();
-            $unescaped = [];
 
             foreach ($patterns as $index => $pattern) {
-                $unescaped[$index] = $pattern;
                 $patterns[$index] = "/\b" . $pattern . "\b/i";
             }
 
             foreach ($matches as $match) {
-                $didReplaceWith = [];
                 $hasCurly = ($match[1] === '{');
                 $text = $match[0];
 
                 if ($hasCurly) {
                     $context = trim($match[3]);
+                    $value = "undefined";
 
                     if (synapse()->memory->person()->has($context)) {
                         $value = synapse()->memory->person()->get($context);
@@ -89,6 +86,8 @@ class Person extends Tag implements TagInterface
                         }
 
                         $content = str_replace($text, $value, $content);
+                    } else {
+                        $content = str_replace($text, $value, $content);
                     }
                 } else {
                     /**
@@ -98,32 +97,24 @@ class Person extends Tag implements TagInterface
 
                     if ($trigger->hasStars()) {
                         if ($trigger->stars->has('<star>')) {
-                            $value = $trigger->stars->get('<star>');
+                            $star = $trigger->stars->get('<star>');
 
                             if (count($patterns) > 0) {
                                 foreach ($patterns as $index => $pattern) {
-                                    echo "Checking if >{$unescaped[$index]}< was already replaced in {$original}\n";
+                                    $substitution = preg_replace($pattern, $replacements[$index], $star);
 
-                                    if (!in_array($unescaped[$index], $didReplaceWith)) {
-                                        if ($original == "say You are dumb") echo "NO in {$value}\n";
-                                        $value = preg_replace($pattern, $replacements[$index], $value);// ?? 'undefined';
-
-                                        $didReplaceWith[] = $replacements[$index];
-                                    } else {
-                                        if ($original == "say You are dumb") echo "YES so skipping {$pattern} in {$value}\n";
+                                    if ($substitution !== $star) {
+                                        $content = str_replace($text, $substitution, $content);
                                     }
                                 }
+                            } else {
+                                $substitution = preg_replace($patterns, $replacements, $star, 1);
+                                $content = str_replace($text, $substitution, $content);
                             }
-
-
-                            $content = str_replace($text, $value, $content);
                         }
                     }
                 }
             }
-
-
-            // FIXME: De replace mag alleen op de person tag value.
 
             $command->setContent($content);
         }

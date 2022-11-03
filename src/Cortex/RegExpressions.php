@@ -35,6 +35,7 @@ class RegExpressions
     public const TRIGGER_DETECT_PRIORITY = "/{weight=(.+?)}/";
 
     public const RESPONSE_DETECT_WEIGHT = "/{weight=(.+?)}/";
+    public const RESPONSE_RANDOM_ARRAY_VALUE = "/\(@(.+?)\)/ui";
 
     public const TAG_STAR = "/<star(\d+)?>/i";
     public const TAG_INPUT = "/<input(\d+)?>/i";
@@ -46,4 +47,16 @@ class RegExpressions
     public const TAG_RANDOM = "/\{random\}(.+?){\/random\}/u";
     public const TAG_PERSON = "/({)person(})(.+?)({)\/person(})|(<)person(>)/u";
     public const TAG_FORMAL = "/({)formal(})(.+?)({)\/formal(})|(<)formal(>)/u";
+    public const TAG_SENTENCE = "/({)sentence(})(.+?)({)\/sentence(})|(<)sentence(>)/u";
+    public const TAG_UPPERCASE = "/({)uppercase(})(.+?)({)\/uppercase(})|(<)uppercase(>)/u";
+    public const TAG_LOWERCASE = "/({)lowercase(})(.+?)({)\/lowercase(})|(<)lowercase(>)/u";
+    public const TAG_SET = "/<set (.+?)=(.+?)>/U";
+
+
+
+
+
+    public const TAG_GET = "/<get (.+?)>/u";
+
+//    public const TAG_ARRAYS = "/\(@(.+?)\)/ui";
 }

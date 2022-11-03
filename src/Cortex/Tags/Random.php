@@ -58,6 +58,8 @@ class Random extends Tag implements TagInterface
 
             $matches = $this->getMatches($command->getNode());
             $content = $command->getNode()->getContent();
+            $value = $command->getNode()->getValue();
+
             $delimiters = [' ', '|'];
             $allWords = [];
 
@@ -75,7 +77,7 @@ class Random extends Tag implements TagInterface
 
                 if (count($words) !== 0) {
                     $rnd = array_rand($words);
-                    $content = str_replace($text, $words[$rnd], $content);
+                    $content = str_replace($text, $words[$rnd], $value);
                     $allWords = array_merge($allWords, $words);
                 }
             }

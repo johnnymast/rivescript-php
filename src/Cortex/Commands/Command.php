@@ -113,6 +113,15 @@ abstract class Command implements CommandValidator
     abstract public function detect(): bool;
 
     /**
+     * Reset all string manipulations
+     * done by tags.
+     *
+     * @return void
+     */
+    public function reset(): void {
+        $this->getNode()->reset();
+    }
+    /**
      * Set the type of this command.
      *
      * @param string $type The type of this command.

@@ -57,32 +57,34 @@ class Bot extends Tag implements TagInterface
         if ($this->isSourceOfType(self::RESPONSE)) {
 
             $matches = $this->getMatches($command->getNode());
-            $content = $command->getNode()->getValue();
+            $content = $command->getNode()->getContent();
+            $value = $command->getNode()->getValue();
+
 
             foreach ($matches as $match) {
                 $string = $match[0];
                 $isSetter = !empty($match[1]);
 
-                if ($isSetter === true) {
-                    $value = trim($match[2]);
-                    $key = trim($match[1]);
+                if ($isSetter === false) {
+                    $variableValue = "undefined";
+                    $variableKey = trim($match[3]);
 
-                    synapse()->memory->variables()->put($key, $value);
-
-                    $content = str_replace($string, '', $content);
-
-                } else {
-                    $value = "undefined";
-                    $key = trim($match[3]);
-
-                    if (synapse()->memory->variables()->has($key)) {
-                        $value = synapse()->memory->variables()->get($key);
+                    if (synapse()->memory->variables()->has($variableKey)) {
+                        $variableValue = synapse()->memory->variables()->get($variableKey);
                     }
 
-                    $content = str_replace($string, $value, $content);
+                    $content = str_replace($string, $variableValue, $value);
+                } else {
+                    $variableValue = trim($match[2]);
+                    $variableKey = trim($match[1]);
+
+                    synapse()->memory->variables()->put($variableKey, $variableValue);
+
+                    $content = str_replace($string, '', $value);
                 }
             }
 
+//            $command->getNode()->setValue($value);
             $command->setContent($content);
         }
     }

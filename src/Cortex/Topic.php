@@ -135,7 +135,7 @@ class Topic
     {
         $triggers = $this->sortTriggersByType($this->triggers);
         // TODO: Order by word count
-//         $triggers = $this->sortTriggersByWordCount($triggers);
+         $triggers = $this->sortTriggersByWordCount($triggers);
 
         $this->triggers = $triggers->sort(function ($current, $previous) {
             return ($current->getOrder() < $previous->getOrder()) ? -1 : 1;

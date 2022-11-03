@@ -14,11 +14,11 @@ use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\RegExpressions;
 
 /**
- * Env class
+ * Set class
  *
- * The Env class is responsible for parsing the <env> tag.
+ * The Bot class is responsible for parsing the <get name> tag.
  *
- * @see      https://www.rivescript.com/wd/RiveScript#env
+ * @see      https://www.rivescript.com/wd/RiveScript#get-set
  *
  * PHP version 8.0 and higher.
  *
@@ -29,7 +29,7 @@ use Axiom\Rivescript\Cortex\RegExpressions;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Env extends Tag implements TagInterface
+class Get extends Tag implements TagInterface
 {
 
     /**
@@ -45,7 +45,7 @@ class Env extends Tag implements TagInterface
      *
      * @var string
      */
-    protected string $pattern = RegExpressions::TAG_ENV;
+    protected string $pattern = RegExpressions::TAG_GET;
 
     /**
      * @param \Axiom\Rivescript\Cortex\Commands\Command $command
@@ -61,29 +61,14 @@ class Env extends Tag implements TagInterface
             $value = $command->getNode()->getValue();
 
             foreach ($matches as $match) {
-                $string = $match[0];
-                $isSetter = !empty($match[1]);
+                $variableContext = trim($match[0]);
+                $variableKey = trim($match[1]);
+                $variableValue = synapse()->memory->user()->get($variableKey) ?? "undefined";
 
-                if ($isSetter === false) {
-                    $variableValue  = "undefined";
-                    $variableKey = trim($match[3]);
-
-                    if (synapse()->memory->global()->has($variableKey)) {
-                        $variableValue = synapse()->memory->global()->get($variableKey);
-                    }
-
-                    $content = str_replace($string, $variableValue, $value);
-                } else {
-                    $variableValue = trim($match[2]);
-                    $variableKey = trim($match[1]);
-
-                    synapse()->memory->global()->put($variableKey, $variableValue);
-
-                    $content = str_replace($string, '', $value);
-                }
+                $content = str_replace($variableContext, $variableValue, $value);
             }
 
-            $command->getNode()->setContent($content);
+            $command->setContent($content);
         }
     }
 }

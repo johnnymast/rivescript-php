@@ -13,12 +13,18 @@ namespace Axiom\Rivescript\Cortex\Tags;
 use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\RegExpressions;
 use Axiom\Rivescript\Utils\Misc;
+use function _PHPStan_71ced81c9\RingCentral\Psr7\str;
 
 /**
  * Star class
  *
  * The start tag matches the wildcards in the response
- * and replaces them with the words from the triggerr.
+ * and replaces them with the words from the trigger.
+ *
+ * Example:
+ *
+ * + my name is *
+ * - hello <star>, <star1> is a nice name.
  *
  * @see      https://www.rivescript.com/wd/RiveScript#star-star1---starN
  *
@@ -56,17 +62,25 @@ class Star extends Tag implements TagInterface
      */
     public function parse(Command $command): void
     {
-        // FIXME BUG IF STAR VALUE HES A SPACE like "you are" it will return you. Example cae ! person you are
-
         if ($this->isSourceOfType(self::RESPONSE)) {
 
             /**
              * @var \Axiom\Rivescript\Cortex\Commands\ResponseCommand $command ;
              */
             $trigger = $command->getTrigger();
+            $value = $command->getNode()->getValue();
 
-            print_r($trigger->stars);
+            $matches = $this->getMatches($command->getNode());
 
+            foreach ($matches as $match) {
+                $key = $match[0];
+                if ($trigger->stars->has($key)) {
+                    $replacement = $trigger->stars->get($key);
+                    $value = str_replace($key, $replacement, $value);
+                }
+            }
+
+            $command->getNode()->setValue($value);
         }
     }
 }

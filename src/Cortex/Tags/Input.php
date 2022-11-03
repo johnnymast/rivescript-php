@@ -92,7 +92,7 @@ class Input extends Tag implements TagInterface
                     $results[$replace] = $inputs[0] ?? "undefined";;
                     $content = str_replace(["<input>", "<input1>"], [":[input]", ":[input1]"], $content);
                 } else {
-                    $results[$replace] = $inputs[$number-1] ?? "undefined";
+                    $results[$replace] = $inputs[$number - 1] ?? "undefined";
                     $content = str_replace("<input{$number}>", ":[input{$number}]", $content);
                 }
             };

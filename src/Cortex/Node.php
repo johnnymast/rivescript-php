@@ -109,6 +109,16 @@ class Node
         $this->command = $this->detectCommand();
     }
 
+
+    /**
+     * @return void
+     */
+    public function reset(): void
+    {
+        $this->content = $this->original;
+        $this->source = Str::removeWhitespace($this->original);
+    }
+
     /**
      * Return the line string
      *
@@ -129,7 +139,8 @@ class Node
         return $this->value;
     }
 
-    public function getContent(): string {
+    public function getContent(): string
+    {
         return $this->content;
     }
 
@@ -209,7 +220,8 @@ class Node
      *
      * @return void
      */
-    public function setContent(string $content): void {
+    public function setContent(string $content): void
+    {
         $this->content = $content;
     }
 
