@@ -65,7 +65,7 @@ class Star extends Tag implements TagInterface
         if ($this->isSourceOfType(self::RESPONSE)) {
 
             /**
-             * @var \Axiom\Rivescript\Cortex\Commands\ResponseCommand $command ;
+             * @var \Axiom\Rivescript\Cortex\Commands\ResponseAbstract $command ;
              */
             $trigger = $command->getTrigger();
             $value = $command->getNode()->getValue();

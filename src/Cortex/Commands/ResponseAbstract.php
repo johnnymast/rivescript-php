@@ -38,7 +38,7 @@ use Axiom\Rivescript\Cortex\Commands\Response\Detectors\WildcardDetector;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class ResponseCommand extends Command
+abstract class ResponseAbstract extends Command implements ResponseInterface
 {
 
     /**
@@ -54,8 +54,15 @@ class ResponseCommand extends Command
     protected TriggerCommand $trigger;
 
     /**
+     * Get the response extra options like
+     * concat type.
+     *
      * @var array
      */
+    private array $options = [
+        'concat' => 'none'
+    ];
+
     protected array $stars = [
         ['star', 'star1'],
         'star2',
@@ -98,19 +105,23 @@ class ResponseCommand extends Command
          * Let's determine the type of
          * trigger we are working with.
          */
-        $type = $this->execute(
-            attribute: FindResponse::class,
-            arguments: [$this],
-            classes: [
-                AtomicResponse::class,
-            ]
-        ) ?? "atomic";
+        $type = match ($this->getNode()->getTag()) {
+            '-' => 'atomic',
+            '^' => 'continue',
+            '*' => 'condition',
+            default => 'atomic',
+        };
+
+        $this->setType($type);
 
         /**
          * @var \Axiom\Rivescript\Cortex\Commands\TriggerCommand $trigger
          */
-        $trigger->attachResponse($this, $this->type);
+        $trigger->attachCommand($this);
 
+        $this->setOptions([
+            'concat' => synapse()->memory->local()->get('concat')
+        ]);
 
         /**
          * Lets run some detectors on this
@@ -141,15 +152,15 @@ class ResponseCommand extends Command
     }
 
     /**
-     * Set a reference to the trigger for the command.
+     * Set the options for this response.
      *
-     * @param \Axiom\Rivescript\Cortex\Commands\TriggerCommand $trigger
+     * @param array $options The options to set.
      *
      * @return void
      */
-    public function setTrigger(TriggerCommand $trigger): void
+    private function setOptions(array $options): void
     {
-        $this->trigger = $trigger;
+        $this->options = $options;
     }
 
     /**
@@ -177,16 +188,6 @@ class ResponseCommand extends Command
     }
 
     /**
-     * Return the trigger this response belongs to.
-     *
-     * @return \Axiom\Rivescript\Cortex\Commands\TriggerCommand
-     */
-    public function getTrigger(): TriggerCommand
-    {
-        return $this->trigger;
-    }
-
-    /**
      * Return the weight for this command.
      *
      * @return int
@@ -196,54 +197,63 @@ class ResponseCommand extends Command
         return $this->weight;
     }
 
+    /**
+     * Return the options for this response.
+     *
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
 
     /**
      * @return void
      */
-    public function invokeStars()
+    public function invokeStars(): void
     {
 
         //if (!$this->getTrigger()->hasStars()) {
 
         $this->getTrigger()->stars = new Collection([]);
 
-            $wildcards = [
-                '/_/' => '[^\s\d]+?',
-                '/#/' => '\\d+?',
-                '/\*/' => '.*?',
-                '/<zerowidthstar>/' => '^\*$',
-            ];
+        $wildcards = [
+            '/_/' => '[^\s\d]+?',
+            '/#/' => '\\d+?',
+            '/\*/' => '.*?',
+            '/<zerowidthstar>/' => '^\*$',
+        ];
 
-            $trigger = $this->getTrigger();
-            $value = $this->getTrigger()
-                ->getNode()
-                ->getValue();
+        $trigger = $this->getTrigger();
+        $value = $this->getTrigger()
+            ->getNode()
+            ->getValue();
 
-            foreach ($wildcards as $pattern => $replacement) {
-                $parsedTrigger = preg_replace($pattern, '(' . $replacement . ')', $value);
+        foreach ($wildcards as $pattern => $replacement) {
+            $parsedTrigger = preg_replace($pattern, '(' . $replacement . ')', $value);
 
-                if ($parsedTrigger === $value) {
-                    continue;
-                }
+            if ($parsedTrigger === $value) {
+                continue;
+            }
 
-                if (@preg_match_all('/' . $parsedTrigger . '$/iu', synapse()->input->source(), $parsed)) {
-                    array_shift($parsed);
+            if (@preg_match_all('/' . $parsedTrigger . '$/iu', synapse()->input->source(), $parsed)) {
+                array_shift($parsed);
 
-                    if (is_array($parsed)) {
-                        foreach ($this->stars as $index => $star) {
-                            if (isset($parsed[$index])) {
-                                if ($index == 0 && is_array($star) === true) {
-                                    foreach ($star as $name) {
-                                        $trigger->stars->put('<' . $name . '>', current($parsed[$index]));
-                                    }
-                                } else {
-                                    $trigger->stars->put('<' . $star . '>', current($parsed[$index]));
+                if (is_array($parsed)) {
+                    foreach ($this->stars as $index => $star) {
+                        if (isset($parsed[$index])) {
+                            if ($index == 0 && is_array($star) === true) {
+                                foreach ($star as $name) {
+                                    $trigger->stars->put('<' . $name . '>', current($parsed[$index]));
                                 }
+                            } else {
+                                $trigger->stars->put('<' . $star . '>', current($parsed[$index]));
                             }
                         }
                     }
                 }
             }
-       // }
+        }
+        // }
     }
 }

@@ -11,7 +11,7 @@
 namespace Axiom\Rivescript\Cortex\Commands\Response\Detectors;
 
 use Axiom\Rivescript\Cortex\Attributes\ResponseDetector;
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 use Axiom\Rivescript\Cortex\RegExpressions;
 use Axiom\Rivescript\Cortex\Traits\Regex;
 
@@ -23,12 +23,12 @@ class ArrayDetector implements ResponseDetectorInterface
     /**
      * Detect if the type of trigger has a priority.
      *
-     * @param \Axiom\Rivescript\Cortex\Commands\ResponseCommand $response
+     * @param \Axiom\Rivescript\Cortex\Commands\ResponseAbstract $response
      *
      * @return void
      */
     #[ResponseDetector]
-    public function detect(ResponseCommand $response): void
+    public function detect(ResponseAbstract $response): void
     {
 
         $value = $response->getNode()->getValue();

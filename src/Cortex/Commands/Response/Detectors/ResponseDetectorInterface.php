@@ -2,7 +2,7 @@
 
 namespace Axiom\Rivescript\Cortex\Commands\Response\Detectors;
 
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 
 /**
  * ResponseDetectorInterface interface
@@ -30,9 +30,9 @@ interface ResponseDetectorInterface
      * If a trait is detected the information will \ed inside the
      * trigger.
      *
-     * @param \Axiom\Rivescript\Cortex\Commands\ResponseCommand $response The parsed reponse.
+     * @param \Axiom\Rivescript\Cortex\Commands\ResponseAbstract $response The parsed reponse.
      *
      * @return void
      */
-    public function detect(ResponseCommand $response): void;
+    public function detect(ResponseAbstract $response): void;
 }

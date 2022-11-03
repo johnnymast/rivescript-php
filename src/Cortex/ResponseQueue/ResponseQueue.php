@@ -11,7 +11,9 @@
 namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
 use Axiom\Collections\Collection;
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
+use Axiom\Rivescript\Cortex\Commands\ResponseInterface;
 use Axiom\Rivescript\Cortex\Commands\TriggerCommand;
 use Axiom\Rivescript\Cortex\TagRunner;
 use Axiom\Rivescript\Cortex\Tags\Tag;
@@ -60,23 +62,30 @@ class ResponseQueue
     /**
      * Attach a new response.
      *
-     * @param \Axiom\Rivescript\Cortex\Commands\ResponseCommand $response The response to add.
-     * @param string                                            $type     The type of response to archive it as.
+     * @param \Axiom\Rivescript\Cortex\Commands\ResponseInterface $response The response to add.
      *
      * @return void
      */
-    public function attach(ResponseCommand $response, string $type): void
+    public function attach(ResponseInterface $response): void
     {
-        if ($this->responses->has($type) === false) {
-            $this->responses->put($type, Collection::make([]));
+        $queueItem = new ResponseQueueItem($response, $this->responses->count());
+
+        /**
+         * @var \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem $last ;
+         */
+        $last = $this->responses->last();
+
+        if ($last !== false && $response->getType() == 'continue') {
+            $last->addContinue($response);
+        } else {
+            $this->responses->push($queueItem);
         }
-        $this->responses->get($type)->push($response);
     }
 
     /**
      * Return the responses.
      *
-     * @return \Axiom\Collections\Collection<ResponseCommand>
+     * @return \Axiom\Collections\Collection<\Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem>
      */
     public function getResponses(): Collection
     {
@@ -94,11 +103,33 @@ class ResponseQueue
     }
 
     /**
+     * Validate the Response queue item. This could be a condition
+     * or a check to see if all information is present. If the response
+     * gets validated it continues on in the queue.
+     *
+     * @param \Axiom\Collections\Collection<\Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem> $responses
+     *
+     * @return \Axiom\Collections\Collection<\Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem>
+     */
+    private function validateResponses(Collection $responses): Collection
+    {
+        $validResponses = Collection::make([]);
+
+        foreach ($responses as $response) {
+            if ($response->validate()) {
+                $validResponses->push($response);
+            }
+        }
+
+        return $validResponses;
+    }
+
+    /**
      * Process the response queue.
      *
-     * @return \Axiom\Rivescript\Cortex\Commands\ResponseCommand|null
+     * @return \Axiom\Rivescript\Cortex\Commands\ResponseAbstract|null
      */
-    public function process(): ?ResponseCommand
+    public function process(): string|bool
     {
         $response = null;
 
@@ -106,16 +137,25 @@ class ResponseQueue
         // parse tags
         //  TagRunner::run();
 
-        if ($this->responses->has('atomic')) {
-            foreach ($this->responses->get('atomic') as $type => $command) {
-            //    $command->reset();
-                $command->invokeStars();
-                TagRunner::run(Tag::RESPONSE, $command);
-                return $command;
-            }
+        $responses = $this->getResponses();
+        $responses = $this->validateResponses($responses);
+
+        if ($responses->count() > 0) {
+            return $responses->first()->render();
+
         }
 
-        return $response;
+        return false;
+//        //       if ($this->responses->has('atomic')) {
+//        foreach ($responses->get('atomic') as $response) {
+//            //    $command->reset();
+//            $response->invokeStars();
+//            TagRunner::run(Tag::RESPONSE, $response);
+//            return $response;
+//        }
+//
+//
+//        return $response;
     }
 
     /**

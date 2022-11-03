@@ -10,7 +10,7 @@
 
 namespace Axiom\Rivescript\Cortex\Tags;
 
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\RegExpressions;
 
@@ -91,7 +91,7 @@ class Person extends Tag implements TagInterface
                     }
                 } else {
                     /**
-                     * @var ResponseCommand $command
+                     * @var ResponseAbstract $command
                      */
                     $trigger = $command->getTrigger();
 

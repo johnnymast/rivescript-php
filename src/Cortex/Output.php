@@ -103,15 +103,9 @@ class Output
         $result = $this->errors["replyNotFound"];
 
         if (is_null($trigger) === false) {
-          //  $trigger->reset();
             $queue = $trigger->getQueue();
             if ($queue->hasResponses()) {
-
-                $response = $queue->process();
-
-                if ($response) {
-                    $result = $response->getNode()->getContent();
-                }
+                return $queue->process();
             }
         }
 

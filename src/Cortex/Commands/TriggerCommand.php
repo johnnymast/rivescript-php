@@ -44,7 +44,7 @@ use Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueue;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class TriggerCommand extends Command
+class TriggerCommand extends Command implements TriggerInterface
 {
 
     /**
@@ -192,15 +192,14 @@ class TriggerCommand extends Command
     }
 
     /**
-     * @param \Axiom\Rivescript\Cortex\Commands\ResponseCommand $response
-     * @param string                                            $type
+     * @param \Axiom\Rivescript\Cortex\Commands\ResponseInterface $response
      *
      * @return void
      */
-    public function attachResponse(ResponseCommand $response, string $type): void
+    public function attachCommand(ResponseInterface $response): void
     {
         $response->setTrigger($this);
-        $this->responses->attach($response, $type);
+        $this->responses->attach($response);
     }
 
     /**

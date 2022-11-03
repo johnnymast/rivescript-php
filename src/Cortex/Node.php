@@ -13,12 +13,14 @@ namespace Axiom\Rivescript\Cortex;
 use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\Commands\CommentCommand;
 use Axiom\Rivescript\Cortex\Commands\ConditionCommand;
+use Axiom\Rivescript\Cortex\Commands\ContinueCmd;
 use Axiom\Rivescript\Cortex\Commands\ContinueCommand;
 use Axiom\Rivescript\Cortex\Commands\DefinitionCommand;
 use Axiom\Rivescript\Cortex\Commands\LabelCommand;
 use Axiom\Rivescript\Cortex\Commands\PreviousCommand;
 use Axiom\Rivescript\Cortex\Commands\RedirectCommand;
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
+use Axiom\Rivescript\Cortex\Commands\ResponseCmd;
 use Axiom\Rivescript\Cortex\Commands\UnknownCommand;
 use Axiom\Rivescript\Cortex\Commands\TriggerCommand;
 use Axiom\Rivescript\Cortex\Traits\Regex;
@@ -198,9 +200,9 @@ class Node
             '!' => DefinitionCommand::class,
             '>' => LabelCommand::class,
             '+' => TriggerCommand::class,
-            '-' => ResponseCommand::class,
+            '-' => ResponseCmd::class,
+            '^' => ContinueCmd::class,
             '%' => PreviousCommand::class,
-            '^' => ContinueCommand::class,
             '@' => RedirectCommand::class,
             '*' => ConditionCommand::class,
             "//", '#' => CommentCommand::class,

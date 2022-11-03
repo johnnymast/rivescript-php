@@ -70,6 +70,10 @@ abstract class Command implements CommandValidator
      * @var array
      */
     protected array $randomWords = [];
+    /**
+     * @var \Axiom\Rivescript\Cortex\Commands\TriggerCommand
+     */
+    private TriggerCommand $trigger;
 
     /**
      * Command Constructor
@@ -118,9 +122,11 @@ abstract class Command implements CommandValidator
      *
      * @return void
      */
-    public function reset(): void {
+    public function reset(): void
+    {
         $this->getNode()->reset();
     }
+
     /**
      * Set the type of this command.
      *
@@ -196,8 +202,6 @@ abstract class Command implements CommandValidator
         return $this->wildcards;
     }
 
-
-
     /**
      * Return the random words for this command.
      *
@@ -229,6 +233,18 @@ abstract class Command implements CommandValidator
     public function addSyntaxError(string $message, array $args = []): void
     {
         $this->syntaxErrors[] = Misc::formatString($message, $args);
+    }
+
+    /**
+     * Set a reference to the trigger for the command.
+     *
+     * @param \Axiom\Rivescript\Cortex\Commands\TriggerCommand $trigger
+     *
+     * @return void
+     */
+    public function setTrigger(TriggerCommand $trigger): void
+    {
+        $this->trigger = $trigger;
     }
 
     /**
@@ -265,9 +281,19 @@ abstract class Command implements CommandValidator
     }
 
     /**
+     * Return the trigger this response belongs to.
+     *
+     * @return \Axiom\Rivescript\Cortex\Commands\TriggerCommand
+     */
+    public function getTrigger(): TriggerCommand
+    {
+        return $this->trigger;
+    }
+
+    /**
      * Return the content of this command.
      *
-     * @return int
+     * @return string
      */
     public function getContent(): string
     {
@@ -295,7 +321,9 @@ abstract class Command implements CommandValidator
      *
      * @return string|null
      */
-    protected function execute(string $attribute, array $arguments, array $classes): ?string
+    protected function execute(string $attribute,
+                               array  $arguments,
+                               array  $classes): ?string
     {
 
         foreach ($classes as $class) {
@@ -317,7 +345,7 @@ abstract class Command implements CommandValidator
                         call_user_func_array([$classInstance, $method->getName()], $arguments);
                     }
 
-                    if ($instance instanceof TriggerDetector || $instance instanceof ResponseDetector) {
+                    if ($instance instanceof TriggerDetector) {
                         call_user_func_array([$classInstance, $method->getName()], $arguments);
                     }
 

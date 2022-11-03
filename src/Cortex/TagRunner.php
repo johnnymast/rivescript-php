@@ -11,6 +11,8 @@
 namespace Axiom\Rivescript\Cortex;
 
 use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\Commands\ResponseInterface;
+use Axiom\Rivescript\Cortex\Commands\TriggerInterface;
 use Axiom\Rivescript\Cortex\Tags\TagInterface;
 
 /**
@@ -38,7 +40,7 @@ class TagRunner
      *
      * @return void
      */
-    public static function run(string $respponseType, Command $command): void
+    public static function run(string $respponseType, ResponseInterface|TriggerInterface $command): void
     {
         foreach (synapse()->tags as $tagClass) {
             $instance = new $tagClass($respponseType);

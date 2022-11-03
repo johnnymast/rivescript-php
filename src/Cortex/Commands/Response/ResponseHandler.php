@@ -2,7 +2,7 @@
 
 namespace Axiom\Rivescript\Cortex\Commands\Response;
 
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 
 /**
  * ResponseHandler interface
@@ -32,11 +32,11 @@ interface ResponseHandler
      * these methods. True will be returned if the response type is
      * detected. False will be returned if types don't match.
      *
-     * @param \Axiom\Rivescript\Cortex\Commands\ResponseCommand $response The parsed response.
+     * @param \Axiom\Rivescript\Cortex\Commands\ResponseAbstract $response The parsed response.
      *
      * @return bool|string
      */
-    public function detect(ResponseCommand $response): bool|string;
+    public function detect(ResponseAbstract $response): bool|string;
 
     /**
      * Return the type of

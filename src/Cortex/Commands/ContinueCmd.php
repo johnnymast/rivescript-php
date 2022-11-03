@@ -10,6 +10,13 @@
 
 namespace Axiom\Rivescript\Cortex\Commands;
 
+use Axiom\Collections\Collection;
+use Axiom\Rivescript\Cortex\Attributes\FindResponse;
+use Axiom\Rivescript\Cortex\Attributes\ResponseDetector;
+use Axiom\Rivescript\Cortex\Commands\Response\AtomicResponse;
+use Axiom\Rivescript\Cortex\Commands\Response\Detectors\ArrayDetector;
+use Axiom\Rivescript\Cortex\Commands\Response\Detectors\WeightedDetector;
+
 /**
  * ContinueCommand class
  *
@@ -31,7 +38,7 @@ namespace Axiom\Rivescript\Cortex\Commands;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class ContinueCommand extends Command
+class ContinueCmd extends ResponseAbstract implements ResponseInterface
 {
 
     /**
@@ -46,13 +53,4 @@ class ContinueCommand extends Command
         return $this->isSyntaxValid();
     }
 
-    /**
-     * Parse the continue command.
-     *
-     * @return bool
-     */
-    public function detect(): bool
-    {
-        return false;
-    }
 }

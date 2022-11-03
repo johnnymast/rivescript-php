@@ -11,7 +11,7 @@
 namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Commands\Command;
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 use Axiom\Rivescript\Cortex\RegExpressions;
 
 // FIXME ADD GOOD DESCRIPTION
@@ -56,7 +56,7 @@ class Lowercase extends Tag implements TagInterface
                     $content = str_replace($context, $replacement, $value);
                 } else {
                     /**
-                     * @var ResponseCommand $response
+                     * @var ResponseAbstract $response
                      */
                     $response = $command;
                     $trigger = $response->getTrigger();

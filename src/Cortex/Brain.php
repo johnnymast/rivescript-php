@@ -150,7 +150,7 @@ class Brain
             /**
              * @deprecated
              */
-            $this->topics->each(fn(Topic $topic) => $topic->sortTriggers());
+       //     $this->topics->each(fn(Topic $topic) => $topic->sortTriggers());
 //            $this->topics->each(fn(Topic $topic) => $topic->sortTriggers($topic->triggers()));
         }
     }

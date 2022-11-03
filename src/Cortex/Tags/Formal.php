@@ -11,7 +11,7 @@
 namespace Axiom\Rivescript\Cortex\Tags;
 
 use Axiom\Rivescript\Cortex\Commands\Command;
-use Axiom\Rivescript\Cortex\Commands\ResponseCommand;
+use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 use Axiom\Rivescript\Cortex\RegExpressions;
 
 /**
@@ -78,7 +78,7 @@ class Formal extends Tag implements TagInterface
 
                 } else {
                     /**
-                     * @var ResponseCommand $response
+                     * @var ResponseAbstract $response
                      */
                     $response = $command;
                     $trigger = $response->getTrigger();
