@@ -4,6 +4,7 @@ namespace Axiom\Rivescript\Cortex\ResponseQueue;
 
 use Axiom\Collections\Collection;
 use Axiom\Rivescript\Cortex\Commands\Command;
+use Axiom\Rivescript\Cortex\Commands\ConditionCmd;
 use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 use Axiom\Rivescript\Cortex\Commands\ResponseInterface;
 use Axiom\Rivescript\Cortex\TagRunner;
@@ -26,6 +27,28 @@ class ResponseQueueItem
     )
     {
         $this->continues = Collection::make([]);
+
+    }
+
+    /**
+     * Return the type for this
+     * command.
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->command->getType();
+    }
+
+    /**
+     * Return the command.
+     *
+     * @return \Axiom\Rivescript\Cortex\Commands\ResponseInterface
+     */
+    public function getCommand(): ResponseInterface
+    {
+        return $this->command;
     }
 
     /**
@@ -52,22 +75,29 @@ class ResponseQueueItem
             ->getNode()
             ->getContent();
 
+        if ($this->command instanceof ConditionCmd) {
+            if ($this->command->validates() === false) {
+                return $content;
+            }
+        }
+
         if ($this->continues->count() > 0) {
-
-            $concat = synapse()->memory->local()->get('concat');
-
             foreach ($this->continues as $response) {
-                $options = $response->getOptions();
-                $concat = $options['concat'];
+                if ($response->getType() == 'continue') {
+                    $options = $response->getOptions();
+                    $concat = $options['concat'];
 
-                $this->prepare($response);
-                $continue = $response->getNode()->getContent();
+                    $this->prepare($response);
+                    $continue = $response->getNode()->getContent();
 
-                $content .= match ($concat) {
-                    'space' => " {$continue}",
-                    'newline' => "\n{$continue}",
-                    default => $continue
-                };
+                    $content .= match ($concat) {
+                        'space' => " {$continue}",
+                        'newline' => "\n{$continue}",
+                        default => $continue
+                    };
+                } else {
+                    $content .= $response->getNode()->getContent();
+                }
             }
         }
 
@@ -95,6 +125,12 @@ class ResponseQueueItem
      */
     public function validate(): bool
     {
-        return true;
+        if ($this->command instanceof ConditionCmd) {
+            $this->prepare($this->command);
+            if (!$this->command->validates()) {
+                return false;
+            }
+        }
+        return true;// $this->command->validates();
     }
 }

@@ -12,10 +12,10 @@ namespace Axiom\Rivescript\Cortex;
 
 use Axiom\Rivescript\Cortex\Commands\Command;
 use Axiom\Rivescript\Cortex\Commands\CommentCommand;
-use Axiom\Rivescript\Cortex\Commands\ConditionCommand;
+use Axiom\Rivescript\Cortex\Commands\ConditionCmd;
 use Axiom\Rivescript\Cortex\Commands\ContinueCmd;
 use Axiom\Rivescript\Cortex\Commands\ContinueCommand;
-use Axiom\Rivescript\Cortex\Commands\DefinitionCommand;
+use Axiom\Rivescript\Cortex\Commands\DefinitionCmd;
 use Axiom\Rivescript\Cortex\Commands\LabelCommand;
 use Axiom\Rivescript\Cortex\Commands\PreviousCommand;
 use Axiom\Rivescript\Cortex\Commands\RedirectCommand;
@@ -197,14 +197,14 @@ class Node
         $this->tag = current(explode(" ", $this->source));
 
         $class = match ($this->tag) {
-            '!' => DefinitionCommand::class,
+            '!' => DefinitionCmd::class,
             '>' => LabelCommand::class,
             '+' => TriggerCommand::class,
             '-' => ResponseCmd::class,
             '^' => ContinueCmd::class,
             '%' => PreviousCommand::class,
             '@' => RedirectCommand::class,
-            '*' => ConditionCommand::class,
+            '*' => ConditionCmd::class,
             "//", '#' => CommentCommand::class,
             default => UnknownCommand::class,
         };

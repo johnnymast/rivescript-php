@@ -39,7 +39,7 @@ use Axiom\Rivescript\Cortex\RegExpressions;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class DefinitionCommand extends Command
+class DefinitionCmd extends Command
 {
     /**
      * Check the syntax for definitions.

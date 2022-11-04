@@ -13,5 +13,7 @@ interface ResponseInterface
 
     public function getOptions(): array;
 
+    public function validates(): bool;
+
     public function invokeStars(): void;
 }

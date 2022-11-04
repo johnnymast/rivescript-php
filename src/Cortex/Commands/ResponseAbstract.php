@@ -154,7 +154,7 @@ abstract class ResponseAbstract extends Command implements ResponseInterface
     /**
      * Set the options for this response.
      *
-     * @param array $options The options to set.
+     * @param array<string> $options The options to set.
      *
      * @return void
      */
@@ -200,11 +200,15 @@ abstract class ResponseAbstract extends Command implements ResponseInterface
     /**
      * Return the options for this response.
      *
-     * @return array
+     * @return array<string>
      */
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    public function validates(): bool {
+        return true;
     }
 
     /**

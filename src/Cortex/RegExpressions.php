@@ -62,5 +62,12 @@ class RegExpressions
 
     public const TAG_GET = "/<get (.+?)>/u";
 
+    public const CONDITION_TYPE_EQUALS = "/^([\S]+) (==|eq) ([\S]+) =>/";
+    public const CONDITION_TYPE_NOT_EQUALS = "/^([\S]+) (!=|ne|<>) ([\S]+) =>/";
+    public const CONDITION_TYPE_GREATER_THAN = "/^([\S]+) (>) ([\S]+) =>/";
+    public const CONDITION_TYPE_GREATER_THAN_OR_EQUALS = "/^([\S]+) (>=) ([\S]+) =>/";
+    public const CONDITION_TYPE_LESS_THAN_OR_EQUALS = "/^([\S]+) (<=) ([\S]+) =>/";
+    public const CONDITION_TYPE_LESS_THAN = "/^([\S]+) (<) ([\S]+) =>/";
+
 //    public const TAG_ARRAYS = "/\(@(.+?)\)/ui";
 }

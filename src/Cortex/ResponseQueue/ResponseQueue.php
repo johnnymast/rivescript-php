@@ -71,14 +71,14 @@ class ResponseQueue
         $queueItem = new ResponseQueueItem($response, $this->responses->count());
 
         /**
-         * @var \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem $last ;
+         * @var \Axiom\Rivescript\Cortex\ResponseQueue\ResponseQueueItem|bool $last ;
          */
         $last = $this->responses->last();
 
-        if ($last !== false && $response->getType() == 'continue') {
-            $last->addContinue($response);
-        } else {
+        if (!$last || $response->getType() != 'continue') {
             $this->responses->push($queueItem);
+        } else if ($response->getType() == 'continue') {
+            $last->addContinue($response);
         }
     }
 

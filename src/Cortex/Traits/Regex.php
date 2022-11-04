@@ -42,7 +42,6 @@ trait Regex
         return isset($matches[0][0]);
     }
 
-
     /**
      * Get the regular expression matches from the source.
      *
