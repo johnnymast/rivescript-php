@@ -86,11 +86,17 @@ class ConditionCmd extends ResponseAbstract implements ResponseInterface
             ],
         ];
 
+        echo "Voor: ".$this->getNode()->getContent()."\n";
+        $this->getNode()->reset();;
+        echo "Na1: ".$this->getNode()->getContent()."\n";
+        print_r($this->getTrigger()->stars);
+
         TagRunner::run(Tag::RESPONSE, $this);
 
+        echo "NaAAAAAAAA: ".$this->getNode()->getValue()." Content: ".$this->getNode()->getContent()."\n";
         $value = $this->getNode()->getValue();
 
-        foreach ($conditions as $condition) {
+        foreach ($conditions as $name => $condition) {
             if ($this->matchesPattern($condition['regex'], $this->getNode()->getValue())) {
                 $match = $this->getMatchesFromPattern($condition['regex'], $this->getNode()->getValue());
                 $match = current($match);
@@ -99,13 +105,21 @@ class ConditionCmd extends ResponseAbstract implements ResponseInterface
                 $left = $match[1];
                 $right = $match[3];
 
+
+
+                echo "Input: ".synapse()->input->original()."\n";
+                echo "Node: {$value}\n";
+                echo "{$name} TESTED: {$left} vs {$right}\n";
+
                 if ($condition['condition']($left, $right)) {
+
                     $content = str_replace($context, '', $value);
                     $this->getNode()->setContent(trim($content));
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 }

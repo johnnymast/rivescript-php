@@ -11,9 +11,16 @@ $script = <<<EOF
 EOF;
 
 $code = <<<EOF
+! local concat = newline
 
-echo "Hello world\n";
-echo "New line :)";
++ test *
+* <star1> == a => First A line
+^ Second A line
+^ Third A line
+- First B line
+^ Second B line
+^ Third B line
+
 EOF;
 
 function onVerbose($msg)
@@ -32,8 +39,11 @@ $rivescript = new Rivescript();
 
 
 try {
-    $rivescript->stream($script);
-    echo $rivescript->getObjectMacroManager()->executeMacro("php", $code);
+    $rivescript->stream($code);
+//    echo $rivescript->getObjectMacroManager()->executeMacro("php", $code);
+    echo $rivescript->reply("test A");
+    echo "\n=====================\n";
+    echo $rivescript->reply("test B");
 
     $rivescript->on(Event::DEBUG, 'onDebug')
         ->on(Event::DEBUG_WARNING, 'onVerbose');

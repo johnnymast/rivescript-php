@@ -75,11 +75,11 @@ class ResponseQueueItem
             ->getNode()
             ->getContent();
 
-        if ($this->command instanceof ConditionCmd) {
-            if ($this->command->validates() === false) {
-                return $content;
-            }
-        }
+//        if ($this->command instanceof ConditionCmd) {
+//            if ($this->command->validates() === false) {
+//                return $content;
+//            }
+//        }
 
         if ($this->continues->count() > 0) {
             foreach ($this->continues as $response) {
@@ -125,8 +125,8 @@ class ResponseQueueItem
      */
     public function validate(): bool
     {
+        $this->prepare($this->command);
         if ($this->command instanceof ConditionCmd) {
-            $this->prepare($this->command);
             if (!$this->command->validates()) {
                 return false;
             }

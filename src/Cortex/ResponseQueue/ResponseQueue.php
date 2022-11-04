@@ -77,7 +77,7 @@ class ResponseQueue
 
         if (!$last || $response->getType() != 'continue') {
             $this->responses->push($queueItem);
-        } else if ($response->getType() == 'continue') {
+        } else if ($response->getType() === 'continue') {
             $last->addContinue($response);
         }
     }
