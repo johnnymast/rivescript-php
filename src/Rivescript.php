@@ -10,6 +10,7 @@
 
 namespace Axiom\Rivescript;
 
+use AllowDynamicProperties;
 use Axiom\Rivescript\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Cortex\Command\Trigger;
 use Axiom\Rivescript\Cortex\Input;
@@ -18,6 +19,7 @@ use Axiom\Rivescript\Cortex\Topic;
 use Axiom\Rivescript\Events\Event;
 use Axiom\Rivescript\Events\EventEmitter;
 use Axiom\Rivescript\ObjectMacros\ObjectMacrosManager;
+use Axiom\Rivescript\SessionManager\MemorySessionStorage;
 use Axiom\Rivescript\SessionManager\SessionManagerInterface;
 use Axiom\Rivescript\Utils\Misc;
 
@@ -35,7 +37,7 @@ use Axiom\Rivescript\Utils\Misc;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.3.0
  */
-class Rivescript extends ContentLoader
+#[AllowDynamicProperties] class Rivescript extends ContentLoader
 {
     use EventEmitter;
 
@@ -64,12 +66,12 @@ class Rivescript extends ContentLoader
      * $rivescript-cli = new RiveScript(debug=true, utf8=true);
      * ```
      *
-     * @param bool                     $utf8            Enable utf8 mode true/false
-     * @param bool                     $debug           Enable utf8 debug true/false
-     * @param bool                     $strict          Enable utf8 strict true/false
-     * @param int                      $depth           Max recursion depth.
-     * @param string                   $logfile         Use this logfile.
-     * @param ?SessionManagerInterface $session_manager pass a customSessionManager.
+     * @param bool                     $utf8           Enable utf8 mode true/false
+     * @param bool                     $debug          Enable utf8 debug true/false
+     * @param bool                     $strict         Enable utf8 strict true/false
+     * @param int                      $depth          Max recursion depth.
+     * @param string                   $logfile        Use this logfile.
+     * @param ?SessionManagerInterface $sessionManager pass a customSessionManager.
      *
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      */
@@ -79,7 +81,13 @@ class Rivescript extends ContentLoader
         public bool                     $strict = true,
         public int                      $depth = 25,
         public string                   $logfile = '',
-        public ?SessionManagerInterface $session_manager = null
+
+        /**
+         * This Session Manager will be used to store user variables.
+         *
+         * @var \Axiom\Rivescript\SessionManager\SessionManagerInterface
+         */
+        public ?SessionManagerInterface $sessionManager = null
     )
     {
         parent::__construct();
@@ -88,6 +96,9 @@ class Rivescript extends ContentLoader
 
         $this->macroManager = new ObjectMacrosManager();
 
+        if (!$sessionManager) {
+            $this->sessionManager = new MemorySessionStorage();
+        }
         /**
          * Set default global variables. These
          * can be overwritten by the script.
@@ -130,8 +141,7 @@ class Rivescript extends ContentLoader
      * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
-    public
-    function load($info): void
+    public function load($info): void
     {
         parent::load($info);
         $this->processInformation();
@@ -146,8 +156,7 @@ class Rivescript extends ContentLoader
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      * @return void
      */
-    public
-    function stream(string $string): void
+    public function stream(string $string): void
     {
 
         $this->openStream();
@@ -163,8 +172,7 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public
-    function sortReplies(): void
+    public function sortReplies(): void
     {
         synapse()->brain->topics()->each(fn(Topic $topic) => $topic->sortTriggers());
     }
@@ -176,11 +184,145 @@ class Rivescript extends ContentLoader
      * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
-    private
-    function processInformation(): void
+    private function processInformation(): void
     {
         synapse()->memory->local()->put('concat', 'none');
         synapse()->brain->teach($this->getStream());
+    }
+
+    /**
+     * Set a variable for a user.
+     * This is like the ``<set>`` tag in RiveScript code.
+     *
+     * @param string $user  The user ID to set a variable for.
+     * @param string $name  The name of the variable to set.
+     * @param string $value he value to set there.
+     *
+     * @return void
+     */
+    public function setUserVar(string $user, string $name, string $value)
+    {
+
+    }
+
+    /**
+     * This function can be called in two ways::
+     *
+     * # Set a dict of variables for a single user.
+     * rs.set_uservars(username, vars)
+     *
+     * # Set a nested dict of variables for many users.
+     * rs.set_uservars(many_vars)
+     *
+     * In the first syntax, ``vars`` is a simple dict of key/value string
+     * pairs. In the second syntax, ``many_vars`` is a structure like this::
+     * {
+     * "username1": {
+     * "key": "value",
+     * },
+     * "username2": {
+     * "key": "value",
+     * },
+     * }
+     * This way you can export *all* user variables via ``get_uservars()``
+     * and then re-import them all at once, instead of setting them once per
+     * user.
+     *
+     * :param optional str user: The user ID to set many variables for.
+     * Skip this parameter to set many variables for many users instead.
+     * :param dict data: The dictionary of key/value pairs for user variables,
+     * or else a dict of dicts mapping usernames to key/value pairs.
+     * This may raise a ``TypeError`` exception if you pass it invalid data
+     * types. Note that only the standard ``dict`` type is accepted, but not
+     * variants like ``OrderedDict``, so if you have a dict-like type you
+     * should cast it to ``dict`` first.
+     *
+     * @param string $user The user to set the variables for.
+     * @param array  $data The data to set for the user.
+     *
+     * @return void many variables for a user, or set many variables for many users.
+     */
+    public function setUserVars(string $user, array $data): void
+    {
+        //
+    }
+
+    /**
+     * Get a variable about a user.
+     *
+     * @param string $user The user ID to look up a variable for.
+     * @param string $name The name of the variable to get.
+     *
+     * @return mixed  The user variable, or ``None`` or ``"undefined"``:
+     * If the user has no data at all, this returns ``None``.
+     * If the user doesn't have this variable set, this returns the
+     * string ``"undefined"``.
+     * Otherwise this returns the string value of the variable.
+     */
+    public function getUserVar(string $user, string $name): mixed
+    {
+        //
+    }
+
+    /**
+     * Get all variables about a user (or all users).
+     *
+     * @param string|null $user The user ID to retrieve all variables for.
+     *                          If not passed, this function will return all data for all users.
+     *
+     * @return mixed dict: All the user variables.
+     * If a ``user`` was passed, this is a ``dict`` of key/value pairs
+     * of that user's variables. If the user doesn't exist in memory,
+     * this returns ``None``.
+     * Otherwise, this returns a ``dict`` of key/value pairs that map
+     * user IDs to their variables (a ``dict`` of ``dict``).
+     */
+    public function getUserVars(string $user = null): mixed
+    {
+        //
+    }
+
+    /**
+     * Delete all variables about a user (or all users).
+     *
+     * @param string $user The user ID to clear variables for, or else clear all
+     *                     variables for all users if not provided.
+     *
+     * @return void
+     */
+    public function clearUserVars(string $user)
+    {
+        //
+    }
+
+    /**
+     * Freeze the variable state for a user.
+     * This will clone and preserve a user's entire variable state, so that it
+     * can be restored later with ``thaw_uservars()``.
+     *
+     *
+     * @param string $user The user ID to freeze variables for.
+     *
+     * @return void
+     */
+    public function freezeUservars(string $user): void
+    {
+        //
+    }
+
+    /**
+     * Thaw a user's frozen variables.
+     *
+     * @param string $action the action to perform when thawing the variables:
+     *                       ``discard``: Don't restore the user's variables, just delete the frozen copy.
+     *                       ``keep``: Keep the frozen copy after restoring the variables.
+     *                       ``thaw``: Restore the variables, then delete the frozen copy (this is the default).
+     *
+     * @return void
+     */
+    public function thawUservars(string $action = "thaw"): void
+    {
+        //
     }
 
     /**
@@ -191,8 +333,7 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public
-    function debug(string $message, array $args = []): void
+    public function debug(string $message, array $args = []): void
     {
         $message = "[DEBUG] " . Misc::formatString($message, $args);
 
@@ -207,8 +348,7 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public
-    function verbose(string $message, array $args = []): void
+    public function verbose(string $message, array $args = []): void
     {
         $message = "[VERBOSE] " . Misc::formatString($message, $args);
 
@@ -223,8 +363,7 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public
-    function warn(string $message, array $args = []): void
+    public function warn(string $message, array $args = []): void
     {
         $message = "[WARNING] " . Misc::formatString($message, $args);
 
@@ -239,8 +378,7 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public
-    function error(string $message, array $args = []): void
+    public function error(string $message, array $args = []): void
     {
         $message = "[ERROR] " . Misc::formatString($message, $args);
 
@@ -255,8 +393,7 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public
-    function say(string $message, array $args = []): void
+    public function say(string $message, array $args = []): void
     {
 
         $message = Misc::formatString($message, $args);
@@ -272,8 +409,7 @@ class Rivescript extends ContentLoader
      *
      * @return string
      */
-    public
-    function reply(string $msg, string $user = 'local-user'): string
+    public function reply(string $msg, string $user = 'local-user'): string
     {
 
         synapse()->rivescript->say("Asked to reply to :user :msg", ['user' => $user, 'msg' => $msg]);

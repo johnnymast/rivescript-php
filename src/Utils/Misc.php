@@ -11,15 +11,15 @@
 namespace Axiom\Rivescript\Utils;
 
 /**
- * Utils class
+ * Misc class
  *
- * This class contains a set of helper functions.
+ * This class contains a set of miscellaneous helper functions.
  *
  * PHP version 8.0 and higher.
  *
  * @category Core
  * @package  Utils
- * @author   Shea Lewis <shea.lewis89@gmail.com>
+ * @author   Johnny Mast <mastjohnny@gmail.com>
  * @license  https://opensource.org/licenses/MIT MIT
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
