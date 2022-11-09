@@ -1,4 +1,4 @@
-# RiveScript-PHP
+# RiveScript-PHP - NOT USABLE Work in Progress!
 [![Source](http://img.shields.io/badge/source-axiom--labs/rivescript--php-blue.svg?style=flat-square)](https://github.com/axiom-labs/rivescript-php)
 [![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://tldrlegal.com/license/mit-license)
 [![Build & Unit Test](https://github.com/axiom-labs/rivescript-php/actions/workflows/Phpunit.yml/badge.svg)](https://github.com/axiom-labs/rivescript-php/actions/workflows/Phpunit.yml)
