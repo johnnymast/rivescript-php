@@ -20,7 +20,7 @@ use Axiom\Rivescript\Events\Event;
 use Axiom\Rivescript\Events\EventEmitter;
 use Axiom\Rivescript\ObjectMacros\ObjectMacrosManager;
 use Axiom\Rivescript\SessionManager\MemorySessionStorage;
-use Axiom\Rivescript\SessionManager\SessionManagerInterface;
+use Axiom\Rivescript\SessionManager\SessionInterface;
 use Axiom\Rivescript\Utils\Misc;
 
 /**
@@ -66,12 +66,12 @@ use Axiom\Rivescript\Utils\Misc;
      * $rivescript-cli = new RiveScript(debug=true, utf8=true);
      * ```
      *
-     * @param bool                     $utf8           Enable utf8 mode true/false
-     * @param bool                     $debug          Enable utf8 debug true/false
-     * @param bool                     $strict         Enable utf8 strict true/false
-     * @param int                      $depth          Max recursion depth.
-     * @param string                   $logfile        Use this logfile.
-     * @param ?SessionManagerInterface $sessionManager pass a customSessionManager.
+     * @param bool              $utf8           Enable utf8 mode true/false
+     * @param bool              $debug          Enable utf8 debug true/false
+     * @param bool              $strict         Enable utf8 strict true/false
+     * @param int               $depth          Max recursion depth.
+     * @param string            $logfile        Use this logfile.
+     * @param ?SessionInterface $sessionManager pass a customSessionManager.
      *
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      */
@@ -85,9 +85,9 @@ use Axiom\Rivescript\Utils\Misc;
         /**
          * This Session Manager will be used to store user variables.
          *
-         * @var \Axiom\Rivescript\SessionManager\SessionManagerInterface
+         * @var \Axiom\Rivescript\SessionManager\SessionInterface
          */
-        public ?SessionManagerInterface $sessionManager = null
+        public ?SessionInterface $sessionManager = null
     )
     {
         parent::__construct();

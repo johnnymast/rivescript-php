@@ -2,7 +2,7 @@
 /*
  * This file is part of Rivescript-php
  *
- * (c) Shea Lewis <shea.lewis89@gmail.com>
+ * (c) Johnny Mast <mastjohnny@gmail.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,10 +11,21 @@
 namespace Axiom\Rivescript\SessionManager;
 
 /**
- * SessionManagerInterface interface
+ * SessionManager class
  *
- * This interface will make sure all sessions plugins
- * will implement the same functions.
+ * This is the Base class for session management for RiveScript. The session manager
+ * keeps track of getting and setting user variables,for example when the <set> or <get> tags
+ * are used in RiveScript or when the API functions like ``setUserVar()`` are called.
+ *
+ * By default RiveScript stores user sessions in memory and provides methods
+ * to export and import them (e.g. to persist them when the bot shuts down
+ * so they can be reloaded). If you'd prefer a more 'active' session storage,
+ * for example one that puts user variables into a database or cache, you can
+ * create your own session manager that extends this class and implements its
+ * functions.
+ *
+ * See the ``eg/sessions`` example from the source of rivescript-python at
+ * https://github.com/aichaos/rivescript-python for an example.
  *
  * PHP version 8.0 and higher.
  *
@@ -25,64 +36,67 @@ namespace Axiom\Rivescript\SessionManager;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-interface SessionManagerInterface
+abstract class Session implements SessionInterface
 {
     /**
-     * @param string               $username The username to set variables for.
-     * @param array<string> $args     (dict): Key/value pairs of variables to set for the user.
+     * Set variables for a user.
+     *
+     * @param string        $username        The username to set variables for.
+     * @param array<string> $args            array with Key/value pairs of variables to set for the user.
      *                                       The values are usually strings, but they can be other types
      *                                       as well (e.g. arrays or other dicts) for some internal data
-     *                                       structures such as input/reply history. A value of ``NoneType``
+     *                                       structures such as input/reply history. A value of ``null``
      *                                       should indicate that the key should be deleted from the session
      *                                       store.
      *
      * @return void
      */
-    public function set(string $username, array $args): void;
+    abstract public function set(string $username, array $args): void;
 
     /**
      * Retrieve a stored variable for a user.
-     * If the user doesn't exist, this should return ``None``. If the user
+     *
+     * If the user doesn't exist, this should return ``null``. If the user
      * does* exist, but the key does not, this should return the
      * string value ``"undefined"``.
      *
      * @param string $username The username to retrieve variables for.
      * @param string $key      The specific variable name to retrieve.
+     * @param string $default  The default value for key the key is not defined.
      *
-     * @return string The value of the requested key, "undefined", or ``NoneType``.
+     * @return mixed The value of the requested key, "undefined", or null.
      */
-    public function get(string $username, string $key): mixed;
+    abstract public function get(string $username, string $key, string $default = "undefined"): mixed;
 
     /**
      * Retrieve all stored variables for a user.
      *
-     * If the user doesn't exist, this should return ``None``.
+     * If the user doesn't exist, this should return ``null``.
      *
      * @param string $username The username to retrieve variables for.
      *
-     * @return mixed Key/value pairs of all stored data for the user, or ``NoneType``.
+     * @return array<string, mixed>|null Key/value pairs of all stored data for the user, or null.
      */
-    public function getAny(string $username);
+    abstract public function getAny(string $username): array|null;
 
     /**
      * Retrieve all variables about all users.
      *
-     *  This should return a dict of dicts, where the top level keys are the
-     *  usernames of every user your bot has data for, and the values are dicts
-     *  of key/value pairs of those users. For example::
+     * This should return an object that maps usernames to an object of their
+     * variables. For example:
      *
      *  { "user1": {
-     *  "topic": "random",
-     *  "name": "Alice",
+     *      "topic": "random",
+     *      "name": "Alice",
      *  },
      *  "user2": {
-     *  "topic": "random",
-     *  "name": "Bob",
+     *      "topic": "random",
+     *      "name": "Bob",
      *  },
      *  }
-     * @return mixed
+     * @return array <string, mixed>
      */
-    public function getAll(): mixed;
+    abstract public function getAll(): array;
 
     /**
      * Reset all variables stored about a particular user.
@@ -91,27 +105,29 @@ interface SessionManagerInterface
      *
      * @return void
      */
-    public function reset(string $username): void;
+    abstract public function reset(string $username): void;
 
     /**
      * Reset all variables for all users.
      *
      * @return void
      */
-    public function resetAll(): void;
+    abstract public function resetAll(): void;
 
     /**
      * Make a snapshot of the user's variables.
      *
      * This should clone and store a snapshot of all stored variables for the
      * user, so that they can later be restored with ``thaw()``. This
-     * implements the RiveScript ``freeze_uservars()`` method.
+     * implements the RiveScript ``freezeUservars()`` method.
      *
      * @param string $username The username to freeze variables for.
      *
+     * @throws \Axiom\Rivescript\Exceptions\MemorySessionException
+     *
      * @return void
      */
-    public function freeze(string $username): void;
+    abstract public function freeze(string $username): void;
 
     /**
      * Restore the frozen snapshot of variables for a user.
@@ -126,9 +142,11 @@ interface SessionManagerInterface
      *                         ``discard``: Don't restore the variables, just delete the frozen copy.
      *                         ``keep``: Restore the variables and keep the copy still.
      *
+     * @throws \Axiom\Rivescript\Exceptions\MemorySessionException
+     *
      * @return void
      */
-    public function thaw(string $username, string $action = "thaw"): void;
+    abstract public function thaw(string $username, string $action = "thaw"): void;
 
     /**
      * The default session data for a new user.
@@ -142,5 +160,5 @@ interface SessionManagerInterface
      * }
      * @return mixed  dict: A dict of default key/value pairs for new user sessions.
      */
-    public function defaultSession(): mixed;
+    abstract public function defaultSession(): mixed;
 }

@@ -37,7 +37,7 @@ use Axiom\Rivescript\Exceptions\MemorySessionException;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class MemorySessionStorage extends SessionManager
+class MemorySessionStorage extends Session
 {
     /**
      * @param array<string, mixed> $users  A list settings for the users.
