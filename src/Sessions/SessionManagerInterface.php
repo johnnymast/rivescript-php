@@ -28,18 +28,17 @@ namespace Axiom\Rivescript\SessionManager;
 interface SessionManagerInterface
 {
     /**
-     * @param string $key      Save a value using this key.
-     * @param string $username The username to set variables for.
-     * @param mixed  $args     (dict): Key/value pairs of variables to set for the user.
-     *                         The values are usually strings, but they can be other types
-     *                         as well (e.g. arrays or other dicts) for some internal data
-     *                         structures such as input/reply history. A value of ``NoneType``
-     *                         should indicate that the key should be deleted from the session
-     *                         store.
+     * @param string               $username The username to set variables for.
+     * @param array<string> $args     (dict): Key/value pairs of variables to set for the user.
+     *                                       The values are usually strings, but they can be other types
+     *                                       as well (e.g. arrays or other dicts) for some internal data
+     *                                       structures such as input/reply history. A value of ``NoneType``
+     *                                       should indicate that the key should be deleted from the session
+     *                                       store.
      *
-     * @return bool
+     * @return void
      */
-    public function set(string $key, string $username, mixed $args): bool;
+    public function set(string $username, array $args): void;
 
     /**
      * Retrieve a stored variable for a user.
@@ -52,7 +51,7 @@ interface SessionManagerInterface
      *
      * @return string The value of the requested key, "undefined", or ``NoneType``.
      */
-    public function get(string $username, string $key): string;
+    public function get(string $username, string $key): mixed;
 
     /**
      * Retrieve all stored variables for a user.

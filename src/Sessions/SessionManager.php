@@ -36,13 +36,13 @@ namespace Axiom\Rivescript\SessionManager;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-abstract class SessionManager
+abstract class SessionManager implements SessionManagerInterface
 {
     /**
      * Set variables for a user.
      *
-     * @param string               $username The username to set variables for.
-     * @param array<string, mixed> $args     array with Key/value pairs of variables to set for the user.
+     * @param string        $username        The username to set variables for.
+     * @param array<string> $args            array with Key/value pairs of variables to set for the user.
      *                                       The values are usually strings, but they can be other types
      *                                       as well (e.g. arrays or other dicts) for some internal data
      *                                       structures such as input/reply history. A value of ``null``

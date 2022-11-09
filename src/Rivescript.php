@@ -200,9 +200,9 @@ use Axiom\Rivescript\Utils\Misc;
      *
      * @return void
      */
-    public function setUserVar(string $user, string $name, string $value)
+    public function setUserVar(string $user, string $name, string $value): void
     {
-
+        //$this->sessionManager->set($user, )
     }
 
     /**
@@ -237,21 +237,21 @@ use Axiom\Rivescript\Utils\Misc;
      * variants like ``OrderedDict``, so if you have a dict-like type you
      * should cast it to ``dict`` first.
      *
-     * @param string $user The user to set the variables for.
-     * @param array  $data The data to set for the user.
+     * @param string               $username The user to set the variables for.
+     * @param array<string, mixed> $data     The data to set for the user.
      *
      * @return void many variables for a user, or set many variables for many users.
      */
-    public function setUserVars(string $user, array $data): void
+    public function setUserVars(string $username, array $data): void
     {
-        //
+        $this->sessionManager->set($username, $data);
     }
 
     /**
      * Get a variable about a user.
      *
      * @param string $user The user ID to look up a variable for.
-     * @param string $name The name of the variable to get.
+     * @param string $name     The name of the variable to get.
      *
      * @return mixed  The user variable, or ``None`` or ``"undefined"``:
      * If the user has no data at all, this returns ``None``.
@@ -261,7 +261,7 @@ use Axiom\Rivescript\Utils\Misc;
      */
     public function getUserVar(string $user, string $name): mixed
     {
-        //
+        return $this->sessionManager->get($user, $name);
     }
 
     /**
@@ -279,7 +279,7 @@ use Axiom\Rivescript\Utils\Misc;
      */
     public function getUserVars(string $user = null): mixed
     {
-        //
+        return $this->sessionManager->getAny($user);
     }
 
     /**
@@ -290,9 +290,9 @@ use Axiom\Rivescript\Utils\Misc;
      *
      * @return void
      */
-    public function clearUserVars(string $user)
+    public function clearUserVars(string $user): void
     {
-        //
+        $this->sessionManager->reset($user);
     }
 
     /**
@@ -307,12 +307,13 @@ use Axiom\Rivescript\Utils\Misc;
      */
     public function freezeUservars(string $user): void
     {
-        //
+        $this->sessionManager->freeze($user);
     }
 
     /**
      * Thaw a user's frozen variables.
      *
+     * @param string $user   The user to perform the action for.
      * @param string $action the action to perform when thawing the variables:
      *                       ``discard``: Don't restore the user's variables, just delete the frozen copy.
      *                       ``keep``: Keep the frozen copy after restoring the variables.
@@ -320,9 +321,9 @@ use Axiom\Rivescript\Utils\Misc;
      *
      * @return void
      */
-    public function thawUservars(string $action = "thaw"): void
+    public function thawUservars(string $user, string $action = "thaw"): void
     {
-        //
+        $this->sessionManager->thaw($user, $action);
     }
 
     /**
