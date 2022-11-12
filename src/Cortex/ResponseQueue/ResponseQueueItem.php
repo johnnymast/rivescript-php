@@ -125,12 +125,12 @@ class ResponseQueueItem
      */
     public function validate(): bool
     {
-        $this->prepare($this->command);
         if ($this->command instanceof ConditionCmd) {
+            $this->prepare($this->command);
             if (!$this->command->validates()) {
                 return false;
             }
         }
-        return true;// $this->command->validates();
+        return true;
     }
 }

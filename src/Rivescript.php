@@ -19,8 +19,8 @@ use Axiom\Rivescript\Cortex\Topic;
 use Axiom\Rivescript\Events\Event;
 use Axiom\Rivescript\Events\EventEmitter;
 use Axiom\Rivescript\ObjectMacros\ObjectMacrosManager;
-use Axiom\Rivescript\SessionManager\MemorySessionStorage;
-use Axiom\Rivescript\SessionManager\SessionInterface;
+use Axiom\Rivescript\Sessions\MemorySessionManagerManager;
+use Axiom\Rivescript\Sessions\SessionInterface;
 use Axiom\Rivescript\Utils\Misc;
 
 /**
@@ -76,18 +76,18 @@ use Axiom\Rivescript\Utils\Misc;
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      */
     public function __construct(
-        public bool                     $utf8 = false,
-        public bool                     $debug = false,
-        public bool                     $strict = true,
-        public int                      $depth = 25,
-        public string                   $logfile = '',
-
+        public bool              $utf8 = false,
+        public bool              $debug = false,
+        public bool              $strict = true,
+        public int               $depth = 25,
+        public string            $logfile = '',
         /**
          * This Session Manager will be used to store user variables.
          *
          * @var \Axiom\Rivescript\SessionManager\SessionInterface
          */
-        public ?SessionInterface $sessionManager = null
+        public ?SessionInterface $sessionManager = null,
+        public bool              $forceCase = false,
     )
     {
         parent::__construct();
@@ -97,8 +97,10 @@ use Axiom\Rivescript\Utils\Misc;
         $this->macroManager = new ObjectMacrosManager();
 
         if (!$sessionManager) {
-            $this->sessionManager = new MemorySessionStorage();
+            $this->sessionManager = new MemorySessionManagerManager();
         }
+
+
         /**
          * Set default global variables. These
          * can be overwritten by the script.
@@ -203,6 +205,14 @@ use Axiom\Rivescript\Utils\Misc;
     public function setUserVar(string $user, string $name, string $value): void
     {
         //$this->sessionManager->set($user, )
+
+        if ($name == "topic" && $this->forceCase) {
+            $value = strtolower($value);
+        }
+
+
+        $fields = [$name => $value];
+        $this->sessionManager->set($user, $fields);
     }
 
     /**
@@ -251,7 +261,7 @@ use Axiom\Rivescript\Utils\Misc;
      * Get a variable about a user.
      *
      * @param string $user The user ID to look up a variable for.
-     * @param string $name     The name of the variable to get.
+     * @param string $name The name of the variable to get.
      *
      * @return mixed  The user variable, or ``None`` or ``"undefined"``:
      * If the user has no data at all, this returns ``None``.
@@ -279,6 +289,10 @@ use Axiom\Rivescript\Utils\Misc;
      */
     public function getUserVars(string $user = null): mixed
     {
+        if (!$user) {
+            return $this->sessionManager->getAll();
+        }
+
         return $this->sessionManager->getAny($user);
     }
 

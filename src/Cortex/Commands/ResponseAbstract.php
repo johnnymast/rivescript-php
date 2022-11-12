@@ -207,7 +207,8 @@ abstract class ResponseAbstract extends Command implements ResponseInterface
         return $this->options;
     }
 
-    public function validates(): bool {
+    public function validates(): bool
+    {
         return true;
     }
 
@@ -258,6 +259,5 @@ abstract class ResponseAbstract extends Command implements ResponseInterface
                 }
             }
         }
-        // }
     }
 }

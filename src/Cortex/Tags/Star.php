@@ -46,7 +46,7 @@ class Star extends Tag implements TagInterface
      *
      * @var array<string>
      */
-    protected array $allowedSources = [self::RESPONSE];
+    protected array $allowedSources = [self::TRIGGER, self::RESPONSE];
 
     /**
      * The pattern for this tag.
@@ -62,14 +62,14 @@ class Star extends Tag implements TagInterface
      */
     public function parse(Command $command): void
     {
-        if ($this->isSourceOfType(self::RESPONSE)) {
 
-            /**
-             * @var \Axiom\Rivescript\Cortex\Commands\ResponseAbstract $command ;
-             */
-            $trigger = $command->getTrigger();
-            $value = $command->getNode()->getValue();
+        /**
+         * @var \Axiom\Rivescript\Cortex\Commands\ResponseAbstract $command ;
+         */
+        $trigger = $command->getTrigger();
+        $value = $command->getNode()->getValue();
 
+        if ($this->isMatching($command->getNode())) {
             $matches = $this->getMatches($command->getNode());
 
             foreach ($matches as $match) {
@@ -81,6 +81,7 @@ class Star extends Tag implements TagInterface
             }
 
             $command->getNode()->setValue($value);
+            $command->getNode()->setContent($value);
         }
     }
 }

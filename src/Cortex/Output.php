@@ -105,6 +105,7 @@ class Output
         if (is_null($trigger) === false) {
             $queue = $trigger->getQueue();
             if ($queue->hasResponses()) {
+                $trigger->runDetectors();
                 return $queue->process();
             }
         }

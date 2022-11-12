@@ -13,6 +13,7 @@ namespace Axiom\Rivescript\Cortex\Commands;
 
 use Axiom\Rivescript\Cortex\RegExpressions;
 use Axiom\Rivescript\Cortex\TagRunner;
+use Axiom\Rivescript\Cortex\Tags\Star;
 use Axiom\Rivescript\Cortex\Tags\Tag;
 
 /**
@@ -86,14 +87,10 @@ class ConditionCmd extends ResponseAbstract implements ResponseInterface
             ],
         ];
 
-        echo "Voor: ".$this->getNode()->getContent()."\n";
-        $this->getNode()->reset();;
-        echo "Na1: ".$this->getNode()->getContent()."\n";
-        print_r($this->getTrigger()->stars);
+        $this->getNode()->reset();
 
-        TagRunner::run(Tag::RESPONSE, $this);
+        TagRunner::run(Tag::TRIGGER, $this);
 
-        echo "NaAAAAAAAA: ".$this->getNode()->getValue()." Content: ".$this->getNode()->getContent()."\n";
         $value = $this->getNode()->getValue();
 
         foreach ($conditions as $name => $condition) {
@@ -104,12 +101,6 @@ class ConditionCmd extends ResponseAbstract implements ResponseInterface
                 $context = $match[0];
                 $left = $match[1];
                 $right = $match[3];
-
-
-
-                echo "Input: ".synapse()->input->original()."\n";
-                echo "Node: {$value}\n";
-                echo "{$name} TESTED: {$left} vs {$right}\n";
 
                 if ($condition['condition']($left, $right)) {
 

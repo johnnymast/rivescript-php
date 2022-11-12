@@ -63,7 +63,7 @@ class Memory
      *
      * @var Collection<string, mixed>
      */
-    protected Collection $user;
+   // protected Collection $user;
 
     /**
      * @var Collection<string, mixed>
@@ -123,7 +123,7 @@ class Memory
 
         $this->arrays = Collection::make([]);
         $this->person = Collection::make([]);
-        $this->user = Collection::make([]);
+//        $this->user = Collection::make([]);
         $this->inputs = new MiniStack(9);
         $this->replies = new MiniStack(9);
     }
@@ -235,14 +235,14 @@ class Memory
      *
      * @return Collection<string, mixed>
      */
-    public function user(string $user = 'local-user'): Collection
-    {
-        if (!$this->user->has($user)) {
-            $data = new Collection([]);
-
-            $this->user->put($user, $data);
-        }
-
-        return $this->user->get($user);
-    }
+//    public function user(string $user = 'local-user'): Collection
+//    {
+//        if (!$this->user->has($user)) {
+//            $data = new Collection([]);
+//
+//            $this->user->put($user, $data);
+//        }
+//
+//        return $this->user->get($user);
+//    }
 }

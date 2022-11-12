@@ -51,10 +51,10 @@ class Mult extends Tag implements TagInterface
                 $variableKey = trim($match[1]);
                 $variableValue = trim($match[2]);
 
-                $existingValue = synapse()->memory->user()->get($variableKey) ?? '0';
+                $existingValue = synapse()->rivescript->getUserVar(synapse()->input->user(), $variableKey) ?? '0';
                 $existingValue = ($existingValue * (int)$variableValue);
 
-                synapse()->memory->user()->put($variableKey, $existingValue);
+                synapse()->rivescript->setUserVar(synapse()->input->user(), $variableKey, (string)$existingValue);
 
                 $content = str_replace($variableContext, '', $value);
             }

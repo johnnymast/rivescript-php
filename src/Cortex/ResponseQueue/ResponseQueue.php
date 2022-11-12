@@ -127,35 +127,18 @@ class ResponseQueue
     /**
      * Process the response queue.
      *
-     * @return \Axiom\Rivescript\Cortex\Commands\ResponseAbstract|null
+     * @return string|bool
      */
     public function process(): string|bool
     {
-        $response = null;
-
-        // order same as trigger.
-        // parse tags
-        //  TagRunner::run();
-
         $responses = $this->getResponses();
         $responses = $this->validateResponses($responses);
 
         if ($responses->count() > 0) {
             return $responses->first()->render();
-
         }
 
         return false;
-//        //       if ($this->responses->has('atomic')) {
-//        foreach ($responses->get('atomic') as $response) {
-//            //    $command->reset();
-//            $response->invokeStars();
-//            TagRunner::run(Tag::RESPONSE, $response);
-//            return $response;
-//        }
-//
-//
-//        return $response;
     }
 
     /**

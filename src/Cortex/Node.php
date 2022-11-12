@@ -117,8 +117,8 @@ class Node
      */
     public function reset(): void
     {
-        $this->content = $this->original;
         $this->source = Str::removeWhitespace($this->original);
+        $this->command = $this->detectCommand();
     }
 
     /**
@@ -211,7 +211,7 @@ class Node
 
         $this->value = $this->content = trim(mb_substr($this->source, 1));
 
-        return new $class($this);;
+        return new $class($this);
     }
 
 

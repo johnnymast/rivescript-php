@@ -101,7 +101,7 @@ class TriggerCommand extends Command implements TriggerInterface
      */
     public function __construct(Node $node, array $syntaxErrors = [], string $content = '')
     {
-        parent::__construct($node, $syntaxErrors, $content);
+        parent::__construct($node, $syntaxErrors);
 
         $this->stars = Collection::make([]);
         $this->responses = new ResponseQueue($this);
@@ -222,6 +222,25 @@ class TriggerCommand extends Command implements TriggerInterface
         return $this->responses;
     }
 
+
+    public function runDetectors() {
+        /**
+         * Lets run some detectors on this
+         * trigger to see what it contains.
+         */
+        $this->execute(
+            attribute: TriggerDetector::class,
+            arguments: [$this],
+            classes: [
+                WildcardDetector::class,
+                ArrayDetector::class,
+                AlternationDetector::class,
+                PreviousTrigger::class,
+                OptionalDetector::class,
+            ]
+        );
+    }
+
     /**
      * @throws \ReflectionException
      */
@@ -240,21 +259,8 @@ class TriggerCommand extends Command implements TriggerInterface
             ]
         ) ?? "atomic";
 
-        /**
-         * Lets run some detectors on this
-         * trigger to see what it contains.
-         */
-        $this->execute(
-            attribute: TriggerDetector::class,
-            arguments: [$this],
-            classes: [
-                WildcardDetector::class,
-                ArrayDetector::class,
-                AlternationDetector::class,
-                PreviousTrigger::class,
-                OptionalDetector::class,
-            ]
-        );
+
+        $this->runDetectors();
 
         $this->setType($type);
 
@@ -291,6 +297,9 @@ class TriggerCommand extends Command implements TriggerInterface
             }
         } else {
 
+            if ($this->hasArrays()) {
+                print_r($this->getArrays());
+            }
             // FIXME: Move this somewhere
             if ($this->hasWildcards()) {
                 $wildcards = $this->getWildcards();
@@ -300,16 +309,16 @@ class TriggerCommand extends Command implements TriggerInterface
                     $parsedTrigger = preg_replace($wildcard->getSearchRegex(), '(' . $wildcard->getReplaceRegex() . ')', $this->getNode()->getValue());
 
                     if ($parsedTrigger === $this->getNode()->getValue()) {
-                        continue;
+                //        continue;
                     }
 
-                    if (@preg_match_all('/' . $parsedTrigger . '$/iu', synapse()->input->source(), $wildcards)) {
+                    if (@preg_match_all('/' . $parsedTrigger . '$/iu', synapse()->input->source(), $w)) {
 
                         $value = $this->getNode()->getValue();
 
 
                         $detected++;
-                        //  return $this;
+                        return $this;
                     }
                 }
 
@@ -323,7 +332,7 @@ class TriggerCommand extends Command implements TriggerInterface
             }
 
 
-//            echo "{$this->getNode()->getValue()} is not fully attomic\n";
+            // echo "{$this->getNode()->getValue()} is not fully attomic\n";
         }
 
         return false;

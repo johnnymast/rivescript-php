@@ -65,7 +65,7 @@ class Set extends Tag implements TagInterface
                 $variableKey = trim($match[1]);
                 $variableValue = trim($match[2]);
 
-                synapse()->memory->user()->put($variableKey, $variableValue);
+                synapse()->rivescript->setUserVar(synapse()->input->user(), $variableKey, $variableValue);
 
                 $content = str_replace($variableContext, '', $value);
             }

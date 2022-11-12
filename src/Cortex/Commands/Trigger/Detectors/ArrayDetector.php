@@ -62,7 +62,7 @@ class ArrayDetector implements TriggerDetectorInterface
             if (is_array($matches) && count($matches) > 0) {
                 foreach ($matches as $match) {
                     if (isset($match[1])) {
-                        $original = '('.$match[0].')'; // FIXME: Possible but IF the origional has aa space
+                        $original = '('.$match[0].')';
                         $name = $match[1];
 
                         if (synapse()->memory->arrays()->has($name)) {
@@ -77,7 +77,7 @@ class ArrayDetector implements TriggerDetectorInterface
                     }
                 }
 
-                $trigger->getNode()->setValue($value);
+                $trigger->getNode()->setContent($value);
             }
 
             synapse()

@@ -52,5 +52,4 @@ class ContinueCmd extends ResponseAbstract implements ResponseInterface
     {
         return $this->isSyntaxValid();
     }
-
 }

@@ -63,7 +63,8 @@ class Get extends Tag implements TagInterface
             foreach ($matches as $match) {
                 $variableContext = trim($match[0]);
                 $variableKey = trim($match[1]);
-                $variableValue = synapse()->memory->user()->get($variableKey) ?? "undefined";
+                $variableValue = synapse()->rivescript->getUserVar(synapse()->input->user(), $variableKey);
+
 
                 $content = str_replace($variableContext, $variableValue, $value);
             }

@@ -184,7 +184,7 @@ class Topic
 
         /** @var TriggerCommand $trigger */
         foreach ($this->triggers as $trigger) {
-            TagRunner::run(Tag::TRIGGER, $trigger);
+
             $value = $trigger->parse();
 
             if ($value) {

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Axiom\Rivescript\SessionManager;
+namespace Axiom\Rivescript\Sessions;
 
 /**
  * SessionManager class
@@ -36,7 +36,7 @@ namespace Axiom\Rivescript\SessionManager;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-abstract class Session implements SessionInterface
+abstract class SessionManager implements SessionInterface
 {
     /**
      * Set variables for a user.

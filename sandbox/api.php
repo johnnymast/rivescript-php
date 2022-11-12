@@ -5,23 +5,15 @@ use Axiom\Rivescript\Events\Event;
 use Axiom\Rivescript\Exceptions\ParseException;
 use Axiom\Rivescript\Rivescript;
 
-$script = <<<EOF
-+ say *
-- Hello <person>
-EOF;
 
 $code = <<<EOF
-! local concat = newline
-
-+ test *
-* <star1> == a => First A line
-^ Second A line
-^ Third A line
-- First B line
-^ Second B line
-^ Third B line
-
++ what (are|is) you
+- I am a robot.
 EOF;
+
+//
+//+ hi * *
+//- you said <star> <star2>
 
 function onVerbose($msg)
 {
@@ -40,10 +32,17 @@ $rivescript = new Rivescript();
 
 try {
     $rivescript->stream($code);
+
 //    echo $rivescript->getObjectMacroManager()->executeMacro("php", $code);
-    echo $rivescript->reply("test A");
-    echo "\n=====================\n";
-    echo $rivescript->reply("test B");
+//    echo $rivescript->reply("hi me");
+//    echo $rivescript->reply("what color is my red jacket");
+//    echo $rivescript->reply("hi man girl");
+    echo $rivescript->reply("what are you");
+//    echo $rivescript->reply("My name is Bob");
+//    echo $rivescript->reply("test B");
+//    echo "\n=====================\n";
+//    echo $rivescript->reply("add");
+//    echo $rivescript->reply("show");
 
     $rivescript->on(Event::DEBUG, 'onDebug')
         ->on(Event::DEBUG_WARNING, 'onVerbose');

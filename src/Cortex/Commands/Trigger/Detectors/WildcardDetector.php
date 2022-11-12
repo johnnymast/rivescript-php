@@ -68,7 +68,7 @@ class WildcardDetector implements TriggerDetectorInterface
             $lastPos = 0;
             $positions = [];
 
-            while ((strpos($value, $character, $lastPos)) > 0) {
+            while (strpos($value, $character, $lastPos) > -1) {
                 if ($lastPos > strlen($value)) {
                     break;
                 }
