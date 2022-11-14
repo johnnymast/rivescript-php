@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Axiom\Rivescript\Cortex\Traits;
+namespace Axiom\Rivescript\Traits;
 
 /**
  * Regex trait

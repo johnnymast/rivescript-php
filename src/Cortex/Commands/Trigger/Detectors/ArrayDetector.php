@@ -13,7 +13,7 @@ namespace Axiom\Rivescript\Cortex\Commands\Trigger\Detectors;
 use Axiom\Rivescript\Cortex\Attributes\TriggerDetector;
 use Axiom\Rivescript\Cortex\Commands\TriggerCommand;
 use Axiom\Rivescript\Cortex\RegExpressions;
-use Axiom\Rivescript\Cortex\Traits\Regex;
+use Axiom\Rivescript\Traits\Regex;
 
 /**
  * ArrayDetector class

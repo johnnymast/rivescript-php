@@ -23,7 +23,8 @@ use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 use Axiom\Rivescript\Cortex\Commands\ResponseCmd;
 use Axiom\Rivescript\Cortex\Commands\UnknownCommand;
 use Axiom\Rivescript\Cortex\Commands\TriggerCommand;
-use Axiom\Rivescript\Cortex\Traits\Regex;
+use Axiom\Rivescript\Traits\Regex;
+use Axiom\Rivescript\Parser;
 use Axiom\Rivescript\Utils\Str;
 
 /**

@@ -1,5 +1,4 @@
 // Administrative functions.
-! var bleep = Test
 
 + shutdown{weight=10000}
 * <id> eq <bot master> => Shutting down... <call>shutdown</call>
@@ -7,9 +6,6 @@
 
 + botmaster only
 - This command can only be used by my botmaster. <id> != <bot master>
-
-+ Test // inline comment
-- Ok
 
 > object shutdown perl
 	my ($rs) = @_;

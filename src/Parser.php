@@ -8,17 +8,15 @@
  * file that was distributed with this source code.
  */
 
-namespace App;
+namespace Axiom\Rivescript;
 
-
-require '../vendor/autoload.php';
-
+use Axiom\Rivescript\Traits\Regex;
 use Axiom\Rivescript\Utils\Utils;
 
 /**
  * Parser class
  *
- * This is a port of the rivescript-js parser by Noah Petherbridge.
+ * This is a port of the rivescript-js parser written by Noah Petherbridge.
  * The original source code can be found here:
  *
  * https://github.com/aichaos/rivescript-js/blob/423cd4ac41ecc4f837639ee8bc8d2163bf61860b/src/parser.js
@@ -34,17 +32,37 @@ use Axiom\Rivescript\Utils\Utils;
  */
 class Parser
 {
+    use Regex;
+
+    /**
+     *
+     */
     public const RS_VERSION = "2.0";
 
+    /**
+     * @var bool
+     */
     protected bool $strict = true;
+    /**
+     * @var bool
+     */
     protected bool $utf8 = true;
 
+    /**
+     * @var bool
+     */
     protected bool $forceCase = false;
 
+    /**
+     * @var string
+     */
     protected string $concat = "none";
 
+    /**
+     * @param \Axiom\Rivescript\Rivescript $master
+     */
     public function __construct(
-        protected Master $master
+        protected Rivescript $master
     )
     {
         $this->strict = $this->master->strict;
@@ -240,6 +258,7 @@ class Parser
             }
 
             $this->say("Cmd: {$cmd}; line: {$lineno}");
+
             for ($li = $lp+1, $len2 = count($lines); $li < $len2; $li++) {
                 $lookahead = $lines[$li];
                 $lookahead = Utils::strip($lookahead);
@@ -298,8 +317,6 @@ class Parser
                         break;
                     }
                 }
-
-
             }
 
             $type = "";
@@ -678,21 +695,6 @@ class Parser
 
         return "";
     }
-
-    /**
-     * Check for patterns in a given string.
-     *
-     * @param string $regex  The pattern to detect.
-     * @param string $string The string that could contain the pattern.
-     *
-     * @return bool
-     */
-    private function matchesPattern(string $regex = '', string $string = ''): bool
-    {
-        preg_match_all($regex, $string, $matches);
-
-        return isset($matches[0][0]);
-    }
 }
 
 
@@ -714,11 +716,4 @@ class Master
         echo $message;
     }
 }
-
-$parser = new Parser(new Master());
-$info = $parser->parse('admin.rive', file_get_contents('admin.rive'), function ($messge) {
-    echo "OnError: " . $messge;
-});
-
-print_r($info);
 

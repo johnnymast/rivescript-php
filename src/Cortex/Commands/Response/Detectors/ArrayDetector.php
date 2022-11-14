@@ -13,7 +13,7 @@ namespace Axiom\Rivescript\Cortex\Commands\Response\Detectors;
 use Axiom\Rivescript\Cortex\Attributes\ResponseDetector;
 use Axiom\Rivescript\Cortex\Commands\ResponseAbstract;
 use Axiom\Rivescript\Cortex\RegExpressions;
-use Axiom\Rivescript\Cortex\Traits\Regex;
+use Axiom\Rivescript\Traits\Regex;
 
 // FIXME
 class ArrayDetector implements ResponseDetectorInterface

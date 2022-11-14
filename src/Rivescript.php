@@ -12,7 +12,6 @@ namespace Axiom\Rivescript;
 
 use AllowDynamicProperties;
 use Axiom\Rivescript\ContentLoader\ContentLoader;
-use Axiom\Rivescript\Cortex\Command\Trigger;
 use Axiom\Rivescript\Cortex\Input;
 use Axiom\Rivescript\Cortex\Output;
 use Axiom\Rivescript\Cortex\Topic;
@@ -42,20 +41,61 @@ use Axiom\Rivescript\Utils\Misc;
     use EventEmitter;
 
     /**
-     * This is the user identification.
-     *
-     * @var string
-     */
-    private string $client_id = 'local-user';
-
-    /**
      * Return the Object Macro Manager.
      *
      * @var \Axiom\Rivescript\ObjectMacros\ObjectMacrosManager
      */
     private ObjectMacrosManager $macroManager;
 
-    private $dbCounter = 0;
+    /**
+     * Force-lowercase triggers true/false.
+     *
+     * @var bool
+     */
+    public bool $forceCase = true;
+
+    /**
+     * Enable strict mode true/false
+     *
+     * @var bool
+     */
+    public bool $strict = true;
+    /**
+     * Enable utf8 mode true/false
+     *
+     * @var bool
+     */
+    public bool $utf8 = false;
+
+    /**
+     * Enable utf8 debug true/false
+     *
+     * @var bool
+     */
+    public bool $debug = false;
+
+    /**
+     * The default concatenation mode.
+     *
+     * @var string
+     */
+    public string $concat = "none";
+
+    /**
+     * Max recursion depth.
+     *
+     * @var int
+     */
+    public int $depth = 25;
+
+    /**
+     * The actual rivescript parser.
+     *
+     * @var \Axiom\Rivescript\Parser
+     */
+    protected Parser $parser;
+
+    public string $logfile = '';
 
     /**
      * Create a new Rivescript instance.
@@ -66,28 +106,21 @@ use Axiom\Rivescript\Utils\Misc;
      * $rivescript-cli = new RiveScript(debug=true, utf8=true);
      * ```
      *
-     * @param bool              $utf8           Enable utf8 mode true/false
-     * @param bool              $debug          Enable utf8 debug true/false
-     * @param bool              $strict         Enable utf8 strict true/false
-     * @param int               $depth          Max recursion depth.
-     * @param string            $logfile        Use this logfile.
-     * @param ?SessionInterface $sessionManager pass a customSessionManager.
-     *
      * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
      */
     public function __construct(
-        public bool              $utf8 = false,
-        public bool              $debug = false,
-        public bool              $strict = true,
-        public int               $depth = 25,
-        public string            $logfile = '',
+
+        /**
+         * Define the options for the Rivescript instance.
+         */
+        public array             $options = [],
+
         /**
          * This Session Manager will be used to store user variables.
          *
          * @var \Axiom\Rivescript\SessionManager\SessionInterface
          */
         public ?SessionInterface $sessionManager = null,
-        public bool              $forceCase = false,
     )
     {
         parent::__construct();
@@ -96,10 +129,18 @@ use Axiom\Rivescript\Utils\Misc;
 
         $this->macroManager = new ObjectMacrosManager();
 
+        $this->concat = $this->options['concat'] ?? $this->concat;
+        $this->debug = $this->options['debug'] ?? $this->debug;
+        $this->depth = $this->options['depth'] ?? $this->depth;
+        $this->utf8 = $this->options['utf8'] ?? $this->utf8;
+        $this->strict = $this->options['strict'] ?? $this->strict;
+        $this->forceCase = $this->options['forceCase'] ?? $this->forceCase;
+
         if (!$sessionManager) {
             $this->sessionManager = new MemorySessionManagerManager();
         }
 
+        $this->parser = new Parser($this);
 
         /**
          * Set default global variables. These
@@ -166,7 +207,6 @@ use Axiom\Rivescript\Utils\Misc;
         $this->processInformation();
         $this->sortReplies();
         $this->closeStream();
-        $this->dbCounter++;
     }
 
     /**
