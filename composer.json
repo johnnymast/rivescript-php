@@ -40,27 +40,8 @@
     }
   },
   "require": {
-    "php": ">=7.4",
-    "symfony/console": "^5.0",
-    "symfony/finder": "^3.2",
-    "axiom/collections": "~2.0"
+    "php": ">=8.1"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "*",
-    "phpunit/phpunit": "^9.5.5",
-    "monolog/monolog": "~1.0",
-    "pestphp/pest": "^1.14",
-    "phpstan/phpstan": "^0.12.94",
-    "symfony/yaml": "5.4.x-dev"
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-develop": "1.0.x-dev"
-    }
-  },
-  "config": {
-    "allow-plugins": {
-      "pestphp/pest-plugin": true
-    }
   }
 }

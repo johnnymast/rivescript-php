@@ -1,9 +1,2 @@
 vendor
-node_modules
-composer.phar
-composer.lock
-.DS_Store
-/error.rive
-/testsuite.rive
-/changes.txt
-/.phpunit.result.cache
+

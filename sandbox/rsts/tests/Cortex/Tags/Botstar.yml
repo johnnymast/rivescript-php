@@ -1,9 +1,0 @@
-
-
-Should_have_a_botstar_test:
-  tests:
-    - source: |
-
-    - input: "i fail you"
-      reply: "forced error here"
-
