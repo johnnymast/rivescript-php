@@ -26,9 +26,6 @@
     ]
   },
   "autoload": {
-    "files": [
-      "src\\helpers.php"
-    ],
     "psr-4": {
       "Axiom\\Rivescript\\": "src/"
     }
@@ -43,5 +40,11 @@
     "php": ">=8.1"
   },
   "require-dev": {
+    "pestphp/pest": "^2.5"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }

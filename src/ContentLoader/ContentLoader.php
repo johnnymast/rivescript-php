@@ -8,9 +8,11 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Axiom\Rivescript\ContentLoader;
 
-use Axiom\Rivescript\Exceptions\ContentLoadingException;
+use Axiom\Rivescript\Exceptions\ContentLoader\ContentLoaderException;
 use DirectoryIterator;
 use SplFileObject;
 
@@ -22,7 +24,7 @@ use SplFileObject;
  * store in a stream for the brain to learn
  * from.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.1 and higher.
  *
  * @see      https://www.php.net/manual/en/stream.streamwrapper.example-1.php
  * @see      https://www.php.net/manual/en/class.streamwrapper
@@ -41,7 +43,7 @@ class ContentLoader
      *
      * @var mixed
      */
-    private $stream;
+    private mixed $stream = null;
 
     /**
      * The stream wrapper name.
@@ -51,21 +53,14 @@ class ContentLoader
     protected string $name = 'rivescript';
 
     /**
-     * Flag indicating if the stream-wrapper
-     * was successfully registered.
-     *
-     * @var bool
-     */
-    protected bool $isRegistered = false;
-
-    /**
      * ContentLoader constructor.
      *
-     * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
+     * @throws \Axiom\Rivescript\Exceptions\ContentLoader\ContentLoaderException
      */
     public function __construct()
     {
         $existed = in_array($this->name, stream_get_wrappers(), true);
+
         if ($existed) {
             stream_wrapper_unregister($this->name);
         }
@@ -74,7 +69,7 @@ class ContentLoader
         }
 
         if (is_resource($this->stream) === false) {
-            throw new ContentLoadingException("Could not instantiate new rivescript content stream.");
+            throw new ContentLoaderException("Could not instantiate new rivescript content stream.");
         }
     }
 
@@ -93,7 +88,7 @@ class ContentLoader
      *
      * @return mixed
      */
-    public function getStream()
+    public function getStream(): mixed
     {
         return $this->stream;
     }
@@ -102,20 +97,20 @@ class ContentLoader
      * Load strings / files or whole directories
      * into the brain.
      *
-     * @param mixed $info Information about what to load.
+     * @param string|array $path The path to load, this could be a string or an array of strings.
      *
      * @return void
      */
-    public function load($info): void
+    public function load(string|array $path): void
     {
-        if (is_string($info) === true && file_exists($info) === false) {
-            $this->writeToMemory($info);
-        } elseif (is_string($info) === true && is_dir($info) === true) {
-            $this->loadDirectory($info);
-        } elseif (is_string($info) === true && file_exists($info) === true) {
-            $this->loadFile($info);
-        } elseif (is_array($info) === true && count($info) > 0) {
-            foreach ($info as $file) {
+        if (is_string($path) === true && file_exists($path) === false) {
+            $this->writeToMemory($path);
+        } elseif (is_string($path) === true && is_dir($path) === true) {
+            $this->loadDirectory($path);
+        } elseif (is_string($path) === true && file_exists($path) === true) {
+            $this->loadFile($path);
+        } elseif (is_array($path) === true && count($path) > 0) {
+            foreach ($path as $file) {
                 if (file_exists($file)) {
                     $this->loadFile($file);
                 }

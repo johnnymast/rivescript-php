@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Axiom\Rivescript\Cortex\ContentLoader;
+namespace Axiom\Rivescript\ContentLoader;
 
 /**
  * ContentStream class
@@ -19,7 +19,7 @@ namespace Axiom\Rivescript\Cortex\ContentLoader;
  * Note: This class taken from php.net and changed to
  *       be workable for this project.
  *
- * PHP version 7.4 and higher.
+ * PHP version 8.1 and higher.
  *
  * @see      https://www.php.net/manual/en/stream.streamwrapper.example-1.php
  * @see      https://www.php.net/manual/en/class.streamwrapper
