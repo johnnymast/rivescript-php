@@ -28,7 +28,7 @@ test(
     function () {
         $expected = "THIS IS THE CONTENT";
 
-        $this->loader->load(__DIR__ . '/../../resources/contentloader/content.txt');
+        $this->loader->load(__DIR__ . '/../../Resources/contentloader/content.txt');
         $stream = $this->loader->getStream();
 
         if (is_resource($stream)) {
@@ -46,8 +46,8 @@ test(
     'load() can load a multiple file passed as an array.',
     function () {
         $files = [
-            __DIR__ . '/../../resources/contentloader/files/file1.rive',
-            __DIR__ . '/../../resources/contentloader/files/file2.rive',
+            __DIR__ . '/../../Resources/contentloader/files/file1.rive',
+            __DIR__ . '/../../Resources/contentloader/files/file2.rive',
         ];
 
         $expected = [
@@ -88,7 +88,7 @@ test(
 
         $actual = [];
 
-        $this->loader->load(__DIR__ . '/../../resources/contentloader/directory');
+        $this->loader->load(__DIR__ . '/../../Resources/contentloader/directory');
         $stream = $this->loader->getStream();
 
         if (is_resource($stream)) {
