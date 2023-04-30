@@ -45,6 +45,16 @@ class Rivescript extends ContentLoader
 {
     use EventEmitter;
 
+    protected ?Brain $brain = null;
+    protected ?Parser $parser = null;
+
+    /**
+     * The default concatenation mode.
+     *
+     * @var string
+     */
+    public string $concat = "none";
+
     /**
      * A RiveScript interpreter for PHP.
      *
@@ -74,6 +84,16 @@ class Rivescript extends ContentLoader
             $this->sessionManager->on(RivescriptEvent::OUTPUT, fn($event) => $this->warn($event->message, $event->args)
             );
         }
+
+        $this->parser = new Parser(
+            master: $this,
+        );
+//
+//        $this->brain = new Brain(
+//            master: $this,
+//            strict: $this->strict,
+//            utf8: $this->utf8
+//        );
     }
 
     /**
@@ -275,7 +295,78 @@ class Rivescript extends ContentLoader
         $this->emit(RivescriptEvent::SAY, $message);
     }
 
-    public function sortReplies()
+    /**
+     * Sort the loaded triggers in memory.
+     *
+     * After you have finished loading your RiveScript code, call this method
+     * to populate the various internal sort buffers. This is absolutely
+     * necessary for reply matching to work efficiently!
+     *
+     * @return void
+     */
+    public function sortReplies(): void
     {
+        $this->say("Sorting triggers...");
     }
+
+    /**
+     * Define a custom language handler for RiveScript objects.
+     *
+     * Pass in a NULL value for the object to delete an existing handler (for
+     * example, to prevent Python code from being able to be run by default).
+     *
+     * @param string $language The lowercase name of the programming language.
+     *                         Examples: python, javascript, perl
+     * @param mixed  $object   An instance of an implementation class object.
+     *
+     * @return void
+     */
+    public function setHandler(string $language, mixed $object): void
+    {
+        if (!$object) {
+            // delete the handler
+        }
+    }
+
+
+    /**
+     * Stream new information into the brain.
+     *
+     * @param string $string The string of information to feed the brain.
+     *
+     * @throws \Axiom\Rivescript\Exceptions\ParseException
+     * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
+     * @return void
+     */
+    public function stream(string $string): void
+    {
+        $this->openStream();
+        $this->writeToMemory($string);
+        $this->processInformation();
+        $this->sortReplies();
+        $this->closeStream();
+    }
+
+    /**
+     * Process new information in the
+     * stream.
+     *
+     * @throws \Axiom\Rivescript\Exceptions\ParseException
+     * @return void
+     */
+    private function processInformation(): void
+    {
+        $stream = $this->getStream();
+        if (is_resource($stream)) {
+            rewind($stream);
+
+            $code = '';
+            while (!feof($stream)) {
+                $code .= fgets($stream);
+            }
+
+            $this->parser->parse($code);
+        }
+    }
+
 }

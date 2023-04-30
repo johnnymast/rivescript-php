@@ -5,6 +5,7 @@ namespace Axiom\Rivescript;
 enum RivescriptEvent: string
 {
     case OUTPUT = 'output';
+    case CUSTOM = 'custom';
     case DEBUG = 'debug';
     case VERBOSE = 'verbose';
     case WARNING = 'warning';

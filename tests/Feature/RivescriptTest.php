@@ -261,3 +261,32 @@ test(
         expect($actual)->toBe($expected);
     }
 );
+
+
+test(
+    'sortReplies() should sort the replies by their weights.',
+    function () {
+        $this->markTestSkipped('This test has not been implemented yet.');
+    }
+);
+
+test(
+    'setHandler() should register a new handler for a programming language.',
+    function () {
+        $this->markTestSkipped('This test has not been implemented yet.');
+    }
+);
+
+test(
+    'setHandler() should remove a new handler for a programming language if the object is null.',
+    function () {
+        $this->markTestSkipped('This test has not been implemented yet.');
+    }
+);
+
+test(
+    'stream() xxx.',
+    function () {
+        $this->markTestSkipped('This test has not been implemented yet.');
+    }
+);
