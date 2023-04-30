@@ -40,12 +40,12 @@ class NullSessionManager implements SessionManagerInterface
 
     public function get(string $username, string $key, string $default = "undefined"): string|null
     {
-        // Empty for testing purposes.
+        return $default;
     }
 
     public function getAll(): array
     {
-        // Empty for testing purposes.
+        return [];
     }
 
     public function getAny(string $username): array
@@ -63,7 +63,7 @@ class NullSessionManager implements SessionManagerInterface
         // Empty for testing purposes.
     }
 
-    public function set(string $username, array $args): void
+    public function set(string|null $username = null, array $args = []): void
     {
         // Empty for testing purposes.
     }

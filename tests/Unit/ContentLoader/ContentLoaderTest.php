@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of Rivescript-php
  *
@@ -10,6 +11,8 @@
 
 declare(strict_types=1);
 
+namespace Axiom\Rivescript\Tests\Unit\ContentLoader;
+
 use Axiom\Rivescript\ContentLoader\ContentLoader;
 
 beforeEach(function () {
@@ -17,14 +20,14 @@ beforeEach(function () {
 });
 
 test(
-    'getStream loader should work',
+    'getStream loader should work.',
     function () {
         $this->assertIsResource($this->loader->getStream());
     }
 );
 
 test(
-    'load() can load a single file',
+    'load() can load a single file.',
     function () {
         $expected = "THIS IS THE CONTENT";
 
@@ -77,7 +80,7 @@ test(
 );
 
 test(
-    'load() can load files in a given directory passed as string',
+    'load() can load files in a given directory passed as string.',
     function () {
         $expected = [
             '+ here we go',

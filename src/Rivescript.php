@@ -14,8 +14,12 @@ namespace Axiom\Rivescript;
 
 use Axiom\Rivescript\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Exceptions\Sessions\MemorySessionException;
+use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
 use Axiom\Rivescript\Interfaces\Sessions\SessionManagerInterface;
 use Axiom\Rivescript\Sessions\MemorySessionManager;
+use Axiom\Rivescript\Traits\EventEmitter;
+use Axiom\Rivescript\Utils\Misc;
+use Traits\EventEmitte;
 
 /**
  * Rivescript class
@@ -39,6 +43,7 @@ use Axiom\Rivescript\Sessions\MemorySessionManager;
  */
 class Rivescript extends ContentLoader
 {
+    use EventEmitter;
 
     /**
      * A RiveScript interpreter for PHP.
@@ -63,8 +68,12 @@ class Rivescript extends ContentLoader
         protected bool $strict = true,
         protected int $depth = 50,
         protected bool $utf8 = false,
-        protected SessionManagerInterface $sessionManager = new MemorySessionManager(),
+        protected ?SessionManagerInterface $sessionManager = new MemorySessionManager(),
     ) {
+        if ($this->sessionManager instanceof EventEmitterInterface) {
+            $this->sessionManager->on(RivescriptEvent::OUTPUT, fn($event) => $this->warn($event->message, $event->args)
+            );
+        }
     }
 
     /**
@@ -73,18 +82,56 @@ class Rivescript extends ContentLoader
      *
      * @param string $user  The user ID to set a variable for.
      * @param string $name  The name of the variable to set.
-     * @param string $value he value to set there.
+     * @param mixed  $value The value to set.
      *
      * @return void
      */
-    public function setUserVar(string $user, string $name, string $value): void
+    public function setUserVar(string $user, string $name, mixed $value): void
     {
-        if ($name == "topic" && $this->forceCase) {
-            $value = strtolower($value);
-        }
-
         $fields = [$name => $value];
         $this->sessionManager->set($user, $fields);
+    }
+
+    /**
+     * Set many variables for a user, or set many variables for many users.
+     *
+     * This function can be called in two ways:
+     *
+     * User variables for a single user:
+     * $rivescript->setUserVars("username", ['name' => 'bob']);
+     *
+     * User variables for many users:
+     * $rivescript->setUserVars(NULL, ['username1' => ['name' => 'bob'], 'username2' => ['name' => 'alice']]);
+     * or
+     * $rivescript->setUserVars(data: ['username1' => ['name' => 'bob'], 'username2' => ['name' => 'alice']]);
+     *
+     * This way you can export all user variables via getUserVars()
+     * and then re-import them all at once, instead of setting them once per
+     * user.
+     *
+     * @param string|null $user The user ID to set many variables for.
+     *                          Skip this parameter to set many variables for many users instead.
+     * @param array       $data An array of key/value pairs for user variables,
+     *                          or else an array of arrays mapping usernames to key/value pairs.
+     *
+     * @return void
+     */
+    public function setUserVars(string|null $user = null, array $data = []): void
+    {
+        $this->sessionManager->set($user, $data);
+    }
+
+    /**
+     * Get a variable about a user.
+     *
+     * @param string $user The user ID to look up a variable for.
+     * @param string $name The name of the variable to get.
+     *
+     * @return mixed The value of the requested key, "undefined", or NULL.
+     */
+    public function getUserVar(string $user, string $name): mixed
+    {
+        return $this->sessionManager->get($user, $name);
     }
 
     /**
@@ -95,7 +142,7 @@ class Rivescript extends ContentLoader
      *
      * @return array|null An array of key/value pairs, or null if the user doesn't exist.
      */
-    public function getUserVars(string|null $user): array|null
+    public function getUserVars(string|null $user = null): array|null
     {
         if (!$user) {
             return $this->sessionManager->getAll();
@@ -107,21 +154,24 @@ class Rivescript extends ContentLoader
     /**
      * Delete all variables about a user (or all users).
      *
-     * @param string $user The user ID to clear variables for, or else clear all
-     *                     variables for all users if not provided.
+     * @param string|null $user The user ID to clear variables for, pass null
+     *                          to remove all user variables.
      *
      * @return void
      */
-    public function clearUserVars(string $user): void
+    public function clearUserVars(string|null $user = null): void
     {
-        $this->sessionManager->reset($user);
+        if (is_null($user)) {
+            $this->sessionManager->resetAll();
+        } else {
+            $this->sessionManager->reset($user);
+        }
     }
 
     /**
      * Freeze the variable state for a user.
      * This will clone and preserve a user's entire variable state, so that it
-     * can be restored later with ``thaw_uservars()``.
-     *
+     * can be restored later with thawUserVars().
      *
      * @param string $user The user ID to freeze variables for.
      *
@@ -148,5 +198,84 @@ class Rivescript extends ContentLoader
     public function thawUserVars(string $user, string $action = "thaw"): void
     {
         $this->sessionManager->thaw($user, $action);
+    }
+
+    /**
+     * Write a warning.
+     *
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) extra parameters.
+     *
+     * @return void
+     */
+    public function debug(string $message, array $args = []): void
+    {
+        $message = "[DEBUG] " . Misc::formatString($message, $args);
+
+        $this->emit(RivescriptEvent::DEBUG, $message);
+    }
+
+    /**
+     * Write a verbose debug message.
+     *
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) extra parameters.
+     *
+     * @return void
+     */
+    public function verbose(string $message, array $args = []): void
+    {
+        $message = "[VERBOSE] " . Misc::formatString($message, $args);
+
+        $this->emit(RivescriptEvent::VERBOSE, $message);
+    }
+
+    /**
+     * Write a debug message.
+     *
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) arguments for the message.
+     *
+     * @return void
+     */
+    public function warn(string $message, array $args = []): void
+    {
+        $message = "[WARNING] " . Misc::formatString($message, $args);
+
+        $this->emit(RivescriptEvent::WARNING, $message);
+    }
+
+    /**
+     * Write a error message.
+     *
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) extra parameters.
+     *
+     * @return void
+     */
+    public function error(string $message, array $args = []): void
+    {
+        $message = "[ERROR] " . Misc::formatString($message, $args);
+
+        $this->emit(RivescriptEvent::ERROR, $message);
+    }
+
+    /**
+     * Log a message to say.
+     *
+     * @param string        $message The message to print out.
+     * @param array<string> $args    (format) arguments for the message.
+     *
+     * @return void
+     */
+    public function say(string $message, array $args = []): void
+    {
+        $message = Misc::formatString($message, $args);
+
+        $this->emit(RivescriptEvent::SAY, $message);
+    }
+
+    public function sortReplies()
+    {
     }
 }

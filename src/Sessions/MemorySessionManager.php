@@ -13,7 +13,12 @@ declare(strict_types=1);
 namespace Axiom\Rivescript\Sessions;
 
 use Axiom\Rivescript\Exceptions\Sessions\MemorySessionException;
+use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
 use Axiom\Rivescript\Interfaces\Sessions\SessionManagerInterface;
+use Axiom\Rivescript\Messages\MessageType;
+use Axiom\Rivescript\Messages\RivescriptMessage;
+use Axiom\Rivescript\RivescriptEvent;
+use Axiom\Rivescript\Traits\EventEmitter;
 
 /**
  * MemorySessionStorage class
@@ -40,8 +45,10 @@ use Axiom\Rivescript\Interfaces\Sessions\SessionManagerInterface;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class MemorySessionManager implements SessionManagerInterface
+class MemorySessionManager implements SessionManagerInterface, EventEmitterInterface
 {
+    use EventEmitter;
+
     /**
      * @param array<string, mixed> $users  A list settings for the users.
      * @param array<string, mixed> $frozen A list of frozen settings.
@@ -62,14 +69,21 @@ class MemorySessionManager implements SessionManagerInterface
      *
      * @param string $username The username to freeze variables for.
      *
-     * @throws \Axiom\Rivescript\Exceptions\Sessions\MemorySessionException
-     *
      * @return void
      */
     public function freeze(string $username): void
     {
         if (!isset($this->users[$username])) {
-            throw new MemorySessionException("thaw({$username}): no frozen variables found");
+            $this->emit(
+                RivescriptEvent::OUTPUT,
+                new RivescriptMessage(
+                    MessageType::WARN,
+                    "Can't freeze vars for user :username : not found!",
+                    ['username' => $username]
+                )
+            );
+
+            return;
         }
 
         $this->frozen[$username] = $this->users[$username];
@@ -86,15 +100,15 @@ class MemorySessionManager implements SessionManagerInterface
      * @param string $key      The specific variable name to retrieve.
      * @param string $default  The default value for key the key is not defined.
      *
-     * @return string|null The value of the requested key, "undefined", or NULL.
+     * @return mixed The value of the requested key, "undefined", or NULL.
      */
-    public function get(string $username, string $key, string $default = "undefined"): string|null
+    public function get(string $username, string $key, string $default = "undefined"): mixed
     {
         if (!isset($this->users[$username])) {
             return null;
         }
         if (!isset($this->users[$username][$key])) {
-            return "undefined";
+            return $default;
         }
         return $this->users[$username][$key];
     }
@@ -106,7 +120,7 @@ class MemorySessionManager implements SessionManagerInterface
      * usernames of every user your bot has data for, and the values are arrays
      * of key/value pairs of those users.
      *
-     * For example::
+     * For example:
      *
      *  {
      *   "user1": {
@@ -136,7 +150,11 @@ class MemorySessionManager implements SessionManagerInterface
      */
     public function getAny(string $username): array|null
     {
-        return $this->users[$username];
+        if (isset($this->users[$username])) {
+            return $this->users[$username];
+        }
+
+        return null;
     }
 
     /**
@@ -167,7 +185,7 @@ class MemorySessionManager implements SessionManagerInterface
     /**
      * Set variables for a user.
      *
-     * @param string        $username  The username to set variables for.
+     * @param string|null   $username  The username to set variables for.
      * @param array<string> $args      Associative array of key/value pairs variables to set for the user.
      *                                 The values are usually strings, but they can be other types
      *                                 as well (e.g. arrays or other objects) for some internal data
@@ -177,14 +195,21 @@ class MemorySessionManager implements SessionManagerInterface
      *
      * @return void
      */
-    public function set(string $username, array $args): void
+    public function set(string $username = null, array $args = []): void
     {
+        if (!$username) {
+            $this->users = $args;
+            return;
+        }
+
         if (!isset($this->users[$username])) {
             $this->users[$username] = $this->defaultSession();
         }
         foreach ($args as $key => $value) {
             $this->users[$username][$key] = $value;
         }
+
+        $this->users[$username] = array_filter($this->users[$username], fn($item) => !is_null($item));
     }
 
     /**
@@ -200,8 +225,6 @@ class MemorySessionManager implements SessionManagerInterface
      *                         discard: Don't restore the variables, just delete the frozen copy.
      *                         keep: Restore the variables and keep the copy still.
      *
-     *
-     * @throws \Axiom\Rivescript\Exceptions\Sessions\MemorySessionException
      *
      * @return void
      */
@@ -220,10 +243,20 @@ class MemorySessionManager implements SessionManagerInterface
                     $this->users[$username] = $this->frozen[$username];
                     break;
                 default:
-                    throw new MemorySessionException("bad thaw action");
+                    $this->emit(
+                        RivescriptEvent::OUTPUT,
+                        new RivescriptMessage(MessageType::WARN, "Unsupported thaw action")
+                    );
             }
         } else {
-            throw new MemorySessionException("thaw({$username}): no frozen variables found");
+            $this->emit(
+                RivescriptEvent::OUTPUT,
+                new RivescriptMessage(
+                    MessageType::WARN,
+                    "Can't thaw vars for user :username: not found!",
+                    ['username' => $username]
+                )
+            );
         }
     }
 

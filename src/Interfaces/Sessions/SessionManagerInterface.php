@@ -51,9 +51,9 @@ interface SessionManagerInterface
      * @param string $key      The specific variable name to retrieve.
      * @param string $default  The default value for key the key is not defined.
      *
-     * @return string|null The value of the requested key, "undefined", or NULL.
+     * @return mixed The value of the requested key, "undefined", or NULL.
      */
-    public function get(string $username, string $key, string $default = "undefined"): string|null;
+    public function get(string $username, string $key, string $default = "undefined"): mixed;
 
     /**
      * Retrieve all variables about all users.
@@ -62,7 +62,7 @@ interface SessionManagerInterface
      * usernames of every user your bot has data for, and the values are arrays
      * of key/value pairs of those users.
      *
-     * For example::
+     * For example:
      *
      *  {
      *   "user1": {
@@ -108,7 +108,7 @@ interface SessionManagerInterface
     /**
      * Set variables for a user.
      *
-     * @param string        $username  The username to set variables for.
+     * @param string|null   $username  The username to set variables for.
      * @param array<string> $args      Associative array of key/value pairs variables to set for the user.
      *                                 The values are usually strings, but they can be other types
      *                                 as well (e.g. arrays or other objects) for some internal data
@@ -118,7 +118,7 @@ interface SessionManagerInterface
      *
      * @return void
      */
-    public function set(string $username, array $args): void;
+    public function set(string $username = null, array $args = []): void;
 
     /**
      * Restore the frozen snapshot of variables for a user.
@@ -136,18 +136,4 @@ interface SessionManagerInterface
      * @return void
      */
     public function thaw(string $username, string $action = "thaw"): void;
-
-    /**
-     * The default session data for a new user.
-     *
-     * You do not need to override this function. This returns a ``dict`` with
-     * the default key/value pairs for new sessions. By default, the
-     * session variables are as follows::
-     *
-     * {
-     * "topic": "random"
-     * }
-     * @return mixed  dict: A dict of default key/value pairs for new user sessions.
-     */
-    public function defaultSession(): array;
 }
