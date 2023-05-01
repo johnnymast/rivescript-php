@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of Rivescript-php
  *
@@ -77,7 +78,7 @@ class MemorySessionManager implements SessionManagerInterface, EventEmitterInter
             $this->emit(
                 RivescriptEvent::OUTPUT,
                 new RivescriptMessage(
-                    MessageType::WARN,
+                    MessageType::WARNING,
                     "Can't freeze vars for user :username : not found!",
                     ['username' => $username]
                 )
@@ -245,14 +246,14 @@ class MemorySessionManager implements SessionManagerInterface, EventEmitterInter
                 default:
                     $this->emit(
                         RivescriptEvent::OUTPUT,
-                        new RivescriptMessage(MessageType::WARN, "Unsupported thaw action")
+                        new RivescriptMessage(MessageType::WARNING, "Unsupported thaw action")
                     );
             }
         } else {
             $this->emit(
                 RivescriptEvent::OUTPUT,
                 new RivescriptMessage(
-                    MessageType::WARN,
+                    MessageType::WARNING,
                     "Can't thaw vars for user :username: not found!",
                     ['username' => $username]
                 )

@@ -15,7 +15,8 @@ namespace Axiom\Rivescript\Messages;
 
 enum MessageType: string
 {
-    case WARN = 'warn';
+    case WARNING = 'warn';
     case INFO = 'info';
     case DEBUG = 'debug';
+    case ERROR = 'error';
 }

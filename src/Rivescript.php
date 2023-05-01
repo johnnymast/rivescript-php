@@ -16,6 +16,7 @@ use Axiom\Rivescript\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Exceptions\Sessions\MemorySessionException;
 use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
 use Axiom\Rivescript\Interfaces\Sessions\SessionManagerInterface;
+use Axiom\Rivescript\Parser\Parser;
 use Axiom\Rivescript\Sessions\MemorySessionManager;
 use Axiom\Rivescript\Traits\EventEmitter;
 use Axiom\Rivescript\Utils\Misc;

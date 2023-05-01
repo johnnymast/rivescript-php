@@ -8,6 +8,8 @@
  * file that was distributed with this source code.
  */
 
+declare(strict_types=1);
+
 namespace Axiom\Rivescript\Sessions;
 
 use Axiom\Rivescript\Interfaces\Sessions\SessionInterface;

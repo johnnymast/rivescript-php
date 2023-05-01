@@ -59,7 +59,7 @@ test(
             ->with(
                 RivescriptEvent::OUTPUT,
                 \Mockery::on(
-                    fn(RivescriptMessage $msg) => $msg->type === MessageType::WARN
+                    fn(RivescriptMessage $msg) => $msg->type === MessageType::WARNING
                         && $msg->message === "Can't freeze vars for user :username : not found!"
                         && $msg->args === ["username" => $user]
                 )
@@ -165,7 +165,7 @@ test(
             ->with(
                 RivescriptEvent::OUTPUT,
                 \Mockery::on(
-                    fn(RivescriptMessage $msg) => $msg->type === MessageType::WARN
+                    fn(RivescriptMessage $msg) => $msg->type === MessageType::WARNING
                         && $msg->message === "Can't thaw vars for user :username: not found!"
                         && $msg->args === ["username" => $this->user]
                 )
@@ -212,7 +212,7 @@ test(
                 RivescriptEvent::OUTPUT,
                 \Mockery::on(
                     fn(RivescriptMessage $msg
-                    ) => $msg->type === MessageType::WARN && $msg->message === "Unsupported thaw action"
+                    ) => $msg->type === MessageType::WARNING && $msg->message === "Unsupported thaw action"
                 )
             );
 
@@ -234,7 +234,7 @@ test(
             ->with(
                 RivescriptEvent::OUTPUT,
                 \Mockery::on(
-                    fn(RivescriptMessage $msg) => $msg->type === MessageType::WARN
+                    fn(RivescriptMessage $msg) => $msg->type === MessageType::WARNING
                         && $msg->message === "Can't thaw vars for user :username: not found!"
                         && $msg->args === ["username" => $this->user]
                 )

@@ -10,8 +10,15 @@
 
 declare(strict_types=1);
 
-namespace Axiom\Rivescript;
+namespace Axiom\Rivescript\Parser;
 
+use Axiom\Rivescript\Exceptions\Parser\ParserException;
+use Axiom\Rivescript\Messages\MessageType;
+use Axiom\Rivescript\Messages\RivescriptMessage;
+use Axiom\Rivescript\Rivescript;
+use Axiom\Rivescript\RivescriptCommand;
+use Axiom\Rivescript\RivescriptEvent;
+use Axiom\Rivescript\Traits\EventEmitter;
 use Axiom\Rivescript\Traits\Regex;
 use Axiom\Rivescript\Utils\Str;
 
@@ -34,12 +41,13 @@ use Axiom\Rivescript\Utils\Str;
  */
 class Parser
 {
+    use EventEmitter;
     use Regex;
 
     /**
      * The supported Rivescript version
      */
-    public const RS_VERSION = "2.0";
+    public const RS_VERSION = 2.0;
 
 
     /**
@@ -65,12 +73,13 @@ class Parser
     /**
      * Reset the parser.
      *
-     * @return void
+     * @return array
      */
-    private function reset(): void
+    public function reset(): array
     {
         $this->values = [
             "begin" => [
+                "version" => self::RS_VERSION,
                 "global" => [],
                 "var" => [],
                 "sub" => [],
@@ -80,6 +89,8 @@ class Parser
             "topics" => [],
             "objects" => [],
         ];
+
+        return $this->values;
     }
 
     /**
@@ -132,20 +143,35 @@ class Parser
     }
 
     /**
+     * @throws \Axiom\Rivescript\Exceptions\Parser\ParserException
+     */
+    private function _error(RivescriptMessage $error)
+    {
+        $this->emit(RivescriptEvent::OUTPUT, $error);
+
+        throw new ParserException("Error while parsing script.");
+    }
+
+    private function _warn(RivescriptMessage $warning)
+    {
+        $this->emit(RivescriptEvent::OUTPUT, $warning);
+    }
+
+    /**
      * Parse the RiveScript code.
      *
      * @param string $code The code in string.
      *
+     * @throws \Axiom\Rivescript\Exceptions\Parser\ParserException
      * @return array<string, mixed>
      */
-    public function parse(string $code): array
+    public function parse(string $filename, string $code): array
     {
         $this->reset();
 
         $topic = "random";
 
         $lines = explode("\n", $code);
-        $filename = "unknown";
         $lineno = 0;
 
         if (is_array($lines) && count($lines) > 0) {
@@ -237,28 +263,43 @@ class Parser
                 $rawLine = trim($line);
                 $line = trim(substr($rawLine, 1));
 
-                $error = $this->checkSyntax($rawLine, $filename, $lineno);;
-
-                if (!empty($error)) {
-                    $this->error($error, $filename, $lineno);
-                    continue;
-                }
 
                 $cmd = RivescriptCommand::fromCode(substr($rawLine, 0, 1));
 
+                $syntax = $this->checkSyntax($cmd->value, $line, $filename, $lineno);;
+
+                if ($syntax->status == ParseResultStatus::ERROR) {
+                    $this->_error($syntax->message);
+                }
+
+
                 switch ($cmd) {
                     case RivescriptCommand::DEFINITION:
-                        $definition = $this->parseDefinition($line, $filename, $lineno);
+                        $parsed = $this->parseDefinition($line, $filename, $lineno);
 
-                        if ($definition) {
-                            $type = $definition['type'];
-                            $name = $definition['name'];
-                            $value = $definition['value'];
+                        if ($parsed->status == ParseResultStatus::ERROR) {
+                            $this->_error($parsed->message);
+                        }
 
-                            if (isset($this->values["begin"][$type])) {
-                                $this->values["begin"][$type][$name] = $value;
+                        if ($parsed->status == ParseResultStatus::WARNING) {
+                            $this->_warn($parsed->message);
+                        }
+
+                        if ($parsed->result) {
+                            if ($parsed->result['type'] !== "version") {
+                                $type = $parsed->result['type'];
+                                $value = $parsed->result['value'];
+                                $name = $parsed->result['name'];
+
+                                $this->values[$type][$name] = $value;
+
+                                if (isset($this->values["begin"][$type])) {
+                                    $this->values["begin"][$type][$name] = $value;
+                                }
                             }
                         }
+
+                        unset($parsed);
                         break;
 
                     case RivescriptCommand::TRIGGER:
@@ -281,13 +322,21 @@ class Parser
     }
 
 
-    private function parseDefinition($line, $filename, $lineno): array|bool
+    /**
+     * @param $line
+     * @param $filename
+     * @param $lineno
+     *
+     * @return \Axiom\Rivescript\Parser\ParseResult
+     */
+    private function parseDefinition($line, $filename, $lineno): ParseResult
     {
         $halves = explode('=', $line, 2);
         $left = explode(' ', Str::strip($halves[0])) ?? [];
         $value = "";
         $name = "";
         $type = "";
+
 
         if (count($halves) == 2) {
             $value = Str::strip($halves[1]);
@@ -301,43 +350,55 @@ class Parser
             }
         }
 
+        if ($type == "version") {
+            $value = (float)$value;
+            $result = [
+                'type' => $type,
+                'value' => $value,
+            ];
+
+            if ($value < self::RS_VERSION) {
+                return ParseResult::withError(
+                    "Lower preferred version RiveScript version as expected. We only support :version at :filename line :lineno",
+                    ['filename' => $filename, 'lineno' => $lineno, 'version' => self::RS_VERSION]
+                );
+            }
+
+            if ($value > (float)self::RS_VERSION) {
+                return ParseResult::withWarning(
+                    "Higher preferred version RiveScript version as expected. This parser supports version :version at :filename line :lineno",
+                    ['filename' => $filename, 'lineno' => $lineno, 'version' => self::RS_VERSION],
+                    $result
+                );
+            }
+
+            return ParseResult::with($result);
+        }
+
+
         if ($type !== "array") {
             $value = str_replace("\r\n", "", $value);
         }
 
-        if ($type === "version") {
-            if ((float)$value > (float)self::RS_VERSION) {
-                $version = self::RS_VERSION;
-
-                $this->warn(
-                    "Unsupported RiveScript version. We only support {$version} at {$filename} line {$lineno}"
-                    ,
-                    $filename,
-                    $lineno
-                );
-                return false;
-            }
-        }
-
         if (strlen($name) === 0) {
-            $this->warn("Undefined variable name", $filename, $lineno);
-            return false;
+            return ParseResult::withError(
+                "Undefined variable name at :filename line :lineno",
+                ['filename' => $filename, 'lineno' => $lineno]
+            );
         }
 
         if (strlen($value) == 0) {
-            $this->warn("Undefined variable value", $filename, $lineno);
-            return false;
+            return ParseResult::withError(
+                "Undefined variable value at :filename line :lineno",
+                ['filename' => $filename, 'lineno' => $lineno]
+            );
         }
 
-        if ($type === "version") {
-            return false;
-        }
-
-        return [
+        return ParseResult::with([
             'type' => $type,
             'name' => $name,
             'value' => $value,
-        ];
+        ]);
     }
 
 
@@ -364,9 +425,9 @@ class Parser
      * @param string $cmd  The command type character.
      * @param string $line The line to check.
      *
-     * @return string
+     * @return ParseResult
      */
-    protected function checkSyntax(string $cmd, string $line): string
+    protected function checkSyntax(string $cmd, string $line, string $filename, int $lineno): ParseResult
     {
         if ($cmd === '!') {
             # ! Definition
@@ -377,12 +438,21 @@ class Parser
             #   - Type options are NOT enforceable, for future compatibility; if RiveScript
             #     encounters a new type that it can't handle, it can safely warn and skip it.
             if (!$this->matchesPattern("/^.+(?:\s+.+|)\s*=\s*.+?$/", $line)) {
-                return "Invalid format for !Definition line: must be '! type name = value' OR '! type = value'";
+                return ParseResult::withError(
+                    "Invalid format for !Definition line: must be '! type name = value' OR '! type = value'",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             } elseif ($this->matchesPattern('/^array/', $line)) {
                 if ($this->matchesPattern("/\=\s?\||\|\s?$/", $line)) {
-                    return "Piped arrays can't begin or end with a |";
+                    return ParseResult::withError(
+                        "Piped arrays can't begin or end with a |",
+                        ['filename' => $filename, 'lineno' => $lineno]
+                    );
                 } elseif ($this->matchesPattern("/\|\|/", $line)) {
-                    return "Piped arrays can't include blank entries";
+                    return ParseResult::withError(
+                        "Piped arrays can't contain blank entries",
+                        ['filename' => $filename, 'lineno' => $lineno]
+                    );
                 }
             }
         } elseif ($cmd === '>') {
@@ -397,13 +467,22 @@ class Parser
             #   - "object" labels follow the same rules as "topic" labels, but don't need be lowercase
             if ($this->matchesPattern("/^begin/", $line)
                 && !$this->matchesPattern("/^begin$/", $line)) {
-                return "The 'begin' label takes no additional arguments, should be verbatim '> begin'";
+                return ParseResult::withError(
+                    "The 'begin' label takes no additional arguments, should be verbatim '> begin'",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             } elseif ($this->matchesPattern("/^topic/", $line)
                 && $this->matchesPattern("/[^a-z0-9_\-\s]/", $line)) {
-                return "Topics should be lowercased and contain only numbers and letters!";
+                return ParseResult::withError(
+                    "Topics should be lowercased and contain only numbers and letters!",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             } elseif ($this->matchesPattern("/^object/", $line)
                 && $this->matchesPattern("/[^a-z0-9_\-\s]/", $line)) {
-                return "Objects can only contain numbers and lowercase letters!";
+                return ParseResult::withError(
+                    "Objects can only contain numbers and lowercase letters!",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             }
         } elseif ($cmd === '+' || $cmd === '%' || $cmd === '@') {
             # + Trigger, % Previous, @ Redirect
@@ -415,10 +494,16 @@ class Parser
 
             if ($this->utf8 === true) {
                 if ($this->matchesPattern("/[A-Z\\.]/", $line)) {
-                    return "Triggers can't contain uppercase letters, backslashes or dots in UTF-8 mode.";
+                    return ParseResult::withError(
+                        "Triggers can't contain uppercase letters or dots in UTF-8 mode.",
+                        ['filename' => $filename, 'lineno' => $lineno]
+                    );
                 }
             } elseif ($this->matchesPattern("/[^a-z0-9(\|)\[\]*_#\@{}<>=\s]/", $line) === true) {
-                return "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =";
+                return ParseResult::withError(
+                    "Triggers may only contain lowercase letters, numbers, and these symbols: ( | ) [ ] * _ # @ { } < > =",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             }
 
             $parens = 0; # Open parenthesis
@@ -458,16 +543,28 @@ class Parser
             }
 
             if ($parens) {
-                return "Unmatched " . ($parens > 0 ? "left" : "right") . " parenthesis bracket ()";
+                return ParseResult::withError(
+                    "Unmatched " . ($parens > 0 ? "left" : "right") . " parenthesis bracket ()",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             }
             if ($square) {
-                return "Unmatched " . ($square > 0 ? "left" : "right") . " square bracket []";
+                return ParseResult::withError(
+                    "Unmatched " . ($square > 0 ? "left" : "right") . " square bracket []",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             }
             if ($curly) {
-                return "Unmatched " . ($curly > 0 ? "left" : "right") . " curly bracket {}";
+                return ParseResult::withError(
+                    "Unmatched " . ($curly > 0 ? "left" : "right") . " curly bracket {}",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             }
             if ($chevron) {
-                return "Unmatched " . ($chevron > 0 ? "left" : "right") . " angled bracket <>";
+                return ParseResult::withError(
+                    "Unmatched " . ($chevron > 0 ? "left" : "right") . " angled bracket <>",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             }
         } elseif ($cmd === '-' || $cmd === '^' || $cmd === '/') {
             # - Trigger, ^ Continue, / Comment
@@ -477,10 +574,13 @@ class Parser
             #   Syntax for a conditional is as follows:
             #   * value symbol value => response
             if (!$this->matchesPattern("/.+?\s(==|eq|!=|ne|<>|<|<=|>|>=)\s.+?=>.+?$/", $line)) {
-                return "Invalid format for !Condition: should be like `* value symbol value => response`";
+                return ParseResult::withError(
+                    "Invalid format for !Condition: should be like `* value symbol value => response`",
+                    ['filename' => $filename, 'lineno' => $lineno]
+                );
             }
         }
 
-        return "";
+        return ParseResult::withSuccess([]);
     }
 }
