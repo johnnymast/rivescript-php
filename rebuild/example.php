@@ -40,6 +40,14 @@ $code = <<<EOF
 + what (are|is) you
 - I am a robot.
 
++ bleep
+@ hi
+
+  + my name is *
+  * <get name> eq <star>    => I know, you told me that already.
+  * <get name> ne undefined => Did you get a name change?<set name=<star>>
+  - <set name=<star>>Nice to meet you, <star>.
+  
 > topic newuser
     + *
     - Hello! My name is <bot name>! I'm a robot. What's your name?
@@ -72,13 +80,81 @@ use MIME::Base64 qw(encode_base64);
 
 EOF;
 
-function write($msg): void
+
+class TermBuffer
 {
-    echo "{$msg}\n";
+    protected array $items = [];
+
+    public function __construct(protected readonly int $max, protected bool $skip = false)
+    {
+    }
+
+    public function setSkip(bool $value): void
+    {
+        $this->skip = $value;
+    }
+
+    private function pop(): void
+    {
+        array_shift($this->items);
+    }
+
+    public function push(string $value): void
+    {
+        if (count($this->items) < $this->max) {
+            $this->items [] = $value;
+        } else {
+            $this->pop();
+        }
+    }
+
+    public function output(): void
+    {
+        foreach ($this->items as $index => $item) {
+            echo $item . "\n";
+        }
+
+        if (!$this->skip) {
+            echo str_repeat("\033[F", min($index + 1, $this->max));
+        }
+    }
+}
+
+const FMT_ERROR = "\033[31m%s \033[0m";
+;
+const FMT_DEBUG = "\033[32m%s \033[0m";
+const FMT_WARN = "\033[33m%s \033[0m";
+const FMT_INFO = "\033[36m%s \033[0m";
+
+$useBuffer = false;
+
+if ($useBuffer) {
+    $buffer = new TermBuffer(5);
+} else {
+    $buffer = null;
+}
+
+function write($msg, $buffer, $fmt): void
+{
+    if ($buffer) {
+        $buffer->push(sprintf($fmt, $msg));
+        $buffer->output();
+    } else {
+        echo sprintf($fmt, $msg) . "\n";
+    }
 }
 
 $rivescript = new Rivescript(debug: true);
-$rivescript->on(RivescriptEvent::DEBUG, fn(string $msg) => write($msg));
-$rivescript->on(RivescriptEvent::VERBOSE, fn(string $msg) => write($msg));
+$rivescript->on(RivescriptEvent::WARNING, fn(string $msg) => write($msg, $buffer, FMT_WARN));
+$rivescript->on(RivescriptEvent::ERROR, fn(string $msg) => write($msg, $buffer, FMT_ERROR));
+$rivescript->on(RivescriptEvent::SAY, fn(string $msg) => write($msg, $buffer, FMT_INFO));
+$rivescript->on(RivescriptEvent::DEBUG, fn(string $msg) => write($msg, $buffer, FMT_DEBUG));
+
 $rivescript->sortReplies();
+
 $rivescript->stream($code);
+
+if ($buffer) {
+    $buffer->setSkip(true);
+    $buffer->output();
+}

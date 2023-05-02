@@ -13,14 +13,16 @@ declare(strict_types=1);
 namespace Axiom\Rivescript\Parser;
 
 use Axiom\Rivescript\Exceptions\Parser\ParserException;
+use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
 use Axiom\Rivescript\Messages\MessageType;
 use Axiom\Rivescript\Messages\RivescriptMessage;
 use Axiom\Rivescript\Rivescript;
-use Axiom\Rivescript\RivescriptCommand;
+use Axiom\Rivescript\RivescriptType;
 use Axiom\Rivescript\RivescriptEvent;
 use Axiom\Rivescript\Traits\EventEmitter;
 use Axiom\Rivescript\Traits\Regex;
 use Axiom\Rivescript\Utils\Str;
+use WeakMap;
 
 /**
  * Parser class
@@ -39,7 +41,7 @@ use Axiom\Rivescript\Utils\Str;
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Parser
+class Parser implements EventEmitterInterface
 {
     use EventEmitter;
     use Regex;
@@ -48,7 +50,6 @@ class Parser
      * The supported Rivescript version
      */
     public const RS_VERSION = 2.0;
-
 
     /**
      * Container for the parsed values.
@@ -63,9 +64,13 @@ class Parser
      * Parser constructor.
      *
      * @param \Axiom\Rivescript\Rivescript $master A reference to the parent RiveScript instance.
+     * @param bool                         $strict Whether strict mode is enabled.
+     * @param bool                         $utf8   Whether UTF-8 mode is enabled.
      */
     public function __construct(
         protected readonly Rivescript $master,
+        protected readonly bool $strict = false,
+        protected readonly bool $utf8 = false
     ) {
         $this->forceCase = true;
     }
@@ -106,43 +111,6 @@ class Parser
     }
 
     /**
-     * Output a warning.
-     *
-     * @param string $message  The message to display.
-     * @param string $filename The filename the code is from.
-     * @param int    $lineno   The line number the warning is referring to.
-     *
-     * @return void
-     */
-    private function warn(string $message, string $filename, int $lineno): void
-    {
-        $this->master->warn($message . "\n", [
-                'filename' => $filename,
-                'lineno' => $lineno
-            ]
-        );
-    }
-
-
-    /**
-     * Output a error.
-     *
-     * @param string $message  The message to display.
-     * @param string $filename The filename the code is from.
-     * @param int    $lineno   The line number the warning is referring to.
-     *
-     * @return void
-     */
-    private function error(string $message, string $filename, int $lineno): void
-    {
-        $this->master->error($message . "\n", [
-                'filename' => $filename,
-                'lineno' => $lineno
-            ]
-        );
-    }
-
-    /**
      * @throws \Axiom\Rivescript\Exceptions\Parser\ParserException
      */
     private function _error(RivescriptMessage $error)
@@ -157,6 +125,11 @@ class Parser
         $this->emit(RivescriptEvent::OUTPUT, $warning);
     }
 
+    private function _say(RivescriptMessage $warning)
+    {
+        $this->emit(RivescriptEvent::OUTPUT, $warning);
+    }
+
     /**
      * Parse the RiveScript code.
      *
@@ -165,16 +138,21 @@ class Parser
      * @throws \Axiom\Rivescript\Exceptions\Parser\ParserException
      * @return array<string, mixed>
      */
-    public function parse(string $filename, string $code): array
+    public function parse(string $filename = "stream", string $code = ""): array
     {
+        // XYourWorstNightmareX not feeling well  must lie down    sorry
         $this->reset();
 
-        $topic = "random";
+        $context = $this->createParserContext();
 
-        $lines = explode("\n", $code);
+        $tmp = explode("\n", $code);
         $lineno = 0;
 
-        if (is_array($lines) && count($lines) > 0) {
+        $lines = array_map(function ($line) use (&$lineno) {
+            return ['script' => $line, 'lineno' => ++$lineno];
+        }, $tmp);
+
+        if (count($lines) > 0) {
             $original = $lines;
             $filtered = [];
 
@@ -182,38 +160,48 @@ class Parser
              * First filter out the comments and objects.
              */
             // TODO: Syntax check the code in this first loop.
-            for ($i = 0; $i < count($original); $i++) {
-                $rawLine = trim($original[$i]);
-                $line = trim(substr($rawLine, 1));
-                $cmd = RivescriptCommand::fromCode(substr($rawLine, 0, 1));
+            for ($i = 0; $i < count($lines); $i++) {
+                $record = $lines[$i];
+                $script = trim($record['script']);
 
-                if (empty($line)) {
+                $scriptWithoutType = trim(substr($script, 1));
+                $lineno = $record["lineno"];
+
+
+                if (empty($script)) {
                     continue;
                 }
 
-                if (str_starts_with($line, '/*') || str_starts_with($line, '*/')
-                    || str_starts_with($line, '#')) {
-                    if (str_starts_with($line, '#')) {
-                        $this->warn("Using the # symbol for comments is deprecated", $filename, $lineno);
+                $type = RivescriptType::fromCode(substr($script, 0, 1));
+
+                if (str_starts_with($script, '/*') || str_starts_with($script, '*/')
+                    || str_starts_with($script, '#')) {
+                    if (str_starts_with($script, '#')) {
+                        $this->_warn(
+                            new RivescriptMessage(
+                                MessageType::WARNING,
+                                "Using the # symbol for comments is deprecated in :filename line :lineno",
+                                ['filename' => $filename, 'lineno' => $lineno]
+                            )
+                        );
                     }
                     continue;
                 }
 
-
-                if ($cmd == RivescriptCommand::LABEL_OPEN && !isset($label)) {
+                if ($type == RivescriptType::LABEL_OPEN && !isset($label)) {
                     $label = match (true) {
-                        str_starts_with($line, 'object') => $this->createEmptyLabel("code"),
-                        str_starts_with($line, 'topic') => $this->createEmptyLabel("topic"),
-                        str_starts_with($line, 'begin') => $this->createEmptyLabel("begin"),
+                        str_starts_with($scriptWithoutType, 'object') => $this->createEmptyLabel("code"),
+                        str_starts_with($scriptWithoutType, 'topic') => $this->createEmptyLabel("topic"),
+                        str_starts_with($scriptWithoutType, 'begin') => $this->createEmptyLabel("begin"),
                         default => null,
                     };
                 }
 
                 if (isset($label) && is_array($label)) {
-                    if ($cmd == RivescriptCommand::LABEL_OPEN) {
+                    if ($type == RivescriptType::LABEL_OPEN) {
                         switch ($label['type']) {
                             case "code":
-                                $headline = trim(substr($line, 6));
+                                $headline = trim(substr($scriptWithoutType, 6));
                                 [$language, $name] = explode(" ", $headline);
 
                                 $label['name'] = trim($name);
@@ -221,11 +209,25 @@ class Parser
                                 $label['valid'] = true;
                                 break;
                             case "topic":
-                                $headline = trim(substr($line, 5));
+                                $headline = trim(substr($scriptWithoutType, 5));
                                 [$name] = explode(" ", $headline);
 
                                 $label['name'] = trim($name);
                                 $label['valid'] = true;
+
+                                if (!$this->hasTopic($name)) {
+                                    $this->createTopic($name);
+                                }
+
+
+//                                $mode = "";
+//                                foreach ($fields as $field) {
+//                                    if ($field === "includes" || $field === "inherits") {
+//                                        $mode = $field;
+//                                    } else if (!empty($mode)) {
+//                                        $ast["topics"][$topic][$field] = 1;
+//                                    }
+//                                }
                                 break;
                             case "begin":
                                 $label['valid'] = true;
@@ -242,40 +244,85 @@ class Parser
                             "code" => "objects",
                         };
 
-                        if ($cmd == RivescriptCommand::LABEL_CLOSE) {
+                        if ($type == RivescriptType::LABEL_CLOSE) {
                             $this->values[$valuesKey][] = $label;
                             unset($label);
                         } else {
-                            $label["lines"][] = $rawLine;
+                            $label["lines"][] = $script;
                         }
                     }
                 } else {
-                    $filtered[] = $rawLine;
+                    $filtered[] = $record;
                 }
             }
 
-            $lineno = 10;
+
+            //https://github.com/aichaos/rivescript-js/blob/master/src/parser.js#L200
+
+
+            // Allow the ?Keyword command to work around UTF-8 bugs for users who
+            // wanted to use `+ [*] keyword [*]` with Unicode symbols that don't match
+            // properly with the usual "optional wildcard" syntax.
+//            if (cmd === "?") {
+//                // The ?Keyword command is really an alias to +Trigger with some workarounds
+//                // to make it match the keyword _anywhere_, in every variation so it works
+//                // with Unicode strings.
+//                let variants = [
+//                    line,
+//                    `[*]${line}[*]`,
+//                    `*${line}*`,
+//                    `[*]${line}*`,
+//                    `*${line}[*]`,
+//                    `${line}*`,
+//                    `*${line}`
+//                ];
+//				cmd = "+";
+//				line = "(" + variants.join("|") + ")";
+//				self.say(`Rewrote ?Keyword as +Trigger: ${line}`);
+//			}
+
+//
+//
+//            if ($this->forceCase && $cmd == '+') {
+//                $line = strtolower($line);
+//            }
+//
+//            // test strict and warn ...
+//
+//            $syntaxError = $this->checkSyntax($cmd, $line);
+//            if (!empty($syntaxError)) {
+//                if ($this->strict) {
+//                    call_user_func($onError, "Syntax error: {$syntaxError} at {$filename} line {$lineno} near {$cmd} {$line}");
+//                } else {
+//                    $this->warn("Syntax error: {$syntaxError} at {$filename} line {$lineno} near {$cmd} {$line} (in topic {$topic})", $filename, $lineno);
+//                }
+//            }
+//
+//            if ($cmd === '+') {
+//                $inThat = null;
+//            }
+
 
             /**
              * Work on the filtered lines.
              */
             foreach ($filtered as $line) {
-                $rawLine = trim($line);
-                $line = trim(substr($rawLine, 1));
+                $record = $line;
+                $script = trim($record['script']);
+                $scriptWithoutType = trim(substr($script, 1));
+                $lineno = $record['lineno'];
 
+                $type = RivescriptType::fromCode(substr($script, 0, 1));
 
-                $cmd = RivescriptCommand::fromCode(substr($rawLine, 0, 1));
-
-                $syntax = $this->checkSyntax($cmd->value, $line, $filename, $lineno);;
+                $syntax = $this->checkSyntax($type, $scriptWithoutType, $filename, $lineno);;
 
                 if ($syntax->status == ParseResultStatus::ERROR) {
                     $this->_error($syntax->message);
                 }
 
-
-                switch ($cmd) {
-                    case RivescriptCommand::DEFINITION:
-                        $parsed = $this->parseDefinition($line, $filename, $lineno);
+                switch ($type) {
+                    case RivescriptType::DEFINITION:
+                        $parsed = $this->parseDefinition($scriptWithoutType, $filename, $lineno);
 
                         if ($parsed->status == ParseResultStatus::ERROR) {
                             $this->_error($parsed->message);
@@ -302,25 +349,214 @@ class Parser
                         unset($parsed);
                         break;
 
-                    case RivescriptCommand::TRIGGER:
-                        echo "Found trigger {$rawLine}\n";
+                    case RivescriptType::TRIGGER:
+
+                        $this->_say(
+                            new RivescriptMessage(
+                                MessageType::SAY, "Trigger pattern: :script",
+                                ['script' => $script]
+                            )
+                        );
+
+                        if (!isset($this->values['topics'][$context->topic])) {
+                            $this->_say(
+                                new RivescriptMessage(
+                                    MessageType::SAY, "Adding topic :topic",
+                                    ['topic' => $context->topic]
+                                )
+                            );
+
+                            if (!$this->hasTopic($context->topic)) {
+                                $this->createTopic($context->topic);
+                            }
+                        }
+
+                        unset($context->curentTrigger);
+
+                        $context->currentTrigger = [
+                            "trigger" => $script,
+                            "reply" => [],
+                            "condition" => [],
+                            "redirect" => null,
+                            "previous" => null, /* TODO: FiXME */
+                        ];
+
+                        $this->values['topics'][$context->topic]['triggers'][] = $context->currentTrigger;
+                        $context->triggerIndex = count($this->values['topics'][$context->topic]['triggers']) - 1;
+
+                        break;
+
+                    case RivescriptType::RESPONSE:
+                        if ($context->currentTrigger === null) {
+                            $this->_warn(
+                                new RivescriptMessage(
+                                    MessageType::WARNING, "Response found before trigger in :filename on line :lineno",
+                                    ['filename' => $filename, 'lineno' => $lineno]
+                                )
+                            );
+                        }
+
+                        $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['reply'][] = $script;
+
+                        $this->_say(
+                            new RivescriptMessage(MessageType::SAY, "Response: :script", ['script' => $script])
+                        );
+                        break;
+
+                    case RivescriptType::CONDITION:
+
+                        if ($context->currentTrigger === null) {
+                            $this->_warn(
+                                new RivescriptMessage(
+                                    MessageType::WARNING, "Response found before trigger in :filename on line :lineno",
+                                    ['filename' => $filename, 'lineno' => $lineno]
+                                )
+                            );
+                        }
+
+                        if ($this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['redirect']) {
+                            $this->_warn(
+                                new RivescriptMessage(
+                                    MessageType::WARNING,
+                                    "You can't mix @Redirects with *Conditions in :filename on line :lineno",
+                                    ['filename' => $filename, 'lineno' => $lineno]
+                                )
+                            );
+                        }
+
+                        $this->_say(
+                            new RivescriptMessage(MessageType::SAY, "Condition: :script", [
+                                'script' => $script
+                            ])
+                        );
+
+                        $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['condition'][] = Str::strip(
+                            $script
+                        );
+
+                        break;
+
+                    case RivescriptType::PREVIOUS: // TODO: Really ?
+                    case RivescriptType::CONTINUE:
+                        // This was handled above
+
+                        $this->_warn(
+                            new RivescriptMessage(
+                                MessageType::SAY, "Previous or continue are NOT handled in :script",
+                                ['script' => $script, 'filename' => $filename, 'lineno' => $lineno]
+                            )
+                        );
+
+
+                        break;
+
+                    case RivescriptType::REDIRECT:
+
+                        if ($context->currentTrigger === null) {
+                            $this->_warn(
+                                new RivescriptMessage(
+                                    MessageType::WARNING, "Response found before trigger in :filename on line :lineno",
+                                    ['filename' => $filename, 'lineno' => $lineno]
+                                )
+                            );
+                        }
+
+                        if (count(
+                                $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['reply']
+                            ) > 0
+                            || count(
+                                $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['condition']
+                            ) > 0) {
+                            $this->_warn(
+                                new RivescriptMessage(
+                                    MessageType::SAY,
+                                    "You can't mix @Redirects with -Replies or *Conditions in :filename on line :lineno",
+                                    [
+                                        'filename' => $filename,
+                                        'lineno' => $lineno
+                                    ]
+                                )
+                            );
+                        }
+
+
+                        $this->_say(
+                            new RivescriptMessage(MessageType::SAY, "Redirect response to: :script", [
+                                'script' => $script
+                            ])
+                        );
+
+                        $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['redirect'][] = Str::strip(
+                            $script
+                        );
                         break;
 
                     default:
-                        echo "Found unknown command {$rawLine}\n";
+                        $this->_warn(
+                            new RivescriptMessage(
+                                MessageType::WARNING,
+                                "Found unknown command :script",
+                                ['script' => $script]
+                            )
+                        );
                         break;
                 }
             }
         }
 
+
 //        print_r($filtered);
 //
 //
-        print_r($this->values);
+    //    print_r($this->values['topics']['random']);
 
         return $this->values;
     }
 
+
+    /**
+     * Check if a topic exists.
+     *
+     * @param string $name The name of the topic.
+     *
+     * @return bool
+     */
+    private function hasTopic(string $name): bool
+    {
+        return isset($this->values["topics"][$name]);
+    }
+
+    /**
+     * Return a topic.
+     *
+     * @param string $name The name of the topic.
+     *
+     * @return mixed
+     */
+    private function getTopic(string $name): mixed
+    {
+        if ($this->hasTopic($name)) {
+            return $this->values['topics'][$name];
+        }
+        return null;
+    }
+
+    /**
+     * Create a new topic.
+     *
+     * @param string $name The name of the topic.
+     *
+     * @return array
+     */
+    private function createTopic(string $name): array
+    {
+        $this->values['topics'][$name] = [
+            "includes" => [],
+            "inherits" => [],
+            "triggers" => [],
+        ];
+        return $this->values['topics'][$name];
+    }
 
     /**
      * @param $line
@@ -403,6 +639,20 @@ class Parser
 
 
     /**
+     * Create a parser context.
+     *
+     * @return object
+     */
+    private function createParserContext(): object
+    {
+        return (object)[
+            'topic' => "random",
+            'currentTrigger' => null,
+            'triggerIndex' => 0,
+        ];
+    }
+
+    /**
      * Create an empty object label.
      *
      * @param string $type The type of object to create.
@@ -422,14 +672,16 @@ class Parser
     /**
      * Check the line for syntax errors.
      *
-     * @param string $cmd  The command type character.
-     * @param string $line The line to check.
+     * @param \Axiom\Rivescript\RivescriptType $type
+     * @param string                           $line The line to check.
+     * @param string                           $filename
+     * @param int                              $lineno
      *
      * @return ParseResult
      */
-    protected function checkSyntax(string $cmd, string $line, string $filename, int $lineno): ParseResult
+    protected function checkSyntax(RivescriptType $type, string $line, string $filename, int $lineno): ParseResult
     {
-        if ($cmd === '!') {
+        if ($type == RivescriptType::DEFINITION) {
             # ! Definition
             #   - Must be formatted like this:
             #     ! type name = value
@@ -455,7 +707,7 @@ class Parser
                     );
                 }
             }
-        } elseif ($cmd === '>') {
+        } elseif ($type === RivescriptType::LABEL_OPEN) {
             // > Label
             // - The "begin" label must have only one argument ("begin")
             // - The "topic" label must be lowercased but can inherit other topics
@@ -484,7 +736,7 @@ class Parser
                     ['filename' => $filename, 'lineno' => $lineno]
                 );
             }
-        } elseif ($cmd === '+' || $cmd === '%' || $cmd === '@') {
+        } elseif ($type === RivescriptType::TRIGGER || $type === RivescriptType::PREVIOUS || $type === RivescriptType::REDIRECT) {
             # + Trigger, % Previous, @ Redirect
             #   This one is strict. The triggers are to be run through Perl's regular expression
             #   engine. Therefore, it should be acceptable by the regexp engine.
@@ -566,10 +818,10 @@ class Parser
                     ['filename' => $filename, 'lineno' => $lineno]
                 );
             }
-        } elseif ($cmd === '-' || $cmd === '^' || $cmd === '/') {
+        } elseif ($type === RivescriptType::RESPONSE || $type === RivescriptType::CONTINUE || $type === RivescriptType::COMMENT) {
             # - Trigger, ^ Continue, / Comment
             # These commands take verbatim arguments, so their syntax is loose.
-        } elseif ($cmd === '*') {
+        } elseif ($type === RivescriptType::CONDITION) {
             # * Condition
             #   Syntax for a conditional is as follows:
             #   * value symbol value => response
@@ -581,6 +833,6 @@ class Parser
             }
         }
 
-        return ParseResult::withSuccess([]);
+        return ParseResult::ok();
     }
 }

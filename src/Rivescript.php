@@ -16,6 +16,8 @@ use Axiom\Rivescript\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Exceptions\Sessions\MemorySessionException;
 use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
 use Axiom\Rivescript\Interfaces\Sessions\SessionManagerInterface;
+use Axiom\Rivescript\Messages\MessageType;
+use Axiom\Rivescript\Messages\RivescriptMessage;
 use Axiom\Rivescript\Parser\Parser;
 use Axiom\Rivescript\Sessions\MemorySessionManager;
 use Axiom\Rivescript\Traits\EventEmitter;
@@ -79,22 +81,45 @@ class Rivescript extends ContentLoader
         protected bool $strict = true,
         protected int $depth = 50,
         protected bool $utf8 = false,
-        protected ?SessionManagerInterface $sessionManager = new MemorySessionManager(),
+        protected ?SessionManagerInterface $session = new MemorySessionManager(),
     ) {
-        if ($this->sessionManager instanceof EventEmitterInterface) {
-            $this->sessionManager->on(RivescriptEvent::OUTPUT, fn($event) => $this->warn($event->message, $event->args)
-            );
-        }
 
         $this->parser = new Parser(
             master: $this,
+            strict: $this->strict,
+            utf8: $this->utf8
         );
-//
-//        $this->brain = new Brain(
-//            master: $this,
-//            strict: $this->strict,
-//            utf8: $this->utf8
-//        );
+
+        $this->tabObjects(
+            [
+                $this->session,
+                $this->parser
+            ]
+        );
+    }
+
+    private function tabObjects(array $objects): void
+    {
+        foreach ($objects as $object) {
+            if ($object instanceof EventEmitterInterface) {
+                $object->on(RivescriptEvent::OUTPUT, function (RivescriptMessage $event) {
+                    switch ($event->type) {
+                        case MessageType::DEBUG:
+                            $this->debug($event->message, $event->args);
+                            break;
+                        case MessageType::WARNING:
+                            $this->warn($event->message, $event->args);
+                            break;
+                        case MessageType::ERROR:
+                            $this->error($event->message, $event->args);
+                            break;
+                        case MessageType::SAY:
+                            $this->say($event->message, $event->args);
+                            break;
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -110,7 +135,7 @@ class Rivescript extends ContentLoader
     public function setUserVar(string $user, string $name, mixed $value): void
     {
         $fields = [$name => $value];
-        $this->sessionManager->set($user, $fields);
+        $this->session->set($user, $fields);
     }
 
     /**
@@ -139,7 +164,7 @@ class Rivescript extends ContentLoader
      */
     public function setUserVars(string|null $user = null, array $data = []): void
     {
-        $this->sessionManager->set($user, $data);
+        $this->session->set($user, $data);
     }
 
     /**
@@ -152,7 +177,7 @@ class Rivescript extends ContentLoader
      */
     public function getUserVar(string $user, string $name): mixed
     {
-        return $this->sessionManager->get($user, $name);
+        return $this->session->get($user, $name);
     }
 
     /**
@@ -166,10 +191,10 @@ class Rivescript extends ContentLoader
     public function getUserVars(string|null $user = null): array|null
     {
         if (!$user) {
-            return $this->sessionManager->getAll();
+            return $this->session->getAll();
         }
 
-        return $this->sessionManager->getAny($user);
+        return $this->session->getAny($user);
     }
 
     /**
@@ -183,9 +208,9 @@ class Rivescript extends ContentLoader
     public function clearUserVars(string|null $user = null): void
     {
         if (is_null($user)) {
-            $this->sessionManager->resetAll();
+            $this->session->resetAll();
         } else {
-            $this->sessionManager->reset($user);
+            $this->session->reset($user);
         }
     }
 
@@ -200,7 +225,7 @@ class Rivescript extends ContentLoader
      */
     public function freezeUserVars(string $user): void
     {
-        $this->sessionManager->freeze($user);
+        $this->session->freeze($user);
     }
 
     /**
@@ -218,7 +243,7 @@ class Rivescript extends ContentLoader
      */
     public function thawUserVars(string $user, string $action = "thaw"): void
     {
-        $this->sessionManager->thaw($user, $action);
+        $this->session->thaw($user, $action);
     }
 
     /**
@@ -366,7 +391,10 @@ class Rivescript extends ContentLoader
                 $code .= fgets($stream);
             }
 
-            $this->parser->parse($code);
+            $this->parser->parse(
+                filename: "stream",
+                code: $code
+            );
         }
     }
 

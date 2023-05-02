@@ -18,6 +18,11 @@ git submodule init
 git submodule update
 ```
 
+## Todo 
+
+- [ ] Support local variable?
+
+
 ## Documentation
 
 Module documentation is available at <http://rivescript.readthedocs.org/>

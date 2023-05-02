@@ -57,13 +57,23 @@ class ParseResult
     }
 
     /**
+     * Return a simple OK.
+     *
+     * @return self|static
+     */
+    public static function ok(): ParseResult|static
+    {
+        return self::withSuccess();
+    }
+
+    /**
      * Return a status with a success status.
      *
      * @param mixed $result The parse result.
      *
      * @return static
      */
-    public static function withSuccess(mixed $result): self
+    public static function withSuccess(mixed $result = null): self
     {
         return new static(
             status: ParseResultStatus::SUCCESS,

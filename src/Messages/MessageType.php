@@ -19,4 +19,5 @@ enum MessageType: string
     case INFO = 'info';
     case DEBUG = 'debug';
     case ERROR = 'error';
+    case SAY = 'say';
 }
