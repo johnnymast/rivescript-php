@@ -12,17 +12,18 @@ declare(strict_types=1);
 
 namespace Axiom\Rivescript\Parser;
 
-use Axiom\Rivescript\Exceptions\Parser\ParserException;
-use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
-use Axiom\Rivescript\Messages\MessageType;
-use Axiom\Rivescript\Messages\RivescriptMessage;
-use Axiom\Rivescript\Rivescript;
-use Axiom\Rivescript\RivescriptType;
-use Axiom\Rivescript\RivescriptEvent;
-use Axiom\Rivescript\Traits\EventEmitter;
-use Axiom\Rivescript\Traits\Regex;
-use Axiom\Rivescript\Utils\Str;
-use WeakMap;
+use Axiom\Rivescript\{
+    Exceptions\Parser\ParserException,
+    Interfaces\Events\EventEmitterInterface,
+    Messages\MessageType,
+    Messages\RivescriptMessage,
+    Rivescript,
+    RivescriptType,
+    RivescriptEvent,
+    Traits\EventEmitter,
+    Traits\Regex,
+    Utils\Str,
+}
 
 /**
  * Parser class
@@ -58,8 +59,6 @@ class Parser implements EventEmitterInterface
      */
     protected array $values = [];
 
-    public bool $forceCase = false;
-
     /**
      * Parser constructor.
      *
@@ -70,9 +69,10 @@ class Parser implements EventEmitterInterface
     public function __construct(
         protected readonly Rivescript $master,
         protected readonly bool $strict = false,
-        protected readonly bool $utf8 = false
-    ) {
-        $this->forceCase = true;
+        protected readonly bool $utf8 = false,
+        protected readonly bool $forceCase = false // TODO:  Move to above here
+    )
+    {
     }
 
     /**
@@ -504,12 +504,6 @@ class Parser implements EventEmitterInterface
             }
         }
 
-
-//        print_r($filtered);
-//
-//
-    //    print_r($this->values['topics']['random']);
-
         return $this->values;
     }
 
@@ -573,7 +567,6 @@ class Parser implements EventEmitterInterface
         $name = "";
         $type = "";
 
-
         if (count($halves) == 2) {
             $value = Str::strip($halves[1]);
         }
@@ -636,7 +629,6 @@ class Parser implements EventEmitterInterface
             'value' => $value,
         ]);
     }
-
 
     /**
      * Create a parser context.
