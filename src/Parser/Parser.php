@@ -124,6 +124,11 @@ class Parser extends AbstractParser implements EventEmitterInterface
     {
         $this->reset(); // FIXME remove later
 
+        $local_options = [
+            "concat" => "none"
+        ];
+        $this->output(RivescriptMessage::Warning("implement local options"));
+
         $context = $this->createParserContext(); // FIXME remove later
 
         $tmp = explode("\n", $code);
@@ -132,6 +137,8 @@ class Parser extends AbstractParser implements EventEmitterInterface
         $lines = array_map(function ($line) use (&$lineno) {
             return ['script' => $line, 'lineno' => ++$lineno];
         }, $tmp);
+
+        $this->output(RivescriptMessage::Warning("MAKE VARIABLES THE SAME AS THE PYTHON PARSER"));
 
         if (count($lines) > 0) {
             /**
@@ -180,6 +187,8 @@ class Parser extends AbstractParser implements EventEmitterInterface
                     $inThat = null;
                 }
 
+                $this->output(RivescriptMessage::Warning("Replace \s with space like 203"));
+
                 for ($i = $step + 1; $i < count($lines); $i++) {
                     $lookline = trim($lines[$i]['script']);
 
@@ -197,11 +206,13 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         continue;
                     }
 
-
+                    # The lookahead command has to be either a % or a ^.
                     if ($lookCmd !== RivescriptType::PREVIOUS && $lookCmd !== RivescriptType::CONTINUE) {
                         break;
                     }
 
+                    # If the current command is a +, see if the following is
+                    # a %.
                     if ($cmd == RivescriptType::TRIGGER) {
                         if ($lookCmd == RivescriptType::PREVIOUS) {
                             $isThat = $lookahead;
@@ -211,13 +222,14 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         }
                     }
 
-                    // TODO: IMPLEMENT
-                    if ($cmd == RivescriptType::TRIGGER) {
-                        if ($lookCmd == RivescriptType::PREVIOUS) {
-                            $isThat = $lookahead;
-                            break;
-                        } else {
-                            $isThat = null;
+                    # If the current command is a ! and the next command(s) are
+                    # ^, we'll tack each extension on as a line break (which is
+                    # useful information for arrays).
+                    if ($cmd === RivescriptType::DEFINITION) {
+                        if ($lookCmd == RivescriptType::CONTINUE) {
+                            $this->output(RivescriptMessage::Warning("TODO"));
+                            //line += "<crlf>" + lookahead
+                            continue;
                         }
                     }
 
@@ -226,6 +238,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                     # end of the current line.
                     if ($cmd != RivescriptType::CONTINUE and $lookCmd != RivescriptType::PREVIOUS) {
                         if ($lookCmd == RivescriptType::CONTINUE) {
+                            $this->output(RivescriptMessage::Warning("IMPLEMENT CONTINUE"));
 //                            line += self . concat_modes . get(
 //                                    local_options["concat"],
 //                                    ""
@@ -262,9 +275,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                             $this->initTopic($name);
                         }
                         break;
-
-                    case RivescriptType::LABEL_CLOSE;
-
+                    case RivescriptType::LABEL_CLOSE:
                         $this->output(RivescriptMessage::Say("Close label"));
                         $key = match ($context->label['type']) {
                             'code' => 'objects',
@@ -294,6 +305,54 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         }
 
                         if ($parsed->result) {
+                            if ($parsed->result['type'] == "local") {
+                                $name = $parsed->result['name'];
+                                $value = $parsed->result['value'];
+                                $local_options[$name] = $value;
+
+                                $this->output(
+                                    RivescriptMessage::Say(
+                                        "\tSet parser option :name = :value",
+                                        ['name' => $name, 'value' => $value]
+                                    )
+                                );
+                                break;
+                            }
+                            if ($parsed->result['type'] == "global") {
+                                $name = $parsed->result['name'];
+                                $value = $parsed->result['value'];
+
+                                if ($value == "<undef>") {
+                                    $this->output(RivescriptMessage::Warning("\tUNDEF NOT SUPPORTED YET."));
+                                }
+
+                                if ($name == "debug") {
+                                    if (strtolower($value) == 'true') {
+                                        $value = true;
+                                    } else {
+                                        $value = false;
+                                    }
+                                } elseif ($name == "depth") {
+                                    $value = (int)$value;
+                                } elseif ($name == "strict") {
+                                    if (strtolower($value) == 'true') {
+                                        $value = true;
+                                    } else {
+                                        $value = false;
+                                    }
+                                }
+
+                                $this->values["begin"]["global"] = $value;
+
+                                $this->output(RivescriptMessage::Say("\tSTODO: Support undef"));
+                                $this->output(
+                                    RivescriptMessage::Say(
+                                        "\tSet global option :name = :value",
+                                        ['name' => $name, 'value' => $value]
+                                    )
+                                );
+                                break;
+                            }
                             if ($parsed->result['type'] !== "version") {
                                 $type = $parsed->result['type'];
                                 $value = $parsed->result['value'];
@@ -301,15 +360,31 @@ class Parser extends AbstractParser implements EventEmitterInterface
 
                                 $this->values[$type][$name] = $value;
 
+                                if ($value == "<undef>") {
+                                    $this->output(RivescriptMessage::Warning("\tUNDEF NOT SUPPORTED YET."));
+                                }
+
+                                if ($type == "array") {
+//                                    Did this have multiple parts?
+//                                        parts = value.split("<crlf>")
+                                    $this->output(RivescriptMessage::Warning("\tARRAY MULTIPLE PART NOT SUPPORTED YET"));
+                                }
+
                                 if (isset($this->values["begin"][$type])) {
                                     $this->values["begin"][$type][$name] = $value;
                                 }
+
+                                $this->output(
+                                    RivescriptMessage::Say(
+                                        "\tSet :type option :name = :value",
+                                        ['type' => $type, 'name' => $name, 'value' => $value]
+                                    )
+                                );
                             }
                         }
 
                         unset($parsed);
                         break;
-
                     case RivescriptType::TRIGGER:
 
                         unset($context->trigger);
@@ -352,7 +427,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
 //                        array_push($context->trigger['reply'], $script);
                         $this->output(RivescriptMessage::Say("Response: :script", ['script' => $script]));
                         break;
-
                     case RivescriptType::CONDITION:
 
                         if ($context->trigger === null) {
@@ -376,8 +450,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         $this->output(RivescriptMessage::Say("Condition: :script", ['script' => $script]));
                         $context->trigger['condition'][] = Str::strip($script);
                         break;
-
-                    case RivescriptType::PREVIOUS: // TODO: Really ?
+                    case RivescriptType::PREVIOUS: // TODO: Continue
                     case RivescriptType::CONTINUE:
                         // This was handled above
 
@@ -388,7 +461,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
                             )
                         );
                         break;
-
                     case RivescriptType::REDIRECT:
 
                         if ($context->trigger === null) {
@@ -415,7 +487,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         );
                         $context->trigger['redirect'][] = Str::strip($script);
                         break;
-
                     default:
                         $this->output(
                             RivescriptMessage::Warning("Found unknown command :script", ['script' => $script])
@@ -436,12 +507,8 @@ class Parser extends AbstractParser implements EventEmitterInterface
      *
      * @return \Axiom\Rivescript\Parser\ParseResult
      */
-    private
-    function parseDefinition(
-        $line,
-        $filename,
-        $lineno
-    ): ParseResult {
+    private function parseDefinition($line, $filename, $lineno): ParseResult
+    {
         $halves = explode('=', $line, 2);
         $left = explode(' ', Str::strip($halves[0])) ?? [];
         $value = "";
@@ -521,13 +588,8 @@ class Parser extends AbstractParser implements EventEmitterInterface
      *
      * @return ParseResult
      */
-    protected
-    function checkSyntax(
-        RivescriptType $type,
-        string $line,
-        string $filename,
-        int $lineno
-    ): ParseResult {
+    protected function checkSyntax(RivescriptType $type, string $line, string $filename, int $lineno): ParseResult
+    {
         if ($type == RivescriptType::DEFINITION) {
             # ! Definition
             #   - Must be formatted like this:

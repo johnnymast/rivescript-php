@@ -8,6 +8,7 @@ use Axiom\Rivescript\RivescriptEvent;
 $code = <<<EOF
 ! version = 2.00
 ! global debug = 1
+! local bleep = blap
 
   ! var name      = RiveScript Bot
   ! var age       = 0
