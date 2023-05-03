@@ -26,4 +26,30 @@ class RivescriptMessage
         public readonly array $args = []
     ) {
     }
+
+    /**
+     * Create a Warning message.
+     *
+     * @param string $message The warning message.
+     * @param array  $args    The arguments for this message.
+     *
+     * @return static
+     */
+    public static function Warning(string $message, array $args = []): static
+    {
+        return new static(MessageType::WARNING, $message, $args);
+    }
+
+    /**
+     * Create a Say message.
+     *
+     * @param string $message The message to say.
+     * @param array  $args    The arguments for this message.
+     *
+     * @return static
+     */
+    public static function Say(string $message, array $args = []): static
+    {
+        return new static(MessageType::SAY, $message, $args);
+    }
 }

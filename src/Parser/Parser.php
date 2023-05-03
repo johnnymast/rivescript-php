@@ -23,7 +23,7 @@ use Axiom\Rivescript\{
     Traits\EventEmitter,
     Traits\Regex,
     Utils\Str,
-}
+};
 
 /**
  * Parser class
@@ -47,16 +47,8 @@ class Parser implements EventEmitterInterface
     use EventEmitter;
     use Regex;
 
-    /**
-     * The supported Rivescript version
-     */
     public const RS_VERSION = 2.0;
 
-    /**
-     * Container for the parsed values.
-     *
-     * @var array
-     */
     protected array $values = [];
 
     /**
@@ -105,9 +97,9 @@ class Parser implements EventEmitterInterface
      *
      * @return void
      */
-    private function say(string $message): void
+    private function output(RivescriptMessage $message): void
     {
-        $this->master->say($message . "\n");
+        $this->emit(RivescriptEvent::OUTPUT, $message);
     }
 
     /**
@@ -153,13 +145,11 @@ class Parser implements EventEmitterInterface
         }, $tmp);
 
         if (count($lines) > 0) {
-            $original = $lines;
             $filtered = [];
 
             /**
              * First filter out the comments and objects.
              */
-            // TODO: Syntax check the code in this first loop.
             for ($i = 0; $i < count($lines); $i++) {
                 $record = $lines[$i];
                 $script = trim($record['script']);
@@ -167,17 +157,21 @@ class Parser implements EventEmitterInterface
                 $scriptWithoutType = trim(substr($script, 1));
                 $lineno = $record["lineno"];
 
-
                 if (empty($script)) {
                     continue;
                 }
 
                 $type = RivescriptType::fromCode(substr($script, 0, 1));
+                $check = $this->checkSyntax($type, $scriptWithoutType, $filename, $lineno);;
+
+                if ($check->status == ParseResultStatus::ERROR) {
+                    $this->_error($check->message);
+                }
 
                 if (str_starts_with($script, '/*') || str_starts_with($script, '*/')
                     || str_starts_with($script, '#')) {
                     if (str_starts_with($script, '#')) {
-                        $this->_warn(
+                        $this->output(
                             new RivescriptMessage(
                                 MessageType::WARNING,
                                 "Using the # symbol for comments is deprecated in :filename line :lineno",
@@ -219,6 +213,9 @@ class Parser implements EventEmitterInterface
                                     $this->createTopic($name);
                                 }
 
+                                $this->output(
+                                    RivescriptMessage::Warning("Add support for includes and inherits in topics.")
+                                );
 
 //                                $mode = "";
 //                                foreach ($fields as $field) {
@@ -329,7 +326,7 @@ class Parser implements EventEmitterInterface
                         }
 
                         if ($parsed->status == ParseResultStatus::WARNING) {
-                            $this->_warn($parsed->message);
+                            $this->output($parsed->message);
                         }
 
                         if ($parsed->result) {
@@ -351,15 +348,14 @@ class Parser implements EventEmitterInterface
 
                     case RivescriptType::TRIGGER:
 
-                        $this->_say(
-                            new RivescriptMessage(
-                                MessageType::SAY, "Trigger pattern: :script",
-                                ['script' => $script]
-                            )
-                        );
+                        if ($this->forceCase) {
+                            $script = strtolower($line);
+                        }
+
+                        $this->output(RivescriptMessage::Say("Trigger pattern: :script", ['script' => $script]));
 
                         if (!isset($this->values['topics'][$context->topic])) {
-                            $this->_say(
+                            $this->output(
                                 new RivescriptMessage(
                                     MessageType::SAY, "Adding topic :topic",
                                     ['topic' => $context->topic]
@@ -371,9 +367,14 @@ class Parser implements EventEmitterInterface
                             }
                         }
 
-                        unset($context->curentTrigger);
+                        if ($context->trigger) {
+                            // Add last trigger with parsed data to the stack
+                            $this->values["topics"][$context->topic]["triggers"][] = $context->trigger;
+                        }
 
-                        $context->currentTrigger = [
+                        unset($context->trigger);
+
+                        $context->trigger = [
                             "trigger" => $script,
                             "reply" => [],
                             "condition" => [],
@@ -381,14 +382,14 @@ class Parser implements EventEmitterInterface
                             "previous" => null, /* TODO: FiXME */
                         ];
 
-                        $this->values['topics'][$context->topic]['triggers'][] = $context->currentTrigger;
-                        $context->triggerIndex = count($this->values['topics'][$context->topic]['triggers']) - 1;
+//                        $this->values['topics'][$context->topic]['triggers'][] = $context->currentTrigger;
+                        //    $context->triggerIndex = count($this->values['topics'][$context->topic]['triggers']) - 1;
 
                         break;
 
                     case RivescriptType::RESPONSE:
-                        if ($context->currentTrigger === null) {
-                            $this->_warn(
+                        if ($context->trigger === null) {
+                            $this->output(
                                 new RivescriptMessage(
                                     MessageType::WARNING, "Response found before trigger in :filename on line :lineno",
                                     ['filename' => $filename, 'lineno' => $lineno]
@@ -396,64 +397,53 @@ class Parser implements EventEmitterInterface
                             );
                         }
 
-                        $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['reply'][] = $script;
+                        $context->trigger['reply'][] = $script;
 
-                        $this->_say(
-                            new RivescriptMessage(MessageType::SAY, "Response: :script", ['script' => $script])
-                        );
+                        $this->output(RivescriptMessage::Say("Response: :script", ['script' => $script]));
                         break;
 
                     case RivescriptType::CONDITION:
 
-                        if ($context->currentTrigger === null) {
-                            $this->_warn(
-                                new RivescriptMessage(
-                                    MessageType::WARNING, "Response found before trigger in :filename on line :lineno",
+                        if ($context->trigger === null) {
+                            $this->output(
+                                RivescriptMessage::Warning(
+                                    "Response found before trigger in :filename on line :lineno",
                                     ['filename' => $filename, 'lineno' => $lineno]
                                 )
                             );
                         }
 
-                        if ($this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['redirect']) {
-                            $this->_warn(
-                                new RivescriptMessage(
-                                    MessageType::WARNING,
+                        if ($context->trigger['redirect']) {
+                            $this->output(
+                                RivescriptMessage::Warning(
                                     "You can't mix @Redirects with *Conditions in :filename on line :lineno",
                                     ['filename' => $filename, 'lineno' => $lineno]
                                 )
                             );
                         }
 
-                        $this->_say(
-                            new RivescriptMessage(MessageType::SAY, "Condition: :script", [
-                                'script' => $script
-                            ])
-                        );
+                        $this->output(RivescriptMessage::Say("Condition: :script", ['script' => $script]));
 
-                        $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['condition'][] = Str::strip(
-                            $script
-                        );
-
+                        $context->trigger['condition'][] = Str::strip($script);
                         break;
 
                     case RivescriptType::PREVIOUS: // TODO: Really ?
                     case RivescriptType::CONTINUE:
                         // This was handled above
 
-                        $this->_warn(
-                            new RivescriptMessage(
-                                MessageType::SAY, "Previous or continue are NOT handled in :script",
-                                ['script' => $script, 'filename' => $filename, 'lineno' => $lineno]
+                        $this->output(
+                            RivescriptMessage::Warning(
+                                "Previous or continue are NOT handled in :script",
+                                ['script' => $script]
                             )
                         );
-
 
                         break;
 
                     case RivescriptType::REDIRECT:
 
-                        if ($context->currentTrigger === null) {
-                            $this->_warn(
+                        if ($context->trigger === null) {
+                            $this->output(
                                 new RivescriptMessage(
                                     MessageType::WARNING, "Response found before trigger in :filename on line :lineno",
                                     ['filename' => $filename, 'lineno' => $lineno]
@@ -461,38 +451,23 @@ class Parser implements EventEmitterInterface
                             );
                         }
 
-                        if (count(
-                                $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['reply']
-                            ) > 0
-                            || count(
-                                $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['condition']
-                            ) > 0) {
-                            $this->_warn(
-                                new RivescriptMessage(
-                                    MessageType::SAY,
+                        if (count($context->trigger['reply']) > 0 || count($context->trigger['condition']) > 0) {
+                            $this->output(
+                                RivescriptMessage::Say(
                                     "You can't mix @Redirects with -Replies or *Conditions in :filename on line :lineno",
-                                    [
-                                        'filename' => $filename,
-                                        'lineno' => $lineno
-                                    ]
+                                    ['filename' => $filename, 'lineno' => $lineno]
                                 )
                             );
                         }
 
 
-                        $this->_say(
-                            new RivescriptMessage(MessageType::SAY, "Redirect response to: :script", [
-                                'script' => $script
-                            ])
-                        );
+                        $this->output(RivescriptMessage::Say("Redirect response to: :script", ['script' => $script]));
 
-                        $this->values['topics'][$context->topic]['triggers'][$context->triggerIndex]['redirect'][] = Str::strip(
-                            $script
-                        );
+                        $context->trigger['redirect'][] = Str::strip($script);
                         break;
 
                     default:
-                        $this->_warn(
+                        $this->output(
                             new RivescriptMessage(
                                 MessageType::WARNING,
                                 "Found unknown command :script",
@@ -502,8 +477,16 @@ class Parser implements EventEmitterInterface
                         break;
                 }
             }
+
+            if ($context->trigger) {
+                // Add last trigger with parsed data to the stack
+                $this->values[" topics"][$context->topic]["triggers"][] = $context->trigger;
+            }
+
+            unset($context->trigger);
         }
 
+        print_r($this->values["topics"]);
         return $this->values;
     }
 
@@ -639,8 +622,7 @@ class Parser implements EventEmitterInterface
     {
         return (object)[
             'topic' => "random",
-            'currentTrigger' => null,
-            'triggerIndex' => 0,
+            'trigger' => null,
         ];
     }
 
