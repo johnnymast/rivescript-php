@@ -122,7 +122,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
      */
     public function parse(string $filename = "stream", string $code = ""): array
     {
-        // XYourWorstNightmareX not feeling well  must lie down    sorry
         $this->reset();
 
         $context = $this->createParserContext();
@@ -199,9 +198,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                                 $label['name'] = trim($name);
                                 $label['valid'] = true;
 
-                                if (!$this->hasTopic($name)) {
-                                    $this->createTopic($name);
-                                }
+                                $this->initTopic($name);
 
                                 $this->output(
                                     RivescriptMessage::Warning("Add support for includes and inherits in topics.")
@@ -225,14 +222,14 @@ class Parser extends AbstractParser implements EventEmitterInterface
                             unset($label);
                         }
                     } else {
-                        $valuesKey = match ($label["type"]) {
+                        $key = match ($label["type"]) {
                             "topic" => "topics",
                             "begin" => "begin_fixme",
                             "code" => "objects",
                         };
 
                         if ($type == RivescriptType::LABEL_CLOSE) {
-                            $this->values[$valuesKey][] = $label;
+                            $this->values[$key][] = $label;
                             unset($label);
                         } else {
                             $label["lines"][] = $script;
@@ -344,17 +341,10 @@ class Parser extends AbstractParser implements EventEmitterInterface
 
                         $this->output(RivescriptMessage::Say("Trigger pattern: :script", ['script' => $script]));
 
-                        if (!isset($this->values['topics'][$context->topic])) {
-                            $this->output(
-                                new RivescriptMessage(
-                                    MessageType::SAY, "Adding topic :topic",
-                                    ['topic' => $context->topic]
-                                )
-                            );
 
-                            if (!$this->hasTopic($context->topic)) {
-                                $this->createTopic($context->topic);
-                            }
+                        if (!isset($this->values['topics'][$context->topic])) {
+                            $this->output(RivescriptMessage::Say("Adding topic :topic", ['topic' => $context->topic]));
+                            $this->initTopic($context->topic);
                         }
 
                         if ($context->trigger) {
@@ -383,7 +373,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         }
 
                         $context->trigger['reply'][] = $script;
-
                         $this->output(RivescriptMessage::Say("Response: :script", ['script' => $script]));
                         break;
 
@@ -408,7 +397,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         }
 
                         $this->output(RivescriptMessage::Say("Condition: :script", ['script' => $script]));
-
                         $context->trigger['condition'][] = Str::strip($script);
                         break;
 
@@ -422,7 +410,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
                                 ['script' => $script]
                             )
                         );
-
                         break;
 
                     case RivescriptType::REDIRECT:

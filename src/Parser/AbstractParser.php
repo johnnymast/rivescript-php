@@ -10,7 +10,7 @@ class AbstractParser
      *
      * @return object
      */
-    private function createParserContext(): object
+    protected function createParserContext(): object
     {
         return (object)[
             'topic' => "random",
@@ -25,7 +25,7 @@ class AbstractParser
      *
      * @return array|null
      */
-    private function createEmptyLabel(string $type): ?array
+    protected function createEmptyLabel(string $type): ?array
     {
         return match ($type) {
             "code" => ["type" => "code", "valid" => false, "name" => "", "language" => "", "lines" => []],
@@ -42,7 +42,7 @@ class AbstractParser
      *
      * @return bool
      */
-    private function hasTopic(string $name): bool
+    protected function hasTopic(string $name): bool
     {
         return isset($this->values["topics"][$name]);
     }
@@ -54,13 +54,15 @@ class AbstractParser
      *
      * @return array
      */
-    private function createTopic(string $name): array
+    protected function initTopic(string $name): array
     {
-        $this->values['topics'][$name] = [
-            "includes" => [],
-            "inherits" => [],
-            "triggers" => [],
-        ];
+        if (!$this->hasTopic($name)) {
+            $this->values['topics'][$name] = [
+                "includes" => [],
+                "inherits" => [],
+                "triggers" => [],
+            ];
+        }
         return $this->values['topics'][$name];
     }
 
