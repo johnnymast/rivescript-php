@@ -42,7 +42,7 @@ use Axiom\Rivescript\{
  * @link     https://github.com/axiom-labs/rivescript-php
  * @since    0.4.0
  */
-class Parser implements EventEmitterInterface
+class Parser extends AbstractParser implements EventEmitterInterface
 {
     use EventEmitter;
     use Regex;
@@ -93,7 +93,7 @@ class Parser implements EventEmitterInterface
     /**
      * Output a message.
      *
-     * @param string $message The message to output.
+     * @param \Axiom\Rivescript\Messages\RivescriptMessage $message The message to output.
      *
      * @return void
      */
@@ -110,16 +110,6 @@ class Parser implements EventEmitterInterface
         $this->emit(RivescriptEvent::OUTPUT, $error);
 
         throw new ParserException("Error while parsing script.");
-    }
-
-    private function _warn(RivescriptMessage $warning)
-    {
-        $this->emit(RivescriptEvent::OUTPUT, $warning);
-    }
-
-    private function _say(RivescriptMessage $warning)
-    {
-        $this->emit(RivescriptEvent::OUTPUT, $warning);
     }
 
     /**
@@ -368,7 +358,6 @@ class Parser implements EventEmitterInterface
                         }
 
                         if ($context->trigger) {
-                            // Add last trigger with parsed data to the stack
                             $this->values["topics"][$context->topic]["triggers"][] = $context->trigger;
                         }
 
@@ -381,10 +370,6 @@ class Parser implements EventEmitterInterface
                             "redirect" => null,
                             "previous" => null, /* TODO: FiXME */
                         ];
-
-//                        $this->values['topics'][$context->topic]['triggers'][] = $context->currentTrigger;
-                        //    $context->triggerIndex = count($this->values['topics'][$context->topic]['triggers']) - 1;
-
                         break;
 
                     case RivescriptType::RESPONSE:
@@ -460,26 +445,23 @@ class Parser implements EventEmitterInterface
                             );
                         }
 
-
                         $this->output(RivescriptMessage::Say("Redirect response to: :script", ['script' => $script]));
-
                         $context->trigger['redirect'][] = Str::strip($script);
                         break;
 
                     default:
                         $this->output(
-                            new RivescriptMessage(
-                                MessageType::WARNING,
-                                "Found unknown command :script",
-                                ['script' => $script]
-                            )
+                            RivescriptMessage::Warning("Found unknown command :script", ['script' => $script])
                         );
                         break;
                 }
             }
 
+            /**
+             * Store the last trigger we
+             * were working on parsing.
+             */
             if ($context->trigger) {
-                // Add last trigger with parsed data to the stack
                 $this->values[" topics"][$context->topic]["triggers"][] = $context->trigger;
             }
 
@@ -488,51 +470,6 @@ class Parser implements EventEmitterInterface
 
         print_r($this->values["topics"]);
         return $this->values;
-    }
-
-
-    /**
-     * Check if a topic exists.
-     *
-     * @param string $name The name of the topic.
-     *
-     * @return bool
-     */
-    private function hasTopic(string $name): bool
-    {
-        return isset($this->values["topics"][$name]);
-    }
-
-    /**
-     * Return a topic.
-     *
-     * @param string $name The name of the topic.
-     *
-     * @return mixed
-     */
-    private function getTopic(string $name): mixed
-    {
-        if ($this->hasTopic($name)) {
-            return $this->values['topics'][$name];
-        }
-        return null;
-    }
-
-    /**
-     * Create a new topic.
-     *
-     * @param string $name The name of the topic.
-     *
-     * @return array
-     */
-    private function createTopic(string $name): array
-    {
-        $this->values['topics'][$name] = [
-            "includes" => [],
-            "inherits" => [],
-            "triggers" => [],
-        ];
-        return $this->values['topics'][$name];
     }
 
     /**
@@ -611,36 +548,6 @@ class Parser implements EventEmitterInterface
             'name' => $name,
             'value' => $value,
         ]);
-    }
-
-    /**
-     * Create a parser context.
-     *
-     * @return object
-     */
-    private function createParserContext(): object
-    {
-        return (object)[
-            'topic' => "random",
-            'trigger' => null,
-        ];
-    }
-
-    /**
-     * Create an empty object label.
-     *
-     * @param string $type The type of object to create.
-     *
-     * @return array|null
-     */
-    private function createEmptyLabel(string $type): ?array
-    {
-        return match ($type) {
-            "code" => ["type" => "code", "valid" => false, "name" => "", "language" => "", "lines" => []],
-            "topic" => ["type" => "topic", "valid" => false, "lines" => []],
-            "begin" => ["type" => "begin", "valid" => false, "lines" => []],
-            default => null,
-        };
     }
 
     /**
