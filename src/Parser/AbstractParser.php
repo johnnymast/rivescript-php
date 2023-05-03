@@ -14,7 +14,9 @@ class AbstractParser
     {
         return (object)[
             'topic' => "random",
+            'lastTopic' => "random",
             'trigger' => null,
+            'label' => null,
         ];
     }
 

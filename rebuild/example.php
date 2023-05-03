@@ -29,6 +29,17 @@ $code = <<<EOF
   ! person you     = I
   ! person i       = you
   
+  
+  + knock knock
+- Who's there?
+
++ *
+% who is there
+- <set joke=<star>><sentence> who?
+
++ <get joke> *
+- Haha! "{sentence}<get joke> <star>{/sentence}"! :D
+
     > begin
 
     + request
@@ -43,7 +54,7 @@ $code = <<<EOF
 + bleep
 @ hi
 
-  + my name is *
+  + my name iss *
   * <get name> eq <star>    => I know, you told me that already.
   * <get name> ne undefined => Did you get a name change?<set name=<star>>
   - <set name=<star>>Nice to meet you, <star>.
@@ -57,14 +68,6 @@ $code = <<<EOF
     - <set name=<formal>>Nice to meet you, <get name>!{topic=random}
   < topic
   
-  > topic newuser
-    + *
-    - Hello! My name is <bot name>! I'm a robot. What's your name?
-
-    + _
-    % * what is your name
-    - <set name=<formal>>Nice to meet you, <get name>!{topic=random}
-  < topic
   
 > object encode perl
 use Digest::MD5 qw(md5_hex);
@@ -79,6 +82,8 @@ use MIME::Base64 qw(encode_base64);
 < object
 
 EOF;
+
+
 
 
 class TermBuffer
