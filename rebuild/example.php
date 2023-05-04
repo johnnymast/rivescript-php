@@ -76,10 +76,8 @@ use MIME::Base64 qw(encode_base64);
 
 < object
 
-> object encode2 perl
-use Digest::MD5 qw(md5_hex);
-use MIME::Base64 qw(encode_base64);
-
+> object encode2 php
+phpinfo();
 < object
 
 EOF;

@@ -14,7 +14,9 @@ namespace Axiom\Rivescript;
 
 use Axiom\Rivescript\ContentLoader\ContentLoader;
 use Axiom\Rivescript\Exceptions\Sessions\MemorySessionException;
+use Axiom\Rivescript\Handlers\PHPObjects;
 use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
+use Axiom\Rivescript\Interfaces\Handlers\HandlerInterface;
 use Axiom\Rivescript\Interfaces\Sessions\SessionManagerInterface;
 use Axiom\Rivescript\Messages\MessageType;
 use Axiom\Rivescript\Messages\RivescriptMessage;
@@ -50,6 +52,9 @@ class Rivescript extends ContentLoader
 
     protected ?Brain $brain = null;
     protected ?Parser $parser = null;
+    protected array $handlers = [];
+    protected array $objlangs = [];
+
 
     /**
      * The default concatenation mode.
@@ -83,7 +88,6 @@ class Rivescript extends ContentLoader
         protected bool $utf8 = false,
         protected ?SessionManagerInterface $session = new MemorySessionManager(),
     ) {
-
         $this->parser = new Parser(
             master: $this,
             strict: $this->strict,
@@ -96,6 +100,8 @@ class Rivescript extends ContentLoader
                 $this->parser
             ]
         );
+
+        $this->handlers["php"] = new PHPObjects($this);
     }
 
     private function tabObjects(array $objects): void
@@ -336,6 +342,21 @@ class Rivescript extends ContentLoader
     }
 
     /**
+     * Return a defined handler.
+     *
+     * @param string $language The language to return the handler for.
+     *
+     * @return mixed
+     */
+    public function getHandler(string $language): mixed
+    {
+        if (isset($this->handlers[$language])) {
+            return $this->handlers[$language];
+        }
+        return null;
+    }
+
+    /**
      * Define a custom language handler for RiveScript objects.
      *
      * Pass in a NULL value for the object to delete an existing handler (for
@@ -347,21 +368,48 @@ class Rivescript extends ContentLoader
      *
      * @return void
      */
-    public function setHandler(string $language, mixed $object): void
+    public function setHandler(string $language, ?HandlerInterface $object = null): void
     {
         if (!$object) {
-            // delete the handler
+            if (isset($this->handlers[$language])) {
+                unset($this->handlers[$language]);
+            } else {
+                $this->handlers[$language] = $object;
+            }
         }
     }
 
+
+    /**
+     * Define a Php object from your program.
+     *
+     * This is equivalent to having an object defined in the RiveScript code,
+     * except your Python code is defining it instead.
+     *
+     * @note this method is only available if there is a Php handler set up
+     * (which there is by default, unless you've called setHandler("php", null)).
+     *
+     * @param string          $name The name of the object.
+     * @param string|callable $code The code for the object.
+     *
+     * @return void
+     */
+    public function setSubroutine(string $name, string|callable $code)
+    {
+        if (isset($this->handlers["php"])) {
+            $this->objlangs[$name] = "php";
+            return $this->handlers["php"]->load($name, $code);
+        } else {
+            $this->warn("Can't setSubroutine: no Php object handler!");
+        }
+    }
 
     /**
      * Stream new information into the brain.
      *
      * @param string $string The string of information to feed the brain.
      *
-     * @throws \Axiom\Rivescript\Exceptions\ParseException
-     * @throws \Axiom\Rivescript\Exceptions\ContentLoadingException
+     * @throws \Axiom\Rivescript\Exceptions\Parser\ParserException
      * @return void
      */
     public function stream(string $string): void
@@ -373,11 +421,22 @@ class Rivescript extends ContentLoader
         $this->closeStream();
     }
 
+    private function parse()
+    {
+//        # Load all the parsed objects.
+//        for obj in ast["objects"]:
+//            # Have a handler for it?
+//            if obj["language"] in self._handlers:
+//                self._objlangs[obj["name"]] = obj["language"]
+//                self._handlers[obj["language"]].load(obj["name"], obj["code"])
+    }
+
     /**
      * Process new information in the
      * stream.
      *
-     * @throws \Axiom\Rivescript\Exceptions\ParseException
+     * @throws \Axiom\Rivescript\Exceptions\Parser\ParserException
+     *
      * @return void
      */
     private function processInformation(): void
@@ -392,10 +451,8 @@ class Rivescript extends ContentLoader
             }
 
             $this->parser->parse(
-                filename: "stream",
                 code: $code
             );
         }
     }
-
 }

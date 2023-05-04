@@ -30,9 +30,9 @@ class AbstractParser
     protected function createEmptyLabel(string $type): ?array
     {
         return match ($type) {
-            "code" => ["type" => "code", "valid" => false, "name" => "", "language" => "", "lines" => []],
-            "topic" => ["type" => "topic", "valid" => false, "lines" => []],
-            "begin" => ["type" => "begin", "valid" => false, "lines" => []],
+            "code" => ["type" => "code", "name" => "", "language" => "", "lines" => []],
+            "topic" => ["type" => "topic", "lines" => []],
+            "begin" => ["type" => "begin", "lines" => []],
             default => null,
         };
     }

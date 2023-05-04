@@ -177,6 +177,11 @@ class Parser extends AbstractParser implements EventEmitterInterface
                 }
 
                 if (isset($context->label) && ($context->label['type'] === 'code' || $context->label['type'] === 'begin')) {
+                    $this->output(RivescriptMessage::Say("Check for unsupported code languages"));
+//                    lang = None
+//                    if len(fields) > 0:
+//                        lang = fields[0].lower()
+
                     if ($cmd !== RivescriptType::LABEL_CLOSE) {
                         $context->label['lines'][] = $script;
                         continue;
@@ -186,8 +191,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
                 if ($cmd == RivescriptType::TRIGGER) {
                     $inThat = null;
                 }
-
-                $this->output(RivescriptMessage::Warning("Replace \s with space like 203"));
 
                 for ($i = $step + 1; $i < count($lines); $i++) {
                     $lookline = trim($lines[$i]['script']);
@@ -200,7 +203,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                     $lookahead = trim(substr($lookline, 1));
 
                     // TODO: Replace \s with space
-                    // lookahead = re . sub(RE . space, ' ', lookahead)  # Replace the `\s` in the message
+                    $lookahead = preg_replace('/\s+/', ' ', $lookahead);
 
                     if (empty($lookahead)) {
                         continue;
@@ -263,25 +266,67 @@ class Parser extends AbstractParser implements EventEmitterInterface
                             default => null,
                         };
 
+                        if ($context->label['type'] == 'begin') {
+                            $this->output(RivescriptMessage::Say("\tFound the BEGIN block."));
+                        }
+
                         if ($context->label['type'] == "topic") {
                             $headline = trim(substr($scriptWithoutType, 5));
                             [$name] = explode(" ", $headline);
 
                             $context->label['name'] = trim($name);
 
+                            $this->output(RivescriptMessage::Say("\tSet topic to :topic", ["topic" => $name]));
+
                             $context->lastTopic = $context->topic;
                             $context->topic = $name;
 
                             $this->initTopic($name);
                         }
+
+                        if ($context->label['type'] == "code") {
+                            $headline = trim(substr($scriptWithoutType, 6));
+                            $lang = null;
+
+                            if (str_contains($headline, " ")) {
+                                [$name, $lang] = explode(" ", $headline);
+                            } else {
+                                $name = $headline;
+                            }
+
+                            if (!$lang) {
+                                $lang = "php";
+                                $this->output(
+                                    RivescriptMessage::Warning(
+                                        "Trying to parse unknown programming language in :filename on line :lineno",
+                                        ["filename" => $filename, "lineno" => $lineno]
+                                    )
+                                );
+                            }
+
+                            $context->label['name'] = trim($name);
+                            $context->label['language'] = strtolower(trim($lang));
+
+                            // $this->output(RivescriptMessage::Say("\tSet object to :object", ["object" => $name]));
+
+                            //   $this->initObject($name);
+                        }
+
                         break;
                     case RivescriptType::LABEL_CLOSE:
-                        $this->output(RivescriptMessage::Say("Close label"));
                         $key = match ($context->label['type']) {
                             'code' => 'objects',
                             'topic' => 'topics',
                             'begin' => 'begin',
                         };
+
+
+                        if ($context->label['type'] == 'begin' || $context->label['type'] == 'topic') {
+                            $this->output(RivescriptMessage::Say("\tEnd topic label."));
+                            $context->topic = $context->lastTopic;
+                        } elseif ($context->label['type'] == 'code') {
+                            $this->output(RivescriptMessage::Say("\tEnd object label."));
+                        }
 
                         $this->values[$key][] = $context->label;
 
@@ -367,7 +412,9 @@ class Parser extends AbstractParser implements EventEmitterInterface
                                 if ($type == "array") {
 //                                    Did this have multiple parts?
 //                                        parts = value.split("<crlf>")
-                                    $this->output(RivescriptMessage::Warning("\tARRAY MULTIPLE PART NOT SUPPORTED YET"));
+                                    $this->output(
+                                        RivescriptMessage::Warning("\tARRAY MULTIPLE PART NOT SUPPORTED YET")
+                                    );
                                 }
 
                                 if (isset($this->values["begin"][$type])) {
@@ -496,18 +543,18 @@ class Parser extends AbstractParser implements EventEmitterInterface
             }
         }
 
-        print_r($this->values["topics"]["random"]);
+        print_r($this->values["objects"]);
         return $this->values;
     }
 
     /**
-     * @param $line
-     * @param $filename
-     * @param $lineno
+     * @param string $line The line to parse.
+     * @param string $filename The filename the code is from.
+     * @param int    $lineno The line number.
      *
      * @return \Axiom\Rivescript\Parser\ParseResult
      */
-    private function parseDefinition($line, $filename, $lineno): ParseResult
+    private function parseDefinition(string $line, string $filename, int $lineno): ParseResult
     {
         $halves = explode('=', $line, 2);
         $left = explode(' ', Str::strip($halves[0])) ?? [];
@@ -551,7 +598,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
 
             return ParseResult::with($result);
         }
-
 
         if ($type !== "array") {
             $value = str_replace("\r\n", "", $value);

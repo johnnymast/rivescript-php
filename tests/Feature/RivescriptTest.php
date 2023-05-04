@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Axiom\Rivescript\Tests\Feature;
 
+use Axiom\Rivescript\Interfaces\Handlers\HandlerInterface;
 use Axiom\Rivescript\Rivescript;
 use Axiom\Rivescript\RivescriptEvent;
 
@@ -280,7 +281,11 @@ test(
 test(
     'setHandler() should remove a new handler for a programming language if the object is null.',
     function () {
-        $this->markTestSkipped('This test has not been implemented yet.');
+        expect($this->rivescript->getHandler("php"))->toBeInstanceOf(HandlerInterface::class);
+
+        $this->rivescript->setHandler("php", null);
+
+        expect($this->rivescript->getHandler("php"))->toBeNull();
     }
 );
 
