@@ -76,7 +76,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
     {
         $this->values = [
             "begin" => [
-                "version" => self::RS_VERSION,
                 "global" => [],
                 "var" => [],
                 "sub" => [],
@@ -147,27 +146,30 @@ class Parser extends AbstractParser implements EventEmitterInterface
             for ($step = 0; $step < count($lines); $step++) {
                 $record = $lines[$step];
                 $script = trim($record['script']);
-                $scriptWithoutType = trim(substr($script, 1));
+                $line = trim(substr($script, 1));
                 $lineno = $record["lineno"];
                 $isThat = null;
 
-                if (empty($script)) {
+                if (empty($line)) {
                     continue;
                 }
 
                 $cmd = RivescriptType::fromCode(substr($script, 0, 1));
-                $check = $this->checkSyntax($cmd, $scriptWithoutType, $filename, $lineno);;
+                $check = $this->checkSyntax($cmd, $line, $filename, $lineno);;
 
                 if ($check->status == ParseResultStatus::ERROR) {
                     $this->_error($check->message);
+                }
+
+                if (str_starts_with($script, '//')) {
+                    continue;
                 }
 
                 if (str_starts_with($script, '/*') || str_starts_with($script, '*/')
                     || str_starts_with($script, '#')) {
                     if (str_starts_with($script, '#')) {
                         $this->output(
-                            new RivescriptMessage(
-                                MessageType::WARNING,
+                            RivescriptMessage::Warning(
                                 "Using the # symbol for comments is deprecated in :filename line :lineno",
                                 ['filename' => $filename, 'lineno' => $lineno]
                             )
@@ -178,9 +180,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
 
                 if (isset($context->label) && ($context->label['type'] === 'code' || $context->label['type'] === 'begin')) {
                     $this->output(RivescriptMessage::Say("Check for unsupported code languages"));
-//                    lang = None
-//                    if len(fields) > 0:
-//                        lang = fields[0].lower()
 
                     if ($cmd !== RivescriptType::LABEL_CLOSE) {
                         $context->label['lines'][] = $script;
@@ -260,9 +259,9 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         $this->output(RivescriptMessage::Say("Open label"));
 
                         $context->label = match (true) {
-                            str_starts_with($scriptWithoutType, 'object') => $this->createEmptyLabel("code"),
-                            str_starts_with($scriptWithoutType, 'topic') => $this->createEmptyLabel("topic"),
-                            str_starts_with($scriptWithoutType, 'begin') => $this->createEmptyLabel("begin"),
+                            str_starts_with($line, 'object') => $this->createEmptyLabel("code"),
+                            str_starts_with($line, 'topic') => $this->createEmptyLabel("topic"),
+                            str_starts_with($line, 'begin') => $this->createEmptyLabel("begin"),
                             default => null,
                         };
 
@@ -271,8 +270,8 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         }
 
                         if ($context->label['type'] == "topic") {
-                            $headline = trim(substr($scriptWithoutType, 5));
-                            [$name] = explode(" ", $headline);
+                            $headline = trim(substr($line, 5));
+                            [$name] = $fields = explode(" ", $headline);
 
                             $context->label['name'] = trim($name);
 
@@ -282,10 +281,26 @@ class Parser extends AbstractParser implements EventEmitterInterface
                             $context->topic = $name;
 
                             $this->initTopic($name);
+
+                            $mode = '';
+                            if (count($fields) > 2) {
+                                array_shift($fields);
+                                foreach ($fields as $field) {
+                                    if ($field == 'includes') {
+                                        $mode = 'includes';
+                                    } elseif ($field == 'inherits') {
+                                        $mode = 'inherits';
+                                    } elseif ($mode == 'includes') {
+                                        $this->values['topics'][$context->topic]['includes'][$field] = 1;
+                                    } elseif ($mode == 'inherits') {
+                                        $this->values['topics'][$context->topic]['inherits'][$field] = 1;
+                                    }
+                                }
+                            }
                         }
 
                         if ($context->label['type'] == "code") {
-                            $headline = trim(substr($scriptWithoutType, 6));
+                            $headline = trim(substr($line, 6));
                             $lang = null;
 
                             if (str_contains($headline, " ")) {
@@ -306,18 +321,14 @@ class Parser extends AbstractParser implements EventEmitterInterface
 
                             $context->label['name'] = trim($name);
                             $context->label['language'] = strtolower(trim($lang));
-
-                            // $this->output(RivescriptMessage::Say("\tSet object to :object", ["object" => $name]));
-
-                            //   $this->initObject($name);
                         }
 
                         break;
                     case RivescriptType::LABEL_CLOSE:
                         $key = match ($context->label['type']) {
                             'code' => 'objects',
-                            'topic' => 'topics',
                             'begin' => 'begin',
+                            default => null,
                         };
 
 
@@ -328,7 +339,9 @@ class Parser extends AbstractParser implements EventEmitterInterface
                             $this->output(RivescriptMessage::Say("\tEnd object label."));
                         }
 
-                        $this->values[$key][] = $context->label;
+                        if ($key) {
+                            $this->values[$key][] = $context->label;
+                        }
 
                         if (isset($context->lastTopic)) {
                             $context->topic = $context->lastTopic;
@@ -339,7 +352,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
 
                         break;
                     case RivescriptType::DEFINITION:
-                        $parsed = $this->parseDefinition($scriptWithoutType, $filename, $lineno);
+                        $parsed = $this->parseDefinition($line, $filename, $lineno);
 
                         if ($parsed->status == ParseResultStatus::ERROR) {
                             $this->_error($parsed->message);
@@ -450,11 +463,18 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         }
 
                         $context->trigger = [
-                            "trigger" => $script,
+                            "trigger" => $line,
                             "reply" => [],
                             "condition" => [],
                             "redirect" => null,
-                            "previous" => $isThat, /* TODO: FiXME */
+                            "previous" => $isThat,
+
+                        ];
+
+                        $this->values["topics"][$context->topic]["syntax"][$line] = [
+                            "previous" => $isThat,
+                            "filename" => $filename,
+                            "lineno" => $lineno,
                         ];
 
                         $this->values["topics"][$context->topic]["triggers"][] = &$context->trigger;
@@ -462,15 +482,14 @@ class Parser extends AbstractParser implements EventEmitterInterface
                     case RivescriptType::RESPONSE:
                         if ($context->trigger === null) {
                             $this->output(
-                                new RivescriptMessage(
-                                    MessageType::WARNING,
+                                RivescriptMessage::Warning(
                                     "Response found before trigger in :filename on line :lineno",
                                     ['filename' => $filename, 'lineno' => $lineno]
                                 )
                             );
                         }
 
-                        $context->trigger['reply'][] = $script;
+                        $context->trigger['reply'][] = $line;
 //                        array_push($context->trigger['reply'], $script);
                         $this->output(RivescriptMessage::Say("Response: :script", ['script' => $script]));
                         break;
@@ -495,7 +514,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         }
 
                         $this->output(RivescriptMessage::Say("Condition: :script", ['script' => $script]));
-                        $context->trigger['condition'][] = Str::strip($script);
+                        $context->trigger['condition'][] = Str::strip($line);
                         break;
                     case RivescriptType::PREVIOUS: // TODO: Continue
                     case RivescriptType::CONTINUE:
@@ -512,8 +531,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
 
                         if ($context->trigger === null) {
                             $this->output(
-                                new RivescriptMessage(
-                                    MessageType::WARNING,
+                                RivescriptMessage::Warning(
                                     "Response found before trigger in :filename on line :lineno",
                                     ['filename' => $filename, 'lineno' => $lineno]
                                 )
@@ -532,7 +550,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                         $this->output(
                             RivescriptMessage::Say("Redirect response to: :script", ['script' => $script])
                         );
-                        $context->trigger['redirect'][] = Str::strip($script);
+                        $context->trigger['redirect'][] = Str::strip($line);
                         break;
                     default:
                         $this->output(
@@ -543,7 +561,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
             }
         }
 
-        print_r($this->values["objects"]);
+        print_r($this->values);
         return $this->values;
     }
 

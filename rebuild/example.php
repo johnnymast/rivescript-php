@@ -82,6 +82,47 @@ phpinfo();
 
 EOF;
 
+$includes =<<<EOF
+// This is in the default "random" topic and catches all non-matching
+  // triggers.
+  #abc
+  + *
+  - I'm afraid I don't know how to reply to that!
+
+  > topic alpha
+    + alpha trigger
+    - Alpha's response.
+  < topic
+
+  > topic beta
+    + beta trigger
+    - Beta's response.
+  <
+
+  > topic gamma
+    + gamma trigger
+    - Gamma's response.
+  < topic
+
+  > topic delta
+    + delta trigger
+    - Delta's response.
+
+    + *
+    - You can't access any other triggers! Haha!
+  < topic
+
+
+  > topic abc inherits alpha beta
+    + how are you
+    - Good, how are you?
+  < topic
+
+  // Matching order:
+  //how are you
+  //alpha trigger
+  //beta trigger
+EOF;
 
 
 
@@ -156,7 +197,7 @@ $rivescript->on(RivescriptEvent::DEBUG, fn(string $msg) => write($msg, $buffer, 
 
 $rivescript->sortReplies();
 
-$rivescript->stream($code);
+$rivescript->stream($includes);
 
 if ($buffer) {
     $buffer->setSkip(true);
