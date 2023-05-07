@@ -2,13 +2,22 @@
 
 namespace Axiom\Rivescript;
 
+use Axiom\Rivescript\Exceptions\Brain\DeepRecursionException;
+use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
+use Axiom\Rivescript\Messages\RivescriptMessage;
+use Axiom\Rivescript\Traits\EventEmitter;
+
 /**
  *
  */
-class Brain
+class Brain implements EventEmitterInterface
 {
+    use EventEmitter;
+
+    private ?string $currentUser = null;
+
     /**
-     *  Whether UTF-8 mode is enabled.
+     * The Brain class controls the actual reply fetching phase for RiveScript.
      *
      * @param \Axiom\Rivescript\Rivescript $master A reference to the parent RiveScript instance.
      * @param bool                         $strict Whether strict mode is enabled.
@@ -21,87 +30,170 @@ class Brain
     ) {
     }
 
-
     /**
-     * Teach the Brain with new information.
+     * Output a message.
      *
-     * @param resource $stream the stream to read from.
+     * @param \Axiom\Rivescript\Messages\RivescriptMessage $message The message to output.
      *
-     * @throws \Axiom\Rivescript\Exceptions\ParseException
      * @return void
      */
-    public function teach($stream): void
+    private function output(RivescriptMessage $message): void
     {
-        if (is_resource($stream)) {
-            $lineNumber = 0;
-
-            rewind($stream);
-
-            $collect = false;
-            $collectFor = null;
-            $collectedContent = '';
-
-//            while (!feof($stream)) {
-//                $content .= fgets($stream);
-//            }
-
-            $str = '';
-            while (!feof($stream)) {
-                $line = fgets($stream);
-                $node = new Node($line, $lineNumber++);
-
-                $command = $node->getCommand();
-
-                if ($command->isEmpty() === true || $command->isComment() === true) {
-                    unset($node);
-                    continue;
-                }
-
-                if ($node->getTag() === '>' && str_starts_with($node->getValue(), "object")) {
-                    $collect = true;
-                    $collectFor = $command;
-                    continue;
-                }
-
-                if ($node->getTag() === '<' && str_starts_with($node->getValue(), "object")) {
-                    //    $collectedContent .= $node->getOriginalSource();
-                    $collectedContent = trim($collectedContent);
-                    $collectFor->setContent($collectedContent);
-
-                    $command = $collectFor;
-                    $collect = false;
-                    $collectFor = null;
-                    $collectedContent = '';
-                }
-
-                if ($collect === true) {
-                    $collectedContent .= $node->getOriginalSource();
-                    continue;
-                }
-
-                if ($command->isSyntaxValid() === true) {
-                    //echo get_class($command) . " -- Topic: " . $this->topic()->getName(), "\n";
-                    $command->detect();
-
-                             } else {
-
-                    /**
-                     * I am not 100% sure yet on what to do in this case.
-                     * For now, we will debug the syntax errors and continue
-                     * on our way.
-                     */
-                    $errors = $command->getSyntaxErrors();
-
-                    throw new ParseException(current($errors));
-                }
-            }
-
-
-            /**
-             * @deprecated
-             */
-            //     $this->topics->each(fn(Topic $topic) => $topic->sortTriggers());
-//            $this->topics->each(fn(Topic $topic) => $topic->sortTriggers($topic->triggers()));
-        }
+        $this->emit(RivescriptEvent::OUTPUT, $message);
     }
+
+
+    /**
+     * Fetch a reply from the RiveScript brain.
+     *
+     * @param string $user              A unique user ID for the person requesting a reply.
+     *                                  This could be e.g. a screen name or nickname. It's used internally
+     *                                  to store user variables (including topic and history), so if your
+     *                                  bot has multiple users each one should have a unique ID.
+     * @param string $msg               A unique user ID for the person requesting a reply.
+     *                                  This could be e.g. a screen name or nickname. It's used internally
+     *                                  to store user variables (including topic and history), so if your
+     *                                  bot has multiple users each one should have a unique ID.
+     * @param bool   $errors_as_replies When errors are encountered (such as a
+     *                                  deep recursion error, no reply matched, etc.) this will make the
+     *                                  reply be a text representation of the error message. If you set
+     *                                  this to false, errors will instead raise an exception, such as
+     *                                  a ``DeepRecursionException`` or ``NoReplyErrorException``. By default, no
+     *                                  exceptions are raised and errors are set in the reply instead.
+     *
+     * @return string
+     */
+    public function reply(string $user, string $msg, bool $errors_as_replies): string
+    {
+        $this->output(
+            RivescriptMessage::Say(
+                "Get reply to [:user] :msg",
+                ['user' => $user, 'msg' => $msg]
+            )
+        );
+
+        if (isset($this->master->topics['__begin__'])) {
+            try {
+                $begin = $this->getReply($user, 'request', 'begin', ignore_object_errors: $errors_as_replies);
+            } catch (\Exception $e) { // RiveScriptError
+
+            }
+        }
+
+        return 'abc';
+    }
+
+
+    /**
+     * The internal reply getter function.
+     *
+     * @param string $user                 The user ID as passed to reply().
+     * @param string $msg                  The formatted user message.
+     * @param string $context              The reply context, one of begin or normal.
+     * @param int    $step                 The recursion depth counter.
+     * @param bool   $ignore_object_errors Whether to ignore errors from within
+     *                                     Php object macros and not raise an ObjectError exception.
+     *
+     * @return string The reply output.
+     */
+    private function getReply(
+        string $user,
+        string $msg,
+        string $context = 'normal',
+        int $step = 0,
+        bool $ignore_object_errors = true
+    ): string {
+        if (!isset($this->master->sorted['topics'])) {
+            throw new NoReplyErrorException(
+                "You must call sortReplies() once you are done loading RiveScript documents"
+            );
+        }
+
+        $topic = $this->master->getUserVar($user, "topic");
+
+        if ($topic == null || $topic == "undefined") {
+            $topic = "random";
+            $this->master->setUserVar($user, "topic", $topic);
+        }
+
+        /**
+         * Collect data on the user.
+         */
+        $stars = [];
+        $thatstars = [];  # For %Previous's.
+        $reply = '';
+
+        if (!isset($this->master->topics[$topic])) {
+            $this->output(
+                RivescriptMessage::Say(
+                    "User :user was in an empty topic named':topic'",
+                    ['user' => $user, 'topic' => $topic]
+                )
+            );
+
+            $topic = "random";
+            $this->master->setUserVar($user, "topic", $topic);
+        }
+
+        if ($step > $this->master->depth) {
+            throw new DeepRecursionException();
+        }
+
+        if ($$context == 'begin') {
+            $topic = '__begin__';
+        }
+
+        $history = $this->master->getUserVar($user, "__history__");
+        if (!is_array($history) || !isset($history['input']) || !isset($history['reply'])) {
+            $history = $this->defaultHistory();
+            $this->master->setUserVar($user, "__history__", $history);
+        }
+
+        if (!isset($this->master->topics['random'])) {
+            throw new NoReplyErrorException("no default topic 'random' was found");
+        }
+
+        $matched = null;
+        $matchedTrigger = null;
+        $foundMatch = false;
+
+        if ($step == 0) {
+            $allTopics = [$topic];
+
+            if (isset($this->master->includes[$topic]) || isset($this->master->lineage[$topic])) {
+                $allTopics = getTopicTree($this->master, $topic);
+            }
+        }
+
+        return '';
+    }
+
+    private function defaultHistory()
+    {
+        return [
+            'input' => [
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined"
+            ],
+            'reply' => [
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined",
+                "undefined"
+            ]
+        ];
+    }
+
 }

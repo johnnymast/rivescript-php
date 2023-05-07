@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of Rivescript-php
  *
@@ -52,9 +53,15 @@ class Rivescript extends ContentLoader
 
     protected ?Brain $brain = null;
     protected ?Parser $parser = null;
-    protected array $handlers = [];
-    protected array $objlangs = [];
-
+    public array $handlers = [];
+    public array $objlangs = [];
+    public array $includes = [];
+    public array $lineage = [];
+    public array $sorted = [];
+    public array $global = [];
+    public array $topics = [];
+    public array $thats = [];
+    public array $syntax = [];
 
     /**
      * The default concatenation mode.
@@ -84,11 +91,17 @@ class Rivescript extends ContentLoader
     public function __construct(
         protected bool $debug = false,
         protected bool $strict = true,
-        protected int $depth = 50,
+        public int $depth = 50,
         protected bool $utf8 = false,
         protected ?SessionManagerInterface $session = new MemorySessionManager(),
     ) {
         $this->parser = new Parser(
+            master: $this,
+            strict: $this->strict,
+            utf8: $this->utf8
+        );
+
+        $this->brain = new Brain(
             master: $this,
             strict: $this->strict,
             utf8: $this->utf8
@@ -338,6 +351,9 @@ class Rivescript extends ContentLoader
      */
     public function sortReplies(): void
     {
+        $this->sorted["topics"] = [];
+        $this->sorted["thats"] = [];
+
         $this->say("Sorting triggers...");
     }
 
@@ -416,19 +432,103 @@ class Rivescript extends ContentLoader
     {
         $this->openStream();
         $this->writeToMemory($string);
-        $this->processInformation();
+//        $this->processInformation();
+        $this->parse();
         $this->sortReplies();
         $this->closeStream();
     }
 
     private function parse()
     {
-//        # Load all the parsed objects.
-//        for obj in ast["objects"]:
-//            # Have a handler for it?
-//            if obj["language"] in self._handlers:
-//                self._objlangs[obj["name"]] = obj["language"]
-//                self._handlers[obj["language"]].load(obj["name"], obj["code"])
+        $stream = $this->getStream();
+        if (is_resource($stream)) {
+            rewind($stream);
+
+            $code = '';
+            while (!feof($stream)) {
+                $code .= fgets($stream);
+            }
+        }
+
+        $parsed = $this->parser->parse(
+            code: $code
+        );
+
+        foreach ($parsed['begin'] as $type => $vars) {
+            if (!isset($this->$type)) {
+                continue;
+            }
+
+            foreach ($vars as $name => $value) {
+                if ($value == '<undef>') {
+                    unset($this->$type[$name]);
+                } else {
+                    $this->$type[$name] = $value;
+                }
+
+                if ($type === 'sub' || $type === 'person') {
+                    // $this->max[$type] = max($this->max[$type], count(explode(' ', $name)));
+                    $this->warn("IMPLMENT PRECOMPILING SUB AND PERSON VARS");
+                }
+
+                if (isset($this->global['debug']) && $this->global['debug']) {
+                    $this->debug = strtolower($this->global['debug']) == 'true';
+                }
+
+                if (isset($this->global['depth']) && $this->global['depth']) {
+                    $this->depth = (int)($this->global['depth']);
+                }
+                //
+
+                foreach ($parsed as $topic => $data) {
+                    if (!isset($this->includes[$topic])) {
+                        $this->includes[$topic] = [];
+                    }
+
+                    if (!isset($this->lineage[$topic])) {
+                        $this->lineage[$topic] = [];
+                    }
+
+                    $this->includes = array_merge($this->includes, $data["includes"]);
+                    $this->lineage = array_merge($this->lineage, $data["lineage"]);
+
+
+                    if (!isset($this->topics[$topic])) {
+                        $this->topics[$topic] = [];
+                    }
+
+                    foreach ($data['triggers'] as $trigger) {
+                        $this->topics[$topic][] = $trigger;
+
+                        $this->warn('IMPLEMENT _precompile_regexp $this->trigger["trigger"]');
+
+                        if ($trigger['previous']) {
+                            $this->warn('IMPLEMENT _precompile_regexp $this->trigger["previous"]');
+
+                            if (!isset($this->thats[$topic])) {
+                                $this->thats[$topic] = [];
+                            }
+
+                            if (isset($this->thats[$trigger['trigger']])) {
+                                $this->thats[$topic][$trigger['trigger']] = [];
+                            }
+
+                            $this->thats[$topic][$trigger['trigger']][$trigger["previous"]] = $trigger["trigger"];
+                        }
+
+                        $this->syntax[$topic] = $data['syntax'];
+                    }
+
+                    //
+                    foreach ($parsed['objects'] as $object) {
+                        if (isset($this->handlers[$object['language']])) {
+                            $this->objlangs[$object['name']] = $object['language'];
+                            $this->handlers[$object['language']]->load($object['name'], $object['code']);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -454,5 +554,30 @@ class Rivescript extends ContentLoader
                 code: $code
             );
         }
+    }
+
+    /**
+     * Fetch a reply from the RiveScript brain.
+     *
+     * @param string $user              A unique user ID for the person requesting a reply.
+     *                                  This could be e.g. a screen name or nickname. It's used internally
+     *                                  to store user variables (including topic and history), so if your
+     *                                  bot has multiple users each one should have a unique ID.
+     * @param string $msg               A unique user ID for the person requesting a reply.
+     *                                  This could be e.g. a screen name or nickname. It's used internally
+     *                                  to store user variables (including topic and history), so if your
+     *                                  bot has multiple users each one should have a unique ID.
+     * @param bool   $errors_as_replies When errors are encountered (such as a
+     *                                  deep recursion error, no reply matched, etc.) this will make the
+     *                                  reply be a text representation of the error message. If you set
+     *                                  this to false, errors will instead raise an exception, such as
+     *                                  a ``DeepRecursionException`` or ``NoReplyErrorException``. By default, no
+     *                                  exceptions are raised and errors are set in the reply instead.
+     *
+     * @return string
+     */
+    public function reply(string $user, string $msg, bool $errors_as_replies = true): string
+    {
+        return $this->brain->reply($user, $msg, $errors_as_replies);
     }
 }

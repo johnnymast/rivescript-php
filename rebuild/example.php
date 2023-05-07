@@ -124,6 +124,10 @@ $includes =<<<EOF
   //beta trigger
 EOF;
 
+$code =<<<EOF
++ hi
+- Hallo
+EOF;
 
 
 class TermBuffer
@@ -189,6 +193,7 @@ function write($msg, $buffer, $fmt): void
     }
 }
 
+$user = "localuser";
 $rivescript = new Rivescript(debug: true);
 $rivescript->on(RivescriptEvent::WARNING, fn(string $msg) => write($msg, $buffer, FMT_WARN));
 $rivescript->on(RivescriptEvent::ERROR, fn(string $msg) => write($msg, $buffer, FMT_ERROR));
@@ -197,7 +202,10 @@ $rivescript->on(RivescriptEvent::DEBUG, fn(string $msg) => write($msg, $buffer, 
 
 $rivescript->sortReplies();
 
-$rivescript->stream($includes);
+$rivescript->stream($code);
+$response = $rivescript->reply($user, "hi");
+
+echo $response;
 
 if ($buffer) {
     $buffer->setSkip(true);

@@ -15,7 +15,6 @@ namespace Axiom\Rivescript\Parser;
 use Axiom\Rivescript\{
     Exceptions\Parser\ParserException,
     Interfaces\Events\EventEmitterInterface,
-    Messages\MessageType,
     Messages\RivescriptMessage,
     Rivescript,
     RivescriptType,
@@ -229,8 +228,7 @@ class Parser extends AbstractParser implements EventEmitterInterface
                     # useful information for arrays).
                     if ($cmd === RivescriptType::DEFINITION) {
                         if ($lookCmd == RivescriptType::CONTINUE) {
-                            $this->output(RivescriptMessage::Warning("TODO"));
-                            //line += "<crlf>" + lookahead
+                            $line .= '<crlf>'. $lookahead;
                             continue;
                         }
                     }
@@ -561,7 +559,6 @@ class Parser extends AbstractParser implements EventEmitterInterface
             }
         }
 
-        print_r($this->values);
         return $this->values;
     }
 

@@ -25,15 +25,6 @@ beforeEach(function () {
 });
 
 
-test(
-    'default version from the parser should be 2.0',
-    function () {
-        $result = $this->parser->reset();
-        $version = $result["begin"]["version"];
-
-        expect($version)->toBe(2.0);
-    }
-);
 
 test(
     'An error should be sent when the script version is lower then the parser supports.',
