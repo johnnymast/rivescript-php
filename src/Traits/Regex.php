@@ -61,4 +61,19 @@ trait Regex
 
         return false;
     }
+
+
+    /**
+     * Replace a pattern with a replacement string.
+     *
+     * @param string $pattern     The pattern to match.
+     * @param string $source      The source to find a match in.
+     * @param string $replacement The replacement string.
+     *
+     * @return string
+     */
+    protected function replacePatternWith(string $pattern, string $source, string $replacement): string
+    {
+        return preg_replace($pattern, $replacement, $source);
+    }
 }

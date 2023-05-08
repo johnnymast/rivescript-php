@@ -6,6 +6,8 @@ use Axiom\Rivescript\Exceptions\Brain\DeepRecursionException;
 use Axiom\Rivescript\Interfaces\Events\EventEmitterInterface;
 use Axiom\Rivescript\Messages\RivescriptMessage;
 use Axiom\Rivescript\Traits\EventEmitter;
+use Axiom\Rivescript\Traits\Regex;
+use Axiom\Rivescript\Utils\Str;
 
 /**
  *
@@ -13,7 +15,11 @@ use Axiom\Rivescript\Traits\EventEmitter;
 class Brain implements EventEmitterInterface
 {
     use EventEmitter;
+    use Regex;
 
+    /**
+     * @var string|null
+     */
     private ?string $currentUser = null;
 
     /**
@@ -163,11 +169,271 @@ class Brain implements EventEmitterInterface
             if (isset($this->master->includes[$topic]) || isset($this->master->lineage[$topic])) {
                 $allTopics = getTopicTree($this->master, $topic);
             }
+
+            foreach ($allTopics as $top) {
+                $this->output(RivescriptMessage::Say("Checking topic :topic for any %Previous's.", ['topic' => $top]));
+            }
+
+            $lastReply = $history["reply"][0];
+
+            foreach ($this->master->sorted['thats'][$topic] as $trig) {
+                $pattern = $trig[1]["previous"];
+                $botside = $this->replyRegexp($user, $pattern);
+            }
         }
 
         return '';
     }
 
+    /**
+     * Prepares a trigger for the regular expression engine.
+     *
+     * @param string $user    The user ID invoking a reply.
+     * @param string $pattern The original trigger text to be turned into a regexp.
+     *
+     * @return string The final regexp object.
+     */
+    private function replyRegexp(string $user, string $pattern): string
+    {
+        /**
+         * Convert # into (\d+?)
+         * Convert _ into (\w+?)
+         * Remove {weight} tags
+         * Remove empty entities
+         * Remove empty entities from start of alt/pattern:opts
+         * Remove empty entities from end of alt/oppattern:ts
+         */
+        $regexp = $this->replacePatternWith(pattern: '/\*/', source: $regexp, replacement: "(.+?)");
+        $regexp = $this->replacePatternWith(pattern: '/#/', source: $regexp, replacement: "(\\d+?)");
+        $regexp = $this->replacePatternWith(pattern: '/_/', source: $regexp, replacement: "(\\w+?)");
+        $regexp = $this->replacePatternWith(pattern: '/\s*\{weight=\d+\}\s*/', source: $regexp, replacement: "");
+        $regexp = $this->replacePatternWith(pattern: '/<zerowidthstar>/', source: $regexp, replacement: "(.*?)");
+        $regexp = $this->replacePatternWith(pattern: '/\|{2,}/', source: $regexp, replacement: '|');
+        $regexp = $this->replacePatternWith(pattern: '/(\(|\[)\|/', source: $regexp, replacement: '$1');
+        $regexp = $this->replacePatternWith(pattern: '/\|(\)|\])/', source: $regexp, replacement: '$1');
+
+        // @ symbols conflict w/ arrays
+        if ($this->utf8) {
+            $regexp = $this->replacePatternWith(pattern: '/\\@/', source: $regexp, replacement: "\\u0040");
+        }
+
+        $pattern = '/\[(.+?)\]/';
+        $giveup = 0;
+
+        if ($this->matchesPattern(pattern: $pattern, source: $regexp)) {
+            $matches = $this->getMatchesFromPattern(pattern: $pattern, source: $regexp);
+            foreach ($matches as $match) {
+                //   $regexp = $this->replacePatternWith(pattern: $pattern, source: $regexp, replacement: $match[1]);
+                $parts = explode('|', $match[1]);
+                $new = [];
+
+                foreach ($parts as $part) {
+                    $p = '(?:\\s|\\b)+' . trim($part) . '(?:\\s|\\b)+';
+                    $new[] = $p;
+                }
+
+                /**
+                 * If this optional had a star or anything in it, make it
+                 * non-matching.
+                 */
+                $pipes = implode('|', $new);
+                $pipes = $this->replacePatternWith(pattern: '(.+?)', source: $pipes, replacement: '(?:.+?)');
+                $pipes = $this->replacePatternWith(pattern: '(\d+?)', source: $pipes, replacement: '(?:\d+?)');
+                $pipes = $this->replacePatternWith(pattern: '([A-Za-z]+?)', source: $pipes, replacement: '(?:[A-Za-z]+?)');
+
+
+                $regexp = $this->replacePatternWith(
+                    '/\s*\[' . preg_quote($match) . '\]\s*/',
+                    source: $regexp,
+                    replacement: '(?:' . $pipes . '|(?:\\s|\\b))'
+                );
+                $regexp = $this->replacePatternWith(pattern: '/\w/', source: $regexp, replacement: '[^\s\d]');
+
+                $bvars = $this->getMatchesFromPattern(
+                    pattern: '/' . preg_quote('<bot (.+?)>', '/') . '/',
+                    source: $regexp
+                );
+
+
+                foreach ($bvars as $var) {
+                    $rep = '';
+                    if (isset($this->master->var[$var])) {
+                        $rep = $this->formatMessage($this->master->var[$var]);
+                    }
+
+                    $regexp = $this->replacePatternWith(pattern: "<bot {$var}>", source: $regexp, replacement: $rep);
+                }
+
+                /**
+                 *  Filter in user variables.
+                 */
+                $uvars = $this->getMatchesFromPattern(
+                    pattern: '/' . preg_quote('<get (.+?)>', '/') . '/',
+                    source: $regexp
+                );
+
+                foreach ($uvars as $var) {
+                    $rep = '';
+                    $value = $this->master->getUserVar($user, $var);
+                    if ($value !== null && $value  !== "undefined") {
+                        $rep = Str::stripNasties($value);
+                    }
+
+                    $regexp = $this->replacePatternWith(pattern: "<get {$var}>", source: $regexp, replacement: $rep);
+                }
+
+                /**
+                 * Filter in <input> and <reply> tags. This is a slow process, so only
+                 * do it if we have to!
+                 */
+                if (strpos($regexp, '<input') > -1 || strpos($regexp, '<reply') > -1) {
+                    $history = $this->master->getUserVar($user, "__history__");
+
+                }
+            }
+        }
+
+
+        return '';
+    }
+
+    /**
+     * Format a user's message for safe processing.
+     *
+     * This runs substitutions on the message and strips out any remaining
+     * symbols (depending on UTF-8 mode).
+     *
+     * @param string $msg      The user's message.
+     * @param bool   $botreply Whether this formatting is being done for the
+     *                         bot's last reply (e.g. in a ``%Previous`` command).
+     *
+     * @return string The formatted message.
+     */
+    private function formatMessage(string $msg, bool $botreply = false): string
+    {
+        $msg = strtolower($msg);
+        $msg = $this->substitute($msg);
+
+        if ($this->utf8) {
+            $msg = $this->replacePatternWith(pattern: '/[\\<>]+/', source: $msg, replacement: '');
+
+
+//            if (self.master.unicodePunctuation != null) {
+//                msg = msg.replace(self.master.unicodePunctuation, "");
+//            }
+            $this->output(
+                RivescriptMessage::Say(
+                    "Implement unicodePunctuation in Rivescript.php and use in in Brain::formatMessage "
+                )
+            );
+
+            if ($botreply) {
+                $msg = $this->replacePatternWith(pattern: '/[.?,!;:@#$%^&*()]/', source: $msg, replacement: '');
+            }
+        } else {
+            $msg = Str::stripNasties($msg, $this->utf8);
+        }
+
+        $msg = trim($msg);
+        $msg = $this->replacePatternWith('/\s+/', $msg, " ");
+        return $msg;
+    }
+
+
+    /**
+     * Run a kind of substitution on a message.
+     *
+     * @param string $msg  The message to run substitutions against.
+     * @param string $type The type of substitution to run,
+     *                     one of ``subs`` or ``person``.
+     *
+     * @return string
+     */
+    private function substitute(string $msg, string $type): string
+    {
+        if (!isset($this->master->sorted[$type])) {
+            $this->output(RivescriptMessage::Warning("You forgot to call sortReplies()!"));
+            return "";
+        }
+
+        $subs = ($type == 'sub') ? $this->master->sub : $this->master->person;
+
+//
+//        if (self.master.unicodePunctuation != null) {
+//            pattern = msg.replace(self.master.unicodePunctuation, "");
+//        } else {
+//            pattern = msg.replace(/[.,!?;:]/g, "");
+//		}
+
+
+        $this->output(
+            RivescriptMessage::Say("Implement unicodePunctuation in RiveScript.php! and use it in Brain::substitute()")
+        );
+        $this->output(
+            RivescriptMessage::Say("Implement maxwords in RiveScript.php! and use it in Brain::substitute()")
+        );
+
+        $pattern = $this->replacePatternWith(pattern: '/[.,!?;:]/', source: $msg, replacement: '');
+
+        $tries = 0;
+        $giveup = 0;
+        $subgiveup = 0;
+        $maxwords = 0; // FIXME: Make dynamic
+
+        while (strpos($pattern, ' ') > -1) {
+            $giveup++;
+            // Give up if there are too many substitutions (for safety)
+            if ($giveup >= 1000) {
+                $this->output(RivescriptMessage::Warning("Too many loops when handling substitutions!"));
+                break;
+            }
+
+            $li = Misc::nIndexOf($pattern, " ", $maxwords);
+            $subpattern = strstr($pattern, 0, $li);
+
+            $result = $subs[$subpattern];
+            if ($result) {
+                $msg = $this->replacePatternWith(pattern: $subpattern, source: $msg, replacement: $result);
+            } else {
+                while (strpos($subpattern, " ") > -1) {
+                    $subgiveup++;
+
+                    if ($subgiveup >= 1000) {
+                        $this->output(RivescriptMessage::Warning("Too many loops when handling substitutions!"));
+                        break;
+                    }
+
+                    $li = strrpos($subpattern, " ");
+                    $subpattern = substr($subpattern, 0, $li);
+
+                    $result = $subs[$subpattern];
+                    if ($result) {
+                        $msg = $this->replacePatternWith(pattern: $subpattern, source: $msg, replacement: $result);
+                        break;
+                    }
+
+                    $tries++;
+                }
+            }
+
+            $fi = strpos($pattern, " ");
+            $pattern = substr($pattern, 0, $fi + 1);
+            $tries++;
+        }
+
+        // After all loops, see if just one word is in the pattern
+        $result = $subs[$pattern];
+        if ($result) {
+            $msg = $this->replacePatternWith(pattern: $pattern, source: $msg, replacement: $result);
+        }
+
+        return $msg;
+    }
+
+
+    /**
+     * @return array[]
+     */
     private function defaultHistory()
     {
         return [

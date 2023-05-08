@@ -60,8 +60,13 @@ class Rivescript extends ContentLoader
     public array $sorted = [];
     public array $global = [];
     public array $topics = [];
+    public array $var = [];
+    public array $regexc = [];
     public array $thats = [];
     public array $syntax = [];
+    public array $sub = [];
+    public array $person = [];
+
 
     /**
      * The default concatenation mode.

@@ -125,7 +125,7 @@ $includes =<<<EOF
 EOF;
 
 $code =<<<EOF
-+ hi
++ what is your [home] phone number
 - Hallo
 EOF;
 
