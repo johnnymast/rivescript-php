@@ -179,11 +179,155 @@ class Brain implements EventEmitterInterface
             foreach ($this->master->sorted['thats'][$topic] as $trig) {
                 $pattern = $trig[1]["previous"];
                 $botside = $this->replyRegexp($user, $pattern);
+
+                $this->output(
+                    RivescriptMessage::Say(
+                        "Try to match lastReply (:lastreply) to :pattern (:botside).",
+                        [
+                            'lastreply' => $lastReply,
+                            'pattern' => $pattern,
+                            'botside' => $botside
+                        ]
+                    )
+                ]
+
+                    //.format(lastReply, pattern, repr(botside)))"));
+                /**
+                 * Match?
+                 */
+                $match = $this->getMatchesFromPattern('/' . preg_quote($botside, '/') . '/', $lastReply);
+
+                if ($match) {
+                    $this->output(RivescriptMessage::Say("Bot side matched!"));
+                    $thatstars = array();
+                    preg_match('/' . preg_quote($botside, '/') . '/', $lastReply, $thatstars);
+
+                    $user_side = $trig[1];
+                    $subtrig = $this->replyRegexp($user, $user_side["trigger"]);
+
+                    $this->output(
+                        RivescriptMessage::Say("Now try to match :msg to :user_side_trigger", [
+                                'msg' => $msg,
+                                'user_side_trigger' => $user_side["trigger"]
+                            ]
+                        )
+                    );
+
+                    $match = $this->getMatchesFromPattern('/' . preg_quote($subtrig, '/') . '/', $msg);
+                    if ($match) {
+                        $this->output(RivescriptMessage::Say("Found a match!"));
+                        $matched = $trig[1];
+                        $matchedTrigger = $user_side["trigger"];
+                        $foundMatch = true;
+
+                        $stars = $match;
+                        break;
+                    }
+
+                    if ($foundMatch) {
+                    }
+                }
+                if ($foundMatch) {
+                    break;
+                }
+            }
+        }
+
+        /**
+         *  Search their topic for a match to their trigger.
+         */
+        if (!$foundMatch) {
+            if (isset($this->master->sorted["topics"][$topic])) {
+                $pattern = $trig[0];
+
+                $regexp = $this->replyRegexp($user, $pattern);
+                $this->output(
+                    RivescriptMessage::Say("Try to match :msg against :pattern (:regexp_pattern)", [
+                        'msg' => $msg,
+                        'pattern' => $pattern,
+                        'regexp_pattern' => $regexp->getPattern(),
+                    ])
+                );
+
+                /**
+                 * Python's regular expression engine is slow. Try a verbatim
+                 * match if this is an atomic trigger.
+                 */
+                $isAtomic = Misc::isAtomic($pattern);
+                $isMatch = false;
+                if ($isAtomic) {
+                    /**
+                     * Only look for exact matches, no sense running atomic triggers
+                     * through the regexp engine.
+                     */
+                    if ($msg == $pattern) {
+                        $isMatch = true;
+                    }
+                } else {
+                    /**
+                     * Non-atomic triggers always need the regexp.
+                     */
+                    $match = $this->getMatchesFromPattern($regexp, $msg);
+                    if ($match) {
+                        $isMatch = true;
+                        $stars = $match;
+                    }
+                }
+
+                if ($isMatch) {
+                    $this->output(RivescriptMessage::Say("Found a match!"));
+                    $matched = $trig[01;
+                    $foundMatch = true;
+                    $matchedTrigger = $pattern;
+                }
+            }
+        }
+
+        /**
+         * Store what trigger they matched on. If their matched trigger is None,
+         * this will be too, which is great.
+         */
+        $this->master->setUserVar($user, "__lastmatch__", $matchedTrigger);
+
+        if ($matched) {
+            foreach ([1] as $nil) {
+                if ($matched["redirect"]) {
+                    $this->output(
+                        RivescriptMessage::Say("Redirecting us to :redirect", ['redirect' => $matched["redirect"]])
+                    );
+
+                    $redirect = $this->procesTags($user, $msg,)
+                }
             }
         }
 
         return '';
     }
+
+    /**
+     * @param string $user                 The user ID.
+     * @param string $msg                  The user's formatted message.
+     * @param string $reply                The raw RiveScript reply for the message.
+     * @param array  $st                   The array of ``<star>`` matches from the trigger.
+     * @param array  $bst                  The array of ``<botstar>`` matches from a
+     *                                     ``%Previous`` command.
+     * @param int    $depth                The recursion depth counter.
+     * @param bool   $ignore_object_errors Whether to ignore errors in Python
+     *                                     object macros instead of raising an ObjectError exception.
+     *
+     * @return void
+     */
+    protected function procesTags(
+        string $user,
+        string $msg,
+        string $reply,
+        array $st = [],
+        array $bst = [],
+        int $depth = 0,
+        bool $ignore_object_errors = true
+    ) {
+    }
+
 
     /**
      * Prepares a trigger for the regular expression engine.
@@ -239,7 +383,11 @@ class Brain implements EventEmitterInterface
                 $pipes = implode('|', $new);
                 $pipes = $this->replacePatternWith(pattern: '(.+?)', source: $pipes, replacement: '(?:.+?)');
                 $pipes = $this->replacePatternWith(pattern: '(\d+?)', source: $pipes, replacement: '(?:\d+?)');
-                $pipes = $this->replacePatternWith(pattern: '([A-Za-z]+?)', source: $pipes, replacement: '(?:[A-Za-z]+?)');
+                $pipes = $this->replacePatternWith(
+                    pattern: '([A-Za-z]+?)',
+                    source: $pipes,
+                    replacement: '(?:[A-Za-z]+?)'
+                );
 
 
                 $regexp = $this->replacePatternWith(
@@ -275,7 +423,7 @@ class Brain implements EventEmitterInterface
                 foreach ($uvars as $var) {
                     $rep = '';
                     $value = $this->master->getUserVar($user, $var);
-                    if ($value !== null && $value  !== "undefined") {
+                    if ($value !== null && $value !== "undefined") {
                         $rep = Str::stripNasties($value);
                     }
 
@@ -288,7 +436,6 @@ class Brain implements EventEmitterInterface
                  */
                 if (strpos($regexp, '<input') > -1 || strpos($regexp, '<reply') > -1) {
                     $history = $this->master->getUserVar($user, "__history__");
-
                 }
             }
         }

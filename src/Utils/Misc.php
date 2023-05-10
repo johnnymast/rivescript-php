@@ -52,4 +52,28 @@ class Misc
 
         return $msg;
     }
+
+
+    /**
+     * "Determine if a trigger is atomic or not.
+     *
+     * In this context we're deciding whether the trigger needs to use
+     * the regular expression engine for testing. So any trigger that contains
+     * nothing but plain words is considered atomic, whereas a trigger with any
+     * "regexp-like" parts (even alternations) is not.
+     *
+     * @param string $pattern The trigger to test.
+     *
+     * @return bool  Whether it's atomic or not.
+     */
+    public static function is_atomic(string $pattern): bool
+    {
+        $special = ['*', '#', '_', '(', '[', '<', '{', '@'];
+        foreach ($special as $char) {
+            if (strpos($pattern, $char) !== false) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
